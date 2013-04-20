@@ -1,0 +1,8 @@
+<nav id='toolbar'>
+	{{if .User}}
+	<a class='action' id='account' href='/account'>{{.User}}</a>
+	{{else}}
+	<a class='action' id='login' href='/login'>login</a>
+	{{end}}
+</nav>
+

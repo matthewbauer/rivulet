@@ -1,0 +1,11 @@
+application: myrivulet
+version: 30
+runtime: go
+api_version: go1
+
+handlers:
+- url: /(.*\.(gif|png|jpg|js|css|svg))
+  static_files: static/\1
+  upload: static/(.*)
+- url: /.*
+  script: _go_app

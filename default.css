@@ -1,0 +1,26 @@
+#header {
+	color: #AFAFAF;
+	background-color: #484848;
+}
+.action {
+	color: #484848;
+}
+#container > a:hover {
+	color: #FF5100;
+}
+#container > a {
+	color: #AFAFAF;
+}
+.article {
+	color: #484848;
+}
+.article-header {
+	color: #484848;
+}
+.article-link {
+	color: #484848;
+}
+.article-content {
+	color: #484848;
+}
+

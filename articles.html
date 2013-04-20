@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+{{template "head.html"}}
+</head>
+<body>
+{{template "header.html" .}}
+<div id='container'>
+	<div class='content' id='container-content'>
+		{{with .Articles}}
+		<section id='articles'>
+			{{range .}}
+			<article class='article unread' id='{{.ID}}'>
+				<header class='article-header'>
+					<a class='article-link' target='_blank' href='/article?url={{.URL}}&id={{.ID}}'>{{.Title}}</a>
+				</header>
+				<div class='article-content'>{{.Summary}}</div>
+			</article>
+			{{end}}
+		</section>
+		{{end}}
+		<div id='next' class='action'><a href='/article'>▼</a></div>
+	</div>
+</div>
+<script src='articles.js'></script>
+</body>
+</html>
