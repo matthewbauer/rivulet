@@ -12,7 +12,7 @@
 		<ul id='feeds'>
 			{{range .}}
 			<li class='feed' id='{{.}}'>
-				<a class='feed-link' href='{{.}}'>{{.}}</a>
+				<a class='feed-link' href='{{.}}'>{{.Name}}</a>
 				<a class='unsubscribe' href='/feed?unsubscribe=1&url={{.}}'>-</a>
 			</li>
 			{{end}}
@@ -23,7 +23,7 @@
 		<ul id='suggested'>
 			{{range .}}
 			<li class='feed' id='{{.}}'>
-				<a class='feed-link' href='{{.}}'>{{.}}</a>
+				<a class='feed-link' href='{{.}}'>{{.Name}}</a>
 				<a class='subscribe' href='/feed?subscribe=1&url={{.}}'>+</a>
 			</li>
 			{{end}}

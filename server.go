@@ -95,7 +95,7 @@ func getOutput(request *http.Request) (output OUTPUT) {
 		if output != UNKNOWNOUTPUT {
 			return
 		}
-		mimetype = mime.TypeByExtension(value)
+		mimetype = mime.TypeByExtension(fmt.Sprintf(".%v", value))
 		output = mimetypeToOutput(mimetype)
 		if output != UNKNOWNOUTPUT {
 			return
@@ -125,7 +125,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 	u := user.Current(context)
 	if u == nil {
 		var url string
-		url, err = user.LoginURL(context, "/")
+		url, err = user.LoginURL(context, "/user?new=1")
 		if err != nil {
 			writer.WriteHeader(http.StatusForbidden)
 			fmt.Fprintf(writer, "%v: method not allowed", http.StatusForbidden)
@@ -184,6 +184,5 @@ func server(writer http.ResponseWriter, request *http.Request) {
 }
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	fmt.Fprintf(os.Stderr, "rootGET\n")
 	return article(context, user, request, 0)
 }

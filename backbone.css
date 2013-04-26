@@ -1,15 +1,9 @@
 body {
-	color: #121F36;
-	background-color: #E8E8E8;
-	font-family: helvetica,arial,sans-serif;
 	padding: 0;
 	margin: 0;
 }
 a {
 	text-decoration: none;
-}
-a, a:visited, a:hover, a:active {
-	  color: inherit;
 }
 a:hover {
 	text-decoration: underline;
@@ -19,7 +13,6 @@ a:hover {
 	margin: 0 auto;
 }
 #header {
-	font-size: larger;
 	box-shadow: .5em 0 .5em .5em #ccc;
 }
 #header-content {
@@ -46,44 +39,48 @@ a:hover {
 .action {
 	font-weight: bold;
 }
-.action > a:hover {
+.action:hover {
 	text-decoration: none;
 }
 .article {
 	padding-top: 1em;
 	padding-bottom: 1em;
-	font-size: 1.5em;
 }
 .article-header {
-	font-size: 1.5em;
+	display: inline;
 	font-weight: none;
-	margin-bottom: 1em;
+	font-size: 1.5em;
 }
 .article-link {
-	display: block;
 	font-weight: bold;
 }
 .article-content {
 	display: none;
-	margin-top: 1em;
 }
 #next {
 	display: block;
 	margin: 1em auto;
-	font-size: 2em;
+	width: 1em;
+}
+#prev {
+	display: block;
+	margin: 1em auto;
 	width: 1em;
 }
 .read {
 	display: none;
 }
+.current {
+	display: block;
+}
 .feed {
-	font-size: medium;
 }
 .unsubscribe {
-	font-size: 1em;
 	vertical-align: top;
 }
 .subscribe {
-	font-size: .5em;
 	vertical-align: top;
+}
+.go {
+	float: right;
 }

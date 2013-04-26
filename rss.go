@@ -54,7 +54,7 @@ type RSSItem struct {
 	Comments    string       `xml:"comments"`
 	Enclosure   RSSEnclosure `xml:"enclosure"`
 	Guid        string       `xml:"guid"`
-	PubDate     string       `xml:"pubdate"`
+	PubDate     string       `xml:"pubDate"`
 	Source      RSSSource    `xml:"source"`
 }
 

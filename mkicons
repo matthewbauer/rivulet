@@ -1,9 +1,14 @@
 #!/bin/sh
 
-sizes='16 24 32 57 64 72 96 114 128 195 256'
+sizes='16 24 32 57 64 72 96 114 128 144 195 256'
 
 for size in $sizes
 do
 	inkscape -C -e static/icon$size.png -w $size -h $size static/icon.svg
 done
 
+cp static/icon16.png static/favicon.ico
+cp static/icon144.png static/apple-touch-icon-144x144.png
+cp static/icon144.png static/apple-touch-icon.png
+cp static/icon144.png static/apple-touch-icon-144x144-precomposed.png
+cp static/icon144.png static/apple-touch-icon-precomposed.png

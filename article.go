@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
+	"time"
 )
 
 import (
@@ -15,6 +17,43 @@ import (
 	"appengine/memcache"
 	"appengine/user"
 )
+
+type ArticleCache struct {
+	Title   string
+	Summary string
+	URL     string
+	ID      string
+	Date    int64
+}
+
+type ArticleData struct {
+	User     string
+	Articles []ArticleCache
+}
+
+func (ArticleData) Template() string { return "articles.html" }
+func (ArticleData) Redirect() string { return "" }
+func (ArticleData) Send() bool       { return true }
+
+type ArticleList struct {
+	Articles []Article
+}
+
+func (ArticleList) Template() string { return "articles.html" }
+func (ArticleList) Redirect() string { return "" }
+func (ArticleList) Send() bool       { return true }
+
+func (al ArticleList) Len() int           { return len(al.Articles) }
+func (al ArticleList) Swap(i, j int)      { al.Articles[i], al.Articles[j] = al.Articles[j], al.Articles[i] }
+func (al ArticleList) Less(i, j int) bool { return al.Articles[i].Rank > al.Articles[j].Rank }
+
+type Article struct { // child of User
+	Rank       int64
+	Feed       string
+	ID         string
+	Read       bool
+	Interested bool
+}
 
 func articlePOST(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	var body []byte
@@ -29,13 +68,17 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 	}
 	var userkey *datastore.Key
 	var userdata UserData
-	userkey, userdata, err = getUserData(context, user.String())
+	userkey, userdata, err = mustGetUserData(context, user.String())
 	if err != nil {
 		return
 	}
+	read := false
+	if request.FormValue("Read") == "1" {
+		read = true
+	}
 	for _, article := range articleList.Articles {
-		found := false
 		var n int
+		found := false
 		for i, a := range userdata.Articles {
 			if a.ID == article.ID {
 				found = true
@@ -50,7 +93,7 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 					return
 				}
 			}
-			if article.Read {
+			if read || article.Read {
 				userdata.Articles = userdata.Articles[:n+copy(userdata.Articles[n:], userdata.Articles[n+1:])]
 			} else {
 				userdata.Articles[n] = article
@@ -65,7 +108,8 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 
 func article(context appengine.Context, user *user.User, request *http.Request, limit int) (data Data, err error) {
 	var userdata UserData
-	_, userdata, err = getUserData(context, user.String())
+	var userkey *datastore.Key
+	userkey, userdata, err = mustGetUserData(context, user.String())
 	if err != nil {
 		return
 	}
@@ -78,18 +122,20 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	if user.ID != "default" {
 		articleData.User = user.String()
 	}
+	var articleCache ArticleCache
+	var feedCache FeedCache
+	sort.Sort(ArticleList{userdata.Articles})
+	_, err = putUserData(context, userkey, userdata)
 	for _, article := range userdata.Articles[0:limit] {
-		var articleCache ArticleCache
 		_, err = memcache.Gob.Get(context, article.ID, &articleCache)
 		if err == memcache.ErrCacheMiss || articleCache.ID != article.ID {
 			err = nil
-			var feedArticles []ArticleCache
-			feedArticles, err = getSubscriptionURL(context, article.Feed)
+			feedCache, err = getSubscriptionURL(context, article.Feed)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "error14: %v\n", err.Error())
 				continue
 			}
-			for _, articleCache = range feedArticles {
+			for _, articleCache = range feedCache.Articles {
 				if articleCache.ID == article.ID {
 					break
 				}
@@ -117,7 +163,7 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 	if id != "" && user.String() != "default" {
 		var userkey *datastore.Key
 		var userdata UserData
-		userkey, userdata, err = getUserData(context, user.String())
+		userkey, userdata, err = mustGetUserData(context, user.String())
 		if err != nil {
 			return
 		}
@@ -126,12 +172,12 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 		if err != nil {
 			return
 		}
-		var articleCache ArticleCache
-		_, err = memcache.Gob.Get(context, id, &articleCache)
-		if err != nil {
-			return
-		}
-		return
+	}
+	url := request.FormValue("url")
+	if url != "" {
+		var redirect Redirect
+		redirect.URL = url
+		return redirect, nil
 	}
 	requestNumber := request.FormValue("number")
 	var number int
@@ -146,18 +192,28 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 	return article(context, user, request, number)
 }
 
-func addArticle(context appengine.Context, feed Feed, id string, articlePrefs []Pref) (err error) {
+func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache) (err error) {
+	if articleCache.ID == "" {
+		return
+	}
+	/*
+	 *var articlePrefs = []Pref{
+	 *    {
+	 *        Field: "feed",
+	 *        Value: articleCache.URL,
+	 *        Score: 1,
+	 *    },
+	 *}
+	 */
+	article := Article{Feed: feed.URL, ID: articleCache.ID, Read: false}
 	for _, subscriber := range feed.Subscribers {
 		userkey, userdata, err := getUserData(context, subscriber)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error2: %v\n", err.Error())
 			continue
 		}
-		rank := getRank(articlePrefs, userdata.Prefs)
-		article := Article{Feed: feed.URL, ID: id, Rank: rank, Read: false}
-		userdata.Articles = append(userdata.Articles, Article{})
-		copy(userdata.Articles[1:], userdata.Articles[0:])
-		userdata.Articles[0] = article
+		article.Rank = articleCache.Date - time.Now().Unix() //getRank(articlePrefs, userdata.Prefs)
+		userdata.Articles = append(userdata.Articles, article)
 		_, err = putUserData(context, userkey, userdata)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error4: %v\n", err.Error())

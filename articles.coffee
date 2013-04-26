@@ -3,16 +3,34 @@ $('.article-link').click (event) ->
 	show($(this).parent().parent())
 	false
 
-$(window).keypress (event) ->
-	if event.which is SPACE or event.which is PAGEDOWN
-		event.preventDefault()
-		next()
-		return false
-	if event.which is ENTER
-		event.preventDefault()
-		show($('.unread'))
-		return false
-	true
+$(window).keydown (event) ->
+	switch event.which
+		when KeyEvent.DOM_VK_SPACE, KeyEvent.DOM_VK_PAGEDOWN, KeyEvent.DOM_VK_DOWN, KeyEvent.DOM_VK_J, KeyEvent.DOM_VK_N
+			if event.shiftKey
+				prev()
+			else
+				next()
+		when KeyEvent.DOM_VK_PAGEUP, KeyEvent.DOM_VK_UP, KeyEvent.DOM_VK_K, KeyEvent.DOM_VK_P
+			if event.shiftKey
+				next()
+			else
+				prev()
+		when KeyEvent.DOM_VK_ENTER, KeyEvent.DOM_VK_LEFT, KeyEvent.DOM_VK_RIGHT, KeyEvent.DOM_VK_RETURN
+			if event.shiftKey
+				window.open($('.unread').children('.go').attr('href'), '_blank')
+			else
+				show($('.unread'))
+		else
+			return true
+	event.preventDefault()
+	return false
+
+$('#prev').hide()
+
+$('#prev').click (event) ->
+	event.preventDefault()
+	prev()
+	false
 
 $('#next').click (event) ->
 	event.preventDefault()

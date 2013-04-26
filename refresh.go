@@ -19,6 +19,8 @@ import (
 	"appengine/user"
 )
 
+var refreshDelay = delay.Func("refresh", refreshSubscriptionURL)
+
 func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastore.Key) (err error) {
 	now := time.Now()
 	var subscription SubscriptionCache
@@ -32,6 +34,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 		return
 	}
 	if now.Unix() > subscription.Update {
+		duration := time.Hour
 		client := urlfetch.Client(context)
 		var response *http.Response
 		response, err = client.Get(feed.URL)
@@ -67,19 +70,18 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 					}
 					return errors.New(fmt.Sprintf("%v is not a feed, deleted", feed.URL))
 				}
-				var articlesCache []ArticleCache
-				articlesCache, err = getSubscription(context, subscription.Format, body)
-				for _, article := range articlesCache {
+				var feedCache FeedCache
+				feedCache, err = getSubscription(context, subscription.Format, body)
+				if err != nil {
+					return
+				}
+				if feedCache.TimeToLive > 0 {
+					duration = time.Duration(feedCache.TimeToLive)
+				}
+				for _, article := range feedCache.Articles {
 					if !ContainsString(feed.Articles, article.ID) {
 						feed.Articles = append(feed.Articles, article.ID)
-						var articlePrefs = []Pref{
-							{
-								Field: "feed",
-								Value: article.URL,
-								Score: 1,
-							},
-						}
-						err = addArticle(context, feed, article.ID, articlePrefs)
+						err = addArticle(context, feed, article)
 						if err != nil {
 							fmt.Fprintf(os.Stderr, "error16: %v\n", err.Error())
 							continue
@@ -90,9 +92,12 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 				subscription.MD5 = sum
 			}
 		}
-		subscription.Update = time.Now().Add(time.Hour).Unix()
+		subscription.Update = time.Now().Add(duration).Unix()
 		item.Object = subscription
 		err = memcache.Gob.Set(context, item)
+		if err != nil {
+			return
+		}
 	}
 	return
 }
@@ -103,8 +108,10 @@ func refreshSubscriptionURL(context appengine.Context, url string) (err error) {
 	var feed Feed
 	var feedkey *datastore.Key
 	feedkey, err = iterator.Next(&feed)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error100\n")
+	if err == datastore.Done {
+		feed.URL = url
+		feedkey = datastore.NewIncompleteKey(context, "Feed", nil)
+	} else if err != nil {
 		return
 	}
 	return refreshSubscription(context, feed, feedkey)
@@ -112,9 +119,9 @@ func refreshSubscriptionURL(context appengine.Context, url string) (err error) {
 
 func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 	query := datastore.NewQuery("Feed")
+	var feed Feed
+	var feedkey *datastore.Key
 	for iterator := query.Run(context); ; {
-		var feed Feed
-		var feedkey *datastore.Key
 		feedkey, err = iterator.Next(&feed)
 		if err == datastore.Done {
 			err = nil
@@ -147,5 +154,3 @@ func refreshGET(context appengine.Context, user *user.User, request *http.Reques
 	}
 	return refresh(context, true)
 }
-
-var refreshDelay = delay.Func("refresh", refreshSubscriptionURL)

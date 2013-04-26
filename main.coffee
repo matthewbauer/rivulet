@@ -1,8 +1,6 @@
 OK = 200
-ENTER = 13
-SPACE = 32
-PAGEDOWN = 34
 NUMBER = 1
+TIMEOUT = 1000
 
 jQuery.fn.exists = -> @length > 0
 
@@ -18,19 +16,30 @@ jQuery.extend
 			processData: false
 			async: false
 
-show = (element) -> element.children('.article-content').slideToggle()
+show = (element) ->
+	$.getJSON '/article?id=' + encodeURIComponent()
+	element.children('.article-content').slideToggle()
 
 addArticle = (data) ->
 	if not $('#articles').exists()
 		$('<section/>').
 			attr('id', 'articles').
 			insertBefore('#next')
-	return if data['ID']?
-	return if $(document.getElementById(data['ID'])).exists()
+	if $(document.getElementById(data['ID'])).exists()
+		return false
 	$('<article/>').
 		addClass('article').
+		addClass('current').
 		addClass('unread').
 		attr('id', data['ID']).
+		append(
+			$('<a/>').
+				addClass('go').
+				addClass('action').
+				attr('target', '_blank').
+				attr('href', '/article?url=' + data['URL'] + '&id=' + data['ID']).
+				html('▶')
+		).
 		append(
 			$('<header/>').
 				addClass('article-header').
@@ -52,31 +61,60 @@ addArticle = (data) ->
 				html(data['Summary'])
 		).
 		appendTo('#articles')
+	$('#prev').show() if $('.read').exists()
+	return true
 
 addArticles = (object) ->
-	if object.Articles? and object.Articles.length != 0
-		addArticle article for article in object.Articles
+	$('#next').show()
+	for article in object['Articles']
+		added = addArticle article
+		if not added
+			return false
+	return true
+
+refresh = ->
+	nextArticle NUMBER
 
 nextArticle = (number) ->
 	$.getJSON '/article?output=json&number=' + number, (data) ->
-		if data['URL']?
-			window.location.href = data['URL']
+		if data['URL']? or not data['Articles']? or data['Articles'].length == 0
+			$('#next').hide()
+			refresh()
 		else
-			addArticles data
-
-markAsRead = (data) -> $.postJSON '/article?read=1', data
+			added = addArticles data
+			if not added
+				$('#next').hide()
+				markAsRead $('.current')
+				setTimeout(refresh, TIMEOUT)
 
 next = ->
-	markAllAsRead()
-	window.setTimeout nextArticles, 500
+	$('#prev').show()
+	if $('.current').last().is(':last-child')
+		markAsRead $('.current')
+		$('.current').removeClass('current')
+		refresh()
+	else
+		n = $('.current').next()
+		$('.current').removeClass('current')
+		n.addClass('current').show()
 
-markAllAsRead = ->
+prev = ->
+	if not $('.current').first().is(':first-child')
+		markAsRead $('.current.unread')
+		p = $('.current').prev()
+		$('.current').removeClass('current')
+		p.addClass('current').show()
+		if $('.current').first().is(':first-child')
+			$('#prev').hide()
+
+
+markAsRead = (elements) ->
 	data = Articles: []
-	$('.unread').each ->
+	elements.each ->
 		data.Articles.push
 			ID: $(this).attr('id')
 			Read: true
-	markAsRead data
+	$.postJSON '/article?read=1', data
 	for element in data.Articles
 		$(document.getElementById(element['ID'])).
 			removeClass('unread').
