@@ -77,7 +77,7 @@ const (
 
 func mimetypeToOutput(mimetype string) OUTPUT {
 	switch mimetype {
-	case "application/json":
+	case "application/json", "text/json":
 		return JSON
 	case "text/html":
 		return HTML

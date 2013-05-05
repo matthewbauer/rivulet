@@ -72,32 +72,30 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 	if err != nil {
 		return
 	}
-	read := false
-	if request.FormValue("Read") == "1" {
-		read = true
-	}
 	for _, article := range articleList.Articles {
 		var n int
+		var a Article
 		found := false
-		for i, a := range userdata.Articles {
+		for n, a = range userdata.Articles {
 			if a.ID == article.ID {
 				found = true
-				n = i
 				break
 			}
 		}
 		if found {
-			if article.Interested {
-				err = selected(context, userkey, userdata, article)
-				if err != nil {
-					return
-				}
-			}
-			if read || article.Read {
-				userdata.Articles = userdata.Articles[:n+copy(userdata.Articles[n:], userdata.Articles[n+1:])]
-			} else {
-				userdata.Articles[n] = article
-			}
+			//			if article.Interested {
+			//				userdata, err = selected(context, userdata, article)
+			//				if err != nil {
+			//					fmt.Fprintf(os.Stderr, "error144: %v\n", err.Error())
+			//					err = nil
+			//				}
+			//			}
+			//			if read || article.Read {
+			//				//userdata.Articles = append(userdata.Articles[:n], userdata.Articles[n+1:]...)
+			//				userdata.Articles[n], userdata.Articles = userdata.Articles[len(userdata.Articles)-1], userdata.Articles[:len(userdata.Articles)-1]
+			//			} else {
+			userdata.Articles[n] = article
+			//			}
 		} else {
 			userdata.Articles = append(userdata.Articles, article)
 		}
@@ -125,10 +123,9 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	var articleCache ArticleCache
 	var feedCache FeedCache
 	sort.Sort(ArticleList{userdata.Articles})
-	_, err = putUserData(context, userkey, userdata)
 	for _, article := range userdata.Articles[0:limit] {
 		_, err = memcache.Gob.Get(context, article.ID, &articleCache)
-		if err == memcache.ErrCacheMiss || articleCache.ID != article.ID {
+		if err == memcache.ErrCacheMiss { // || articleCache.ID != article.ID
 			err = nil
 			feedCache, err = getSubscriptionURL(context, article.Feed)
 			if err != nil {
@@ -146,6 +143,8 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 		}
 		articleData.Articles = append(articleData.Articles, articleCache)
 	}
+	userdata.Articles = userdata.Articles[limit:]
+	_, err = putUserData(context, userkey, userdata)
 	return articleData, nil
 }
 
@@ -168,10 +167,11 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 			return
 		}
 		article := getArticleById(userdata.Articles, id)
-		err = selected(context, userkey, userdata, article)
+		userdata, err = selected(context, userdata, article)
 		if err != nil {
 			return
 		}
+		_, err = putUserData(context, userkey, userdata)
 	}
 	url := request.FormValue("url")
 	if url != "" {

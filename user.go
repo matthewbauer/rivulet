@@ -119,13 +119,13 @@ func unsubscribe(context appengine.Context, user *user.User, url string) (err er
 	for i, feed := range userdata.Feeds {
 		if feed == url {
 			userdata.Feeds = userdata.Feeds[:i+copy(userdata.Feeds[i:], userdata.Feeds[i+1:])]
-			_, err = putUserData(context, userkey, userdata)
 			if err != nil {
-				return
+				continue
 			}
 			break
 		}
 	}
+	_, err = putUserData(context, userkey, userdata)
 	query := datastore.NewQuery("Feed").Filter("URL=", url)
 	var feed Feed
 	var key *datastore.Key
@@ -186,7 +186,7 @@ func subscribeUser(context appengine.Context, user *user.User, url string) (err 
 	return
 }
 
-func selected(context appengine.Context, userkey *datastore.Key, userdata UserData, article Article) (err error) {
+func selected(context appengine.Context, userdata UserData, article Article) (UserData, error) {
 	found := false
 	for i, value := range userdata.Prefs {
 		if value.Field == "field" && value.Value == article.Feed {
@@ -203,8 +203,7 @@ func selected(context appengine.Context, userkey *datastore.Key, userdata UserDa
 			Score: 1,
 		})
 	}
-	_, err = putUserData(context, userkey, userdata)
-	return
+	return userdata, nil
 }
 
 func userGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {

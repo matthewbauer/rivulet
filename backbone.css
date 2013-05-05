@@ -47,7 +47,6 @@ a:hover {
 	padding-bottom: 1em;
 }
 .article-header {
-	display: inline;
 	font-weight: none;
 	font-size: 1.5em;
 }
@@ -68,6 +67,9 @@ a:hover {
 	width: 1em;
 }
 .read {
+	display: none;
+}
+.unread {
 	display: none;
 }
 .current {
