@@ -1,7 +1,7 @@
 OK = 200
 LIST = 1
-NUMBER = 8
-TIMEOUT = 1000
+NUMBER = 1
+TIMEOUT = 1024
 
 jQuery.fn.exists = -> @length > 0
 
@@ -18,7 +18,10 @@ jQuery.extend
 			async: false
 
 show = (element) ->
-	$.getJSON '/article?id=' + encodeURIComponent()
+	$.getJSON '/article?id=' + encodeURIComponent(element.attr('id'))
+	element.children('.article-content').slideToggle()
+
+hide = (element) ->
 	element.children('.article-content').slideToggle()
 
 addArticle = (data) ->
@@ -56,44 +59,44 @@ addArticle = (data) ->
 		)
 
 addArticles = (object) ->
-	if not object?
-		return []
 	list = []
+	return list if not object?
 	for article in object['Articles']
 		element = addArticle article
-		if element?
-			list.push element.hide()
+		list.push element.hide() if element?
 	list
 
 makeCurrent = (articles) ->
-	for article in articles.slice(0, LIST)
-		article.show().addClass('current')
+	article.show().addClass('current') for article in articles.slice(0, LIST)
 	for article in articles
-		if not $(document.getElementById(data['ID'])).exists()
+		if not $(document.getElementById(article.attr('id'))).exists()
 			article.appendTo '#articles'
 
 makeArticle = (articles) ->
 	for article in articles
-		article.appendTo '#articles'
+		if not $(document.getElementById(article.attr('id'))).exists()
+			article.appendTo '#articles'
 
-nextArticle = (number, fun) ->
+nextArticle = (number, timeout, fun) ->
 	$.getJSON '/article?output=json&number=' + number, (data) ->
 		if data['URL']?
-			setTimeout nextArticle, TIMEOUT, NUMBER, makeCurrent
-#			$('<article/>').
-#				html('the end of the river').
-#				addClass('current').
-#				appendTo('#articles')
+			setTimeout nextArticle, timeout * 2, NUMBER, timeout * 2, makeCurrent
 		else
 			articles = addArticles data
+			#div = $('<div/>')
+			#for article in articles.slice(0, LIST)
+				#div.addClass('current').append(article)
+			#$('#next').hide()
+			#div.appendTo('body').
+				#show().
+				#css({position: 'fixed', top: $(document).height(), left: $('#articles').offset().left}).
+				#animate {top: $('#articles').offset().top}, ->
+								#$(this).children().appendTo($('#articles'))
+								#$(this).remove()
+								#$('#next').show()
+			#for article in articles.slice(LIST + 1)
+				#article.appendTo('#articles')
 			fun(articles)
-#			$('#next').hide()
-#			articles.appendTo('body').show().
-#				css({position: 'fixed', top: $(document).height(), left: $('#articles').offset().left}).
-#				animate {top: $('#articles').offset().top}, ->
-#								$(this).children().each -> $(this).appendTo('#articles')
-#								$(this).remove()
-#								$('#next').show()
 
 next = ->
 	if $('#next').is ':visible'
@@ -103,16 +106,12 @@ next = ->
 			markAsRead $('.current')
 			$('.current').removeClass 'current'
 			$('#articles').children().slice(index + 1, index + LIST + 1).addClass('current').show()
-			if index > (NUMBER / 2)
-				nextArticle 1, makeArticle
+			nextArticle 1, TIMEOUT, makeArticle if index > (NUMBER / 2)
 		else
 			markAsRead $('.current')
 			$('.current').removeClass 'current'
-			nextArticle NUMBER, makeCurrent
-		if $('.current').first().index() < LIST
-			$('#prev').hide()
-		else
-			$('#prev').show()
+			nextArticle NUMBER, TIMEOUT, makeCurrent
+		$('#prev').show()
 		$('#next').show()
 
 prev = ->
@@ -121,8 +120,7 @@ prev = ->
 		markAsRead $('.current')
 		$('.current').removeClass 'current'
 		$('#articles').children().slice(index - LIST, index).addClass('current').show()
-		if $('.current').first().index() < LIST
-			$('#prev').hide()
+		$('#prev').hide() if $('.current').first().index() < LIST
 
 markAsRead = (elements) ->
 	elements.each ->

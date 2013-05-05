@@ -17,12 +17,21 @@ $(window).keyup (event) ->
 				next()
 			else
 				prev()
-		when KeyEvent.DOM_VK_ENTER, KeyEvent.DOM_VK_LEFT, KeyEvent.DOM_VK_RIGHT, KeyEvent.DOM_VK_RETURN, KeyEvent.DOM_VK_NUMPAD5, KeyEvent.DOM_VK_NUMPAD6
+		when KeyEvent.DOM_VK_ENTER, KeyEvent.DOM_VK_RETURN
 			event.preventDefault()
 			if event.shiftKey
-				window.open $('.unread').children('.go').attr('href'), '_blank'
+				window.open $('.current').children('.go').attr('href'), '_blank'
 			else
-				show($('.unread'))
+				show($('.current'))
+		when KeyEvent.DOM_VK_RIGHT, KeyEvent.DOM_VK_NUMPAD5
+			event.preventDefault()
+			if event.shiftKey
+				window.open $('.current').children('.go').attr('href'), '_blank'
+			else
+				show($('.current')) if not $('.current').children('.article-content').is(':visible')
+		when KeyEvent.DOM_VK_LEFT, KeyEvent.DOM_VK_NUMPAD6
+			event.preventDefault()
+			hide($('.current')) if $('.current').children('.article-content').is(':visible')
 		else
 			return true
 	return false
@@ -39,9 +48,11 @@ $('#next').click (event) ->
 	next()
 	false
 
-if not $('#articles').exists()
-	$('<section/>').
-		attr('id', 'articles').
-		insertBefore('#next')
+
+$('<section/>').
+	attr('id', 'articles').
+	insertBefore('#next') if not $('#articles').exists()
 
 next() if not $('.unread').exists()
+
+$('#prev').hide()
