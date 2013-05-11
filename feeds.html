@@ -11,9 +11,9 @@
 		<h2>Subscribed</h2>
 		<ul id='feeds'>
 			{{range .}}
-			<li class='feed' id='{{.}}'>
-				<a class='feed-link' href='{{.}}'>{{.Name}}</a>
-				<a class='unsubscribe' href='/feed?unsubscribe=1&url={{.}}'>-</a>
+			<li class='feed' id='{{.URL}}'>
+				<a class='unsubscribe' href='/feed?unsubscribe=1&url={{.URL}}'>-</a>
+				<a class='feed-link' href='{{.URL}}'>{{.Title}}</a>
 			</li>
 			{{end}}
 		</ul>
@@ -22,9 +22,9 @@
 		<h2>Suggested</h2>
 		<ul id='suggested'>
 			{{range .}}
-			<li class='feed' id='{{.}}'>
-				<a class='feed-link' href='{{.}}'>{{.Name}}</a>
-				<a class='subscribe' href='/feed?subscribe=1&url={{.}}'>+</a>
+			<li class='feed' id='{{.URL}}'>
+				<a class='subscribe' href='/feed?subscribe=1&url={{.URL}}'>+</a>
+				<a class='feed-link' href='{{.URL}}'>{{.Title}}</a>
 			</li>
 			{{end}}
 		</ul>

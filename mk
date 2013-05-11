@@ -2,4 +2,3 @@
 
 ./mkjs
 ./mkicons
-./mkcss

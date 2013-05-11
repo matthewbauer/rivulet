@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -19,7 +18,8 @@ import (
 	"appengine/user"
 )
 
-var refreshDelay = delay.Func("refresh", refreshSubscriptionURL)
+var refreshSubscriptionURLDelay = delay.Func("refresh", refreshSubscriptionURL)
+var refreshDelay = delay.Func("refresh", func(context appengine.Context, x string) { refresh(context, true) })
 
 func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastore.Key) (err error) {
 	now := time.Now()
@@ -60,6 +60,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 			}
 			sum := fmt.Sprintf("%x", hash.Sum(nil))
 			if sum != subscription.MD5 {
+				printError(context, errors.New("Refreshing..."))
 				if subscription.Format == UNKNOWN {
 					subscription.Format = getFeedType(response, body)
 				}
@@ -83,7 +84,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 						feed.Articles = append(feed.Articles, article.ID)
 						err = addArticle(context, feed, article)
 						if err != nil {
-							fmt.Fprintf(os.Stderr, "error16: %v\n", err.Error())
+							printError(context, err)
 							continue
 						}
 					}
@@ -127,7 +128,7 @@ func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 			err = nil
 			break
 		} else if err != nil {
-			fmt.Fprintf(os.Stderr, "error9: %v\n", err.Error())
+			printError(context, err)
 			continue
 		}
 		if asNeeded {
@@ -136,7 +137,7 @@ func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 			_, err = getSubscriptionURL(context, feed.URL)
 		}
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error10: %v\n", err.Error())
+			printError(context, err)
 			continue
 		}
 	}

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-appserver .
+appserver --clear_datastore=yes .
 

@@ -1,28 +1,28 @@
 body {
 	padding: 0;
 	margin: 0;
+	-webkit-overflow-scrolling: touch;
 }
 a {
 	text-decoration: none;
+	color: rgb(0, 0, 238);
 }
 a:hover {
 	text-decoration: underline;
 }
+a:visited {
+	color: rgb(0, 0, 238);
+}
 .content {
-	width: 50%;
+	width: 61.80340%;
 	margin: 0 auto;
 }
 #header {
 	box-shadow: .5em 0 .5em .5em #ccc;
 }
-#header-content {
-	padding-top: 0.5em;
-	padding-bottom: 0.5em;
-}
 #logo {
+	margin-left: 45%;
 	vertical-align: middle;
-	display: block;
-	margin: 0 auto;
 }
 #credit {
 	position: relative;
@@ -36,6 +36,15 @@ a:hover {
 #container-content {
 	padding-top: 1em;
 }
+#add {
+	vertical-align: middle;
+	font-size: 4em;
+	width: 1em;
+	color: black;
+}
+#add:hover {
+	text-decoration: none;
+}
 .action {
 	font-weight: bold;
 }
@@ -47,24 +56,30 @@ a:hover {
 	padding-bottom: 1em;
 }
 .article-header {
-	font-weight: none;
 	font-size: 1.5em;
 }
 .article-link {
 	font-weight: bold;
 }
+.article-link:visited {
+	color: black;
+}
 .article-content {
-	display: none;
+	margin-top: 1em;
+	margin-bottom: 1em;
 }
 #next {
 	display: block;
-	margin: 1em auto;
-	width: 1em;
+	text-align: center;
+	font-size: 4em;
 }
 #prev {
 	display: block;
-	margin: 1em auto;
-	width: 1em;
+	text-align: center;
+	font-size: 4em;
+}
+.go {
+	display: none;
 }
 .read {
 	display: none;
@@ -76,12 +91,22 @@ a:hover {
 	display: block;
 }
 .feed {
+	margin-bottom: 1em;
+	list-style-type: none;
 }
 .unsubscribe {
-	vertical-align: top;
+	font-size: 3em;
+	color: red;
+}
+.unsubscribe:hover {
+	text-decoration: none;
 }
 .subscribe {
-	vertical-align: top;
+	font-size: 3em;
+	color: green;
+}
+.subscribe:hover {
+	text-decoration: none;
 }
 .go {
 	float: right;

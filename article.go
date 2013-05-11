@@ -2,10 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"sort"
 	"strconv"
 	"time"
@@ -23,6 +21,7 @@ type ArticleCache struct {
 	Summary string
 	URL     string
 	ID      string
+	Feed    string
 	Date    int64
 }
 
@@ -86,7 +85,7 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 			//			if article.Interested {
 			//				userdata, err = selected(context, userdata, article)
 			//				if err != nil {
-			//					fmt.Fprintf(os.Stderr, "error144: %v\n", err.Error())
+			//					printError(context, err)
 			//					err = nil
 			//				}
 			//			}
@@ -112,6 +111,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 		return
 	}
 	if limit > len(userdata.Articles) {
+		refreshDelay.Call(context, "")
 		var redirect Redirect
 		redirect.URL = "/feed"
 		return redirect, nil
@@ -122,14 +122,13 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	}
 	var articleCache ArticleCache
 	var feedCache FeedCache
-	sort.Sort(ArticleList{userdata.Articles})
 	for _, article := range userdata.Articles[0:limit] {
 		_, err = memcache.Gob.Get(context, article.ID, &articleCache)
 		if err == memcache.ErrCacheMiss { // || articleCache.ID != article.ID
 			err = nil
 			feedCache, err = getSubscriptionURL(context, article.Feed)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error14: %v\n", err.Error())
+				printError(context, err)
 				continue
 			}
 			for _, articleCache = range feedCache.Articles {
@@ -138,10 +137,15 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 				}
 			}
 		} else if err != nil {
-			fmt.Fprintf(os.Stderr, "error15: %v\n", err.Error())
+			printError(context, err)
 			continue
 		}
 		articleData.Articles = append(articleData.Articles, articleCache)
+	}
+	if len(articleData.Articles) < limit {
+		var redirect Redirect
+		redirect.URL = "/feed"
+		return redirect, nil
 	}
 	userdata.Articles = userdata.Articles[limit:]
 	_, err = putUserData(context, userkey, userdata)
@@ -197,26 +201,27 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 		return
 	}
 	/*
-	 *var articlePrefs = []Pref{
-	 *    {
-	 *        Field: "feed",
-	 *        Value: articleCache.URL,
-	 *        Score: 1,
-	 *    },
-	 *}
+	*var articlePrefs = []Pref{
+	*    {
+	*        Field: "feed",
+	*        Value: articleCache.URL,
+	*        Score: 1,
+	*    },
+	*}
 	 */
 	article := Article{Feed: feed.URL, ID: articleCache.ID, Read: false}
 	for _, subscriber := range feed.Subscribers {
 		userkey, userdata, err := getUserData(context, subscriber)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error2: %v\n", err.Error())
+			printError(context, err)
 			continue
 		}
 		article.Rank = articleCache.Date - time.Now().Unix() //getRank(articlePrefs, userdata.Prefs)
 		userdata.Articles = append(userdata.Articles, article)
+		sort.Sort(ArticleList{userdata.Articles})
 		_, err = putUserData(context, userkey, userdata)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error4: %v\n", err.Error())
+			printError(context, err)
 			continue
 		}
 	}

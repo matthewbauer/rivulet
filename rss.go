@@ -56,6 +56,7 @@ type RSSItem struct {
 	Guid        string       `xml:"guid"`
 	PubDate     string       `xml:"pubDate"`
 	Source      RSSSource    `xml:"source"`
+	Content     string       `xml:"encoded"`
 }
 
 type RSSTextInput struct {

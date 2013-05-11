@@ -7,12 +7,12 @@
 {{template "header.html" .}}
 <div id='container'>
 	<div class='content' id='container-content'>
-		<a id='prev' class='action' href='/article'>▲</a>
+		<a id='prev' class='action' href='/article'>↑</a>
 		{{with .Articles}}
 		<section id='articles'>
 			{{range .}}
 			<article class='article unread' id='{{.ID}}'>
-				<a class='go action' target='_blank' href='/article?url={{.URL}}&id={{.ID}}'>▶</a>
+				<a class='go action' target='_blank' href='/article?url={{.URL}}&id={{.ID}}'>→</a>
 				<header class='article-header'>
 					<a class='article-link' target='_blank' href='/article?url={{.URL}}&id={{.ID}}'>{{.Title}}</a>
 				</header>
@@ -21,9 +21,8 @@
 			{{end}}
 		</section>
 		{{end}}
-		<a id='next' class='action' href='/article'>▼</a>
+		<a id='next' class='action' href='/article'>↓</a>
 	</div>
 </div>
-<script src='articles.js'></script>
 </body>
 </html>

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -30,26 +29,6 @@ const (
 	OTHER
 )
 
-var defaultFeeds = []string{
-	"http://www.marco.org/rss",
-	"http://www.thegatesnotes.com/RSS",
-	"http://www.theverge.com/rss/index.xml",
-	"http://daringfireball.net/index.xml",
-	"http://scripting.com/rss.xml",
-	"http://buzzmachine.com/feed/",
-	"http://flowingdata.com/feed/",
-	"http://blogs.wsj.com/numbersguy/feed/",
-	"http://feeds.kottke.org/main",
-	"http://feeds.washingtonpost.com/rss/rss_ezra-klein",
-	"http://feeds.feedburner.com/CalculatedRisk",
-	"http://feeds.feedburner.com/blogspot/MKuf",
-	"http://feeds.feedburner.com/Asymco",
-	"http://feeds.feedburner.com/GoogleOperatingSystem",
-	"http://feeds.feedburner.com/thebrowser/xrdJ",
-	"http://feeds.feedburner.com/538dotcom",
-	"http://feeds.feedburner.com/marginalrevolution",
-}
-
 type FeedInfo struct {
 	URL        string
 	Subscribed bool
@@ -61,8 +40,8 @@ type FeedList struct {
 
 type FeedData struct {
 	User           string
-	Feeds          []string
-	SuggestedFeeds []string
+	Feeds          []FeedCache
+	SuggestedFeeds []FeedCache
 }
 
 func (FeedData) Template() string { return "feeds.html" }
@@ -136,10 +115,7 @@ func getFeedType(response *http.Response, body []byte) FeedFormat {
 		return RSS
 	default:
 		var feed GenericFeed
-		err := xml.Unmarshal(body, &feed)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error114: %v\n", err.Error())
-		}
+		xml.Unmarshal(body, &feed)
 		switch feed.XMLName.Local {
 		case "channel", "rss":
 			return RSS
@@ -153,8 +129,13 @@ func getFeedType(response *http.Response, body []byte) FeedFormat {
 	return OTHER
 }
 
+const (
+	MYDATE    = "1/2/2006 3:04:05 PM"
+	ONIONDATE = "Mon, 2 Jan 2006 15:04:05 -0700"
+)
+
 func getDate(dateString string) (date time.Time, err error) {
-	layouts := []string{time.RFC822, time.RFC822Z, time.RFC3339, time.RFC1123, time.RFC1123Z, time.ANSIC, time.UnixDate, time.RubyDate}
+	layouts := []string{time.RFC822, time.RFC822Z, time.RFC3339, time.RFC1123, time.RFC1123Z, time.ANSIC, time.UnixDate, time.RubyDate, ONIONDATE} //, MYDATE
 	for _, layout := range layouts {
 		date, err = time.Parse(layout, dateString)
 		if err == nil && date.Year() != 0 {
@@ -168,7 +149,7 @@ func getRSS(context appengine.Context, body []byte) (feedCache FeedCache, err er
 	var rss RSSStruct
 	err = xml.Unmarshal(body, &rss)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error115: %v\n", err.Error())
+		printError(context, err)
 	}
 	err = nil
 	var date time.Time
@@ -178,24 +159,34 @@ func getRSS(context appengine.Context, body []byte) (feedCache FeedCache, err er
 		}
 		feedCache.Title = channel.Title
 		for _, item := range channel.Item {
+			if item.Guid == "" {
+				break
+			}
 			_, err = memcache.Gob.Get(context, item.Guid, nil)
 			if err == memcache.ErrCacheMiss {
 				err = nil
 				date, err = getDate(item.PubDate)
 				if err != nil {
-					fmt.Fprintf(os.Stderr, "error105: %v\n", err.Error())
+					printError(context, fmt.Errorf("rss feed %v has dates that look like %v", channel.Link, item.PubDate))
 					continue
+				}
+				var content string
+				if item.Content != "" {
+					content = item.Content
+				} else {
+					content = item.Description
 				}
 				article := ArticleCache{
 					URL:     item.Link,
 					Title:   item.Title,
-					Summary: item.Description,
+					Summary: content,
 					ID:      item.Guid,
 					Date:    date.Unix(),
+					Feed:    feedCache.Title,
 				}
 				err = memcache.Gob.Set(context, &memcache.Item{Key: item.Guid, Object: article})
 				if err != nil {
-					fmt.Fprintf(os.Stderr, "error5: %v\n", err.Error())
+					printError(context, err)
 					continue
 				}
 				feedCache.Articles = append(feedCache.Articles, article)
@@ -211,29 +202,43 @@ func getAtom(context appengine.Context, body []byte) (feedCache FeedCache, err e
 	var feed AtomFeed
 	err = xml.Unmarshal(body, &feed)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error115: %v\n", err.Error())
+		printError(context, err)
 	}
 	feedCache.Title = feed.Title
 	var date time.Time
 	for _, item := range feed.Entry {
+		if item.Id == "" {
+			break
+		}
 		_, err = memcache.Gob.Get(context, item.Id, nil)
 		if err == memcache.ErrCacheMiss {
 			err = nil
 			date, err = getDate(item.Updated)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error105: %v\n", err.Error())
+				printError(context, fmt.Errorf("atom feed %v has dates that look like %v", feed.Link[0].Href, item.Updated))
 				continue
 			}
+			var url string
+			for _, link := range item.Link {
+				if link.Rel == "alternate" {
+					url = link.Href
+					break
+				}
+			}
+			if url == "" {
+				url = item.Link[0].Href
+			}
 			article := ArticleCache{
-				URL:     item.Link[0].Href,
+				URL:     url,
 				Title:   item.Title,
 				Summary: item.Content.Text,
 				ID:      item.Id,
 				Date:    date.Unix(),
+				Feed:    feedCache.Title,
 			}
 			err = memcache.Gob.Set(context, &memcache.Item{Key: item.Id, Object: article})
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error7: %v\n", err.Error())
+				printError(context, err)
 				continue
 			}
 			feedCache.Articles = append(feedCache.Articles, article)
@@ -274,13 +279,13 @@ func getSubscriptionURL(context appengine.Context, url string) (feed FeedCache, 
 	return getSubscription(context, format, body)
 }
 
-func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedFeeds []string, err error) {
-	for _, defaultURL := range defaultFeeds {
-		if !ContainsString(suggestedFeeds, defaultURL) && !ContainsString(userdata.Feeds, defaultURL) {
-			suggestedFeeds = append(suggestedFeeds, defaultURL)
+func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedFeeds []FeedCache, err error) {
+	for _, defaultFeed := range defaultFeeds {
+		if !ContainsFeedCache(suggestedFeeds, defaultFeed) && !ContainsString(userdata.Feeds, defaultFeed.URL) {
+			suggestedFeeds = append(suggestedFeeds, defaultFeed)
 		}
 	}
-	query := datastore.NewQuery("Feed")
+	/*query := datastore.NewQuery("Feed")
 	var feed Feed
 	for iterator := query.Run(context); ; {
 		_, err = iterator.Next(&feed)
@@ -288,13 +293,13 @@ func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedF
 			err = nil
 			break
 		} else if err != nil {
-			fmt.Fprintf(os.Stderr, "error11: %v\n", err.Error())
+			printError(context, err)
 			continue
 		}
 		if !ContainsString(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
 			suggestedFeeds = append(suggestedFeeds, feed.URL)
 		}
-	}
+	}*/
 	return
 }
 
@@ -305,7 +310,7 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 			if user.String() == "default" {
 				return
 			}
-			err = unsubscribe(context, user, url)
+			err = unsubscribe(context, user.String(), url)
 			if err != nil {
 				return
 			}
@@ -331,7 +336,24 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 	if err != nil {
 		return
 	}
-	feedData.Feeds = userdata.Feeds
+
+	for _, feed := range userdata.Feeds {
+		var item FeedCache
+		for _, defaultFeed := range defaultFeeds {
+			if defaultFeed.URL == feed {
+				item = defaultFeed
+				break
+			}
+		}
+		if item.URL == "" {
+			_, err = memcache.Gob.Get(context, feed, &item)
+			if err == memcache.ErrCacheMiss {
+				continue
+			}
+		}
+		feedData.Feeds = append(feedData.Feeds, item)
+	}
+
 	feedData.SuggestedFeeds, err = getSuggestedFeeds(context, userdata)
 	if err != nil {
 		return
@@ -354,13 +376,13 @@ func feedPOST(context appengine.Context, user *user.User, request *http.Request)
 		if feed.Subscribed {
 			err = subscribeUser(context, user, feed.URL)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error17: %v\n", err.Error())
+				printError(context, err)
 				continue
 			}
 		} else {
-			err = unsubscribe(context, user, feed.URL)
+			err = unsubscribe(context, user.String(), feed.URL)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "error18: %v\n", err.Error())
+				printError(context, err)
 				continue
 			}
 		}

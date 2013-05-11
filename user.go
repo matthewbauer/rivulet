@@ -3,14 +3,14 @@ package main
 import (
 	"bytes"
 	"encoding/gob"
-	"fmt"
 	"net/http"
-	"os"
+	"sort"
 )
 
 import (
 	"appengine"
 	"appengine/datastore"
+	"appengine/memcache"
 	"appengine/user"
 )
 
@@ -68,9 +68,9 @@ func (userdata *UserData) Save(c chan<- datastore.Property) (err error) {
 func newUserData(context appengine.Context, id string) (key *datastore.Key, userdata UserData, err error) {
 	userdata.String = id
 	for _, url := range defaultFeeds {
-		err = subscribe(context, &userdata, url)
+		err = subscribe(context, &userdata, url.URL)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error102: %v\n", err.Error())
+			printError(context, err)
 			continue
 		}
 	}
@@ -109,10 +109,10 @@ func getRank(article []Pref, user []Pref) (score int64) {
 	return
 }
 
-func unsubscribe(context appengine.Context, user *user.User, url string) (err error) {
+func unsubscribe(context appengine.Context, user string, url string) (err error) {
 	var userdata UserData
 	var userkey *datastore.Key
-	userkey, userdata, err = mustGetUserData(context, user.String())
+	userkey, userdata, err = mustGetUserData(context, user)
 	if err != nil {
 		return
 	}
@@ -155,7 +155,7 @@ func subscribe(context appengine.Context, userdata *UserData, url string) (err e
 		feed.URL = url
 		feed.Subscribers = []string{userdata.String}
 		key, err = datastore.Put(context, datastore.NewIncompleteKey(context, "Feed", nil), &feed)
-		refreshDelay.Call(context, feed.URL)
+		refreshSubscriptionURLDelay.Call(context, feed.URL)
 		feedsubscribed = true
 	}
 	if !ContainsString(userdata.Feeds, url) {
@@ -219,4 +219,33 @@ func userGET(context appengine.Context, user *user.User, request *http.Request) 
 		return
 	}
 	return userdata, nil
+}
+
+func sortUserArticles(context appengine.Context, user string) (err error) {
+	var userdata UserData
+	var userkey *datastore.Key
+	userkey, userdata, err = mustGetUserData(context, user)
+	if err != nil {
+		return
+	}
+	sort.Sort(ArticleList{userdata.Articles})
+	_, err = putUserData(context, userkey, userdata)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func getUserFeedList(context appengine.Context, user string) (feeds []FeedCache, err error) {
+	var userdata UserData
+	_, userdata, err = mustGetUserData(context, user)
+	if err != nil {
+		return
+	}
+	for _, feed := range userdata.Feeds {
+		var item FeedCache
+		_, err = memcache.Gob.Get(context, feed, &item)
+		feeds = append(feeds, item)
+	}
+	return
 }

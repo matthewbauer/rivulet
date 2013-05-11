@@ -22,6 +22,7 @@ type AtomEntry struct {
 	Contributor []AtomPersonConstruct `xml:"contributor"`
 	Id          string                `xml:"id"`
 	Link        []AtomLink            `xml:"link"`
+	AtomLink    []AtomLink            `xml:"atom:link"`
 	Published   string                `xml:"published"`
 	Rights      string                `xml:"rights"`
 	Source      AtomSource            `xml:"source"`

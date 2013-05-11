@@ -15,6 +15,15 @@ import (
 	"appengine/user"
 )
 
+func ContainsFeedCache(list []FeedCache, elem FeedCache) bool {
+	for _, t := range list {
+		if t.URL == elem.URL {
+			return true
+		}
+	}
+	return false
+}
+
 func ContainsString(list []string, elem string) bool {
 	for _, t := range list {
 		if t == elem {
@@ -148,7 +157,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		data, err = handlers[request.URL.Path][request.Method](context, u, request)
 	}
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error1: %v\n", err.Error())
+		printError(context, err)
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -166,7 +175,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		var bytes []byte
 		bytes, err = json.Marshal(data)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error25: %v\n", err.Error())
+			printError(context, err)
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -185,4 +194,9 @@ func server(writer http.ResponseWriter, request *http.Request) {
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	return article(context, user, request, 0)
+}
+
+func printError(context appengine.Context, err error) {
+	fmt.Fprintf(os.Stderr, "%v\n", err.Error())
+	context.Errorf("%v\n", err.Error())
 }

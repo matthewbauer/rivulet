@@ -1,0 +1,20 @@
+{
+  "name": "Rivulet",
+  "description": "Pan your news",
+  "version": "1",
+  "app": {
+    "urls": [
+      "myrivulet.appspot.com"
+    ],
+    "launch": {
+      "web_url": "myrivulet.appspot.com"
+    }
+  },
+  "icons": {
+    "128": "icon_128.png"
+  },
+  "permissions": [
+    "unlimitedStorage",
+    "notifications"
+  ]
+}
