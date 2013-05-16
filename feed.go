@@ -79,9 +79,9 @@ func (feed *Feed) Load(c <-chan datastore.Property) (err error) {
 			reader := bytes.NewBuffer(p.Value.([]byte))
 			decoder := gob.NewDecoder(reader)
 			err = decoder.Decode(feed)
-			if err != nil {
-				return
-			}
+			//			if err != nil {
+			//				return
+			//			}
 		}
 	}
 	return
@@ -96,9 +96,9 @@ func (feed *Feed) Save(c chan<- datastore.Property) (err error) {
 	writer := bytes.Buffer{}
 	encoder := gob.NewEncoder(&writer)
 	err = encoder.Encode(feed)
-	if err != nil {
-		return
-	}
+	//	if err != nil {
+	//		return
+	//	}
 	c <- datastore.Property{Name: "Bytes", Value: writer.Bytes(), NoIndex: true}
 	return
 }
@@ -151,7 +151,6 @@ func getRSS(context appengine.Context, body []byte) (feedCache FeedCache, err er
 	if err != nil {
 		printError(context, err)
 	}
-	err = nil
 	var date time.Time
 	for _, channel := range rss.Channel {
 		if channel.Ttl > 0 {
@@ -164,7 +163,6 @@ func getRSS(context appengine.Context, body []byte) (feedCache FeedCache, err er
 			}
 			_, err = memcache.Gob.Get(context, item.Guid, nil)
 			if err == memcache.ErrCacheMiss {
-				err = nil
 				date, err = getDate(item.PubDate)
 				if err != nil {
 					printError(context, fmt.Errorf("rss feed %v has dates that look like %v", channel.Link, item.PubDate))
@@ -212,7 +210,6 @@ func getAtom(context appengine.Context, body []byte) (feedCache FeedCache, err e
 		}
 		_, err = memcache.Gob.Get(context, item.Id, nil)
 		if err == memcache.ErrCacheMiss {
-			err = nil
 			date, err = getDate(item.Updated)
 			if err != nil {
 				printError(context, fmt.Errorf("atom feed %v has dates that look like %v", feed.Link[0].Href, item.Updated))
@@ -220,13 +217,15 @@ func getAtom(context appengine.Context, body []byte) (feedCache FeedCache, err e
 			}
 			var url string
 			for _, link := range item.Link {
-				if link.Rel == "alternate" {
+				if link.Href != "" {
 					url = link.Href
-					break
+					if link.Rel == "alternate" {
+						break
+					}
 				}
 			}
 			if url == "" {
-				url = item.Link[0].Href
+				break
 			}
 			article := ArticleCache{
 				URL:     url,
@@ -290,7 +289,6 @@ func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedF
 	for iterator := query.Run(context); ; {
 		_, err = iterator.Next(&feed)
 		if err == datastore.Done {
-			err = nil
 			break
 		} else if err != nil {
 			printError(context, err)

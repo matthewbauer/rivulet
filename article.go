@@ -86,7 +86,6 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 			//				userdata, err = selected(context, userdata, article)
 			//				if err != nil {
 			//					printError(context, err)
-			//					err = nil
 			//				}
 			//			}
 			//			if read || article.Read {
@@ -125,7 +124,6 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	for _, article := range userdata.Articles[0:limit] {
 		_, err = memcache.Gob.Get(context, article.ID, &articleCache)
 		if err == memcache.ErrCacheMiss { // || articleCache.ID != article.ID
-			err = nil
 			feedCache, err = getSubscriptionURL(context, article.Feed)
 			if err != nil {
 				printError(context, err)

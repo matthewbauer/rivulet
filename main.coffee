@@ -121,11 +121,33 @@ LIST = 1
 NUMBER = 1
 TIMEOUT = 256
 
-jQuery.fn.exists = -> @length > 0
+$.ajaxSetup
+	async: false
 
-jQuery.extend
+$.fn.exists = -> @length > 0
+
+$.fn.scrollTo = (target, options, callback) ->
+	if typeof options is "function" and arguments_.length is 2
+		callback = options
+		options = target
+	settings = $.extend(
+		scrollTarget: target
+		offsetTop: 50
+		duration: 500
+		easing: "swing"
+		, options)
+	@each ->
+		scrollPane = $(this)
+		scrollTarget = (if (typeof settings.scrollTarget is "number") then settings.scrollTarget else $(settings.scrollTarget))
+		scrollY = (if (typeof scrollTarget is "number") then scrollTarget else scrollTarget.offset().top + scrollPane.scrollTop() - parseInt(settings.offsetTop))
+		scrollPane.animate
+			scrollTop: scrollY
+			, parseInt(settings.duration), settings.easing, ->
+			callback.call this  if typeof callback is "function"
+
+$.extend
 	postJSON: (url, data, callback) ->
-		jQuery.ajax
+		$.ajax
 			type: 'POST'
 			url: url
 			data: JSON.stringify data
@@ -147,6 +169,7 @@ addArticle = (data) ->
 		addClass('article').
 		addClass('unread').
 		attr('id', data['ID']).
+		hide().
 		append(
 			$('<a/>').
 				addClass('go').
@@ -179,7 +202,6 @@ addArticle = (data) ->
 				html(data['Summary']).
 				click (event) ->
 					event.preventDefault()
-					$.getJSON '/article?id=' + encodeURIComponent(element.attr('id'))
 					false
 		)
 
@@ -188,7 +210,7 @@ addArticles = (object) ->
 	return list if not object?
 	for article in object['Articles']
 		element = addArticle article
-		list.push element.hide() if element?
+		list.push element if element?
 	list
 
 makeCurrent = (articles) ->
@@ -208,7 +230,7 @@ nextArticle = (number, timeout, fun) ->
 			articles = addArticles data
 			newarticles = []
 			for article in articles
-				if not $(document.getElementById(article['ID'])).exists()
+				if not $(document.getElementById(article.attr('id'))).exists()
 					newarticles.push article
 			if newarticles is []
 				timeout *= 2
@@ -226,22 +248,26 @@ nextArticle = (number, timeout, fun) ->
 next = ->
 	if $('#next').is ':visible'
 		$('#next').hide()
-		index = $('.current').last().index()
+		current = $('.current')
+		index = current.index()
 		if index is -1
-			index = 0
+			index = $('.unread').index()
+			if index is -1
+				index = 0
 		if index + LIST < $('#articles').children().length
 			$('#articles').children().slice(index + 1, index + LIST + 1).addClass('current').show()
 		else
 			nextArticle NUMBER, TIMEOUT, makeCurrent
-		markAsRead $('.current')
-		$('.current').removeClass 'current'
-		setTimeout nextArticle, TIMEOUT, 1, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() - 1
+		markAsRead current
+		current.removeClass 'current'
+		$('body').scrollTo($('.current').offset().top)
+		#setTimeout nextArticle, TIMEOUT, 1, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() - 1
 		$('#prev').show()
 		$('#next').show()
 
 prev = ->
 	if $('#prev').is ':visible'
-		index = $('.current').first().index()
+		index = $('.current').index()
 		if index >= LIST
 			markAsRead $('.current')
 			$('.current').removeClass 'current'

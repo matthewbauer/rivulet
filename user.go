@@ -207,16 +207,15 @@ func selected(context appengine.Context, userdata UserData, article Article) (Us
 }
 
 func userGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	if request.FormValue("new") == "1" {
-		newUserData(context, user.String())
-		var redirect Redirect
-		redirect.URL = "/"
-		return redirect, nil
-	}
 	var userdata UserData
 	_, userdata, err = mustGetUserData(context, user.String())
 	if err != nil {
 		return
+	}
+	if request.FormValue("new") == "1" {
+		var redirect Redirect
+		redirect.URL = "/"
+		return redirect, nil
 	}
 	return userdata, nil
 }

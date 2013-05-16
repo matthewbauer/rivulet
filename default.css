@@ -8,7 +8,7 @@ body {
 	background-color: #484848;
 }
 .action {
-	color: #484848;
+	color: black;
 }
 #container > a:hover {
 	color: #FF5100;

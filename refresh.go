@@ -18,6 +18,8 @@ import (
 	"appengine/user"
 )
 
+const defaultRefreshDelay = time.Minute * 10
+
 var refreshSubscriptionURLDelay = delay.Func("refresh", refreshSubscriptionURL)
 var refreshDelay = delay.Func("refresh", func(context appengine.Context, x string) { refresh(context, true) })
 
@@ -27,14 +29,13 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 	var item *memcache.Item
 	item, err = memcache.Gob.Get(context, feed.URL, &subscription)
 	if err == memcache.ErrCacheMiss {
-		err = nil
 		subscription.URL = feed.URL
 		item = &memcache.Item{Key: feed.URL}
 	} else if err != nil {
 		return
 	}
 	if now.Unix() > subscription.Update {
-		duration := time.Hour
+		duration := defaultRefreshDelay
 		client := urlfetch.Client(context)
 		var response *http.Response
 		response, err = client.Get(feed.URL)
@@ -60,7 +61,6 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 			}
 			sum := fmt.Sprintf("%x", hash.Sum(nil))
 			if sum != subscription.MD5 {
-				printError(context, errors.New("Refreshing..."))
 				if subscription.Format == UNKNOWN {
 					subscription.Format = getFeedType(response, body)
 				}
@@ -120,15 +120,14 @@ func refreshSubscriptionURL(context appengine.Context, url string) (err error) {
 
 func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 	query := datastore.NewQuery("Feed")
-	var feed Feed
-	var feedkey *datastore.Key
 	for iterator := query.Run(context); ; {
+		var feed Feed
+		var feedkey *datastore.Key
 		feedkey, err = iterator.Next(&feed)
 		if err == datastore.Done {
-			err = nil
 			break
 		} else if err != nil {
-			printError(context, err)
+			//			printError(context, err)
 			continue
 		}
 		if asNeeded {
@@ -141,6 +140,7 @@ func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 			continue
 		}
 	}
+	err = nil
 	return
 }
 

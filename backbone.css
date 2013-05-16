@@ -5,13 +5,9 @@ body {
 }
 a {
 	text-decoration: none;
-	color: rgb(0, 0, 238);
 }
 a:hover {
 	text-decoration: underline;
-}
-a:visited {
-	color: rgb(0, 0, 238);
 }
 .content {
 	width: 61.80340%;
@@ -19,9 +15,9 @@ a:visited {
 }
 #header {
 	box-shadow: .5em 0 .5em .5em #ccc;
+	padding-left: 43%;
 }
 #logo {
-	margin-left: 45%;
 	vertical-align: middle;
 }
 #credit {
@@ -36,16 +32,9 @@ a:visited {
 #container-content {
 	padding-top: 1em;
 }
-#add {
+.action {
 	vertical-align: middle;
 	font-size: 4em;
-	width: 1em;
-	color: black;
-}
-#add:hover {
-	text-decoration: none;
-}
-.action {
 	font-weight: bold;
 }
 .action:hover {
@@ -60,9 +49,6 @@ a:visited {
 }
 .article-link {
 	font-weight: bold;
-}
-.article-link:visited {
-	color: black;
 }
 .article-content {
 	margin-top: 1em;
