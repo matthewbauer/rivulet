@@ -209,23 +209,26 @@ addArticles = (object) ->
 	list = []
 	return list if not object?
 	for article in object['Articles']
+		continue if not article['ID']?
 		element = addArticle article
 		list.push element if element?
 	list
 
-makeCurrent = (articles) ->
+makeCurrent = (articles, current, index) ->
 	makeArticle articles
 	$(document.getElementById(article.attr('id'))).addClass('current').show() for article in articles.slice(0, LIST)
+	removeCurrent current, index
+	$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 
 makeArticle = (articles) ->
 	for article in articles
 		article.hide().appendTo '#articles'
 
-nextArticle = (number, timeout, fun) ->
-	$.getJSON '/article?output=json&number=' + number, (data) ->
+nextArticle = (number, timeout, fun, current, index, first) ->
+	$.getJSON('/article?output=json&number=' + number, (data) ->
 		if data['URL']?
 			timeout *= 2
-			setTimeout nextArticle, timeout, NUMBER, timeout, fun
+			setTimeout nextArticle, timeout, number, timeout, fun, current, index
 		else
 			articles = addArticles data
 			newarticles = []
@@ -234,10 +237,10 @@ nextArticle = (number, timeout, fun) ->
 					newarticles.push article
 			if newarticles.length is 0
 				timeout *= 2
-				console.log 'empty'
-				setTimeout nextArticle, timeout, NUMBER, timeout, fun
+				setTimeout nextArticle, timeout, number, timeout, fun, current, index
 			else
-				fun(newarticles)
+				$('#prev').show() if not first
+				fun(newarticles, current, index)
 #			$('#next').hide()
 #			$('.current').
 #				css({position: 'fixed', top: $(document).height(), left: $('#articles').offset().left}).
@@ -245,8 +248,14 @@ nextArticle = (number, timeout, fun) ->
 #				animate {top: $('#articles').offset().top}, ->
 #								$(this).css({position: 'static'})
 #								$('#next').show()
+	).
+		fail -> setTimeout nextArticle, timeout, number, timeout, fun, current, index
 
-next = ->
+removeCurrent = (current, index) ->
+	markAsRead current
+	current.removeClass 'current'
+
+next = (first) ->
 	if $('#next').is ':visible'
 		$('#next').hide()
 		current = $('.current')
@@ -259,24 +268,26 @@ next = ->
 					index = 0
 		if index + LIST < $('#articles').children().length
 			$('#articles').children().slice(index + 1, index + LIST + 1).addClass('current').show()
+			removeCurrent current, index
+			$('#prev').show() if not first
+			$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 		else
-			nextArticle NUMBER, TIMEOUT, makeCurrent
-		markAsRead current
-		current.removeClass 'current'
+			nextArticle NUMBER, TIMEOUT, makeCurrent, current, index, first
 		#setTimeout nextArticle, TIMEOUT, 1, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() - 1
 		$('#next').show()
-		$('body').scrollTo($('.current').offset().top) if $('.current').exists()
-		$('#prev').show()
 
 prev = ->
 	if $('#prev').is ':visible'
+		$('#prev').hide()
 		index = $('.current').index()
 		if index >= LIST
 			markAsRead $('.current')
 			$('.current').removeClass 'current'
 			$('#articles').children().slice(index - LIST, index).addClass('current').show()
-			if index - LIST is 0
-				$('#prev').hide()
+		if index - LIST is 0
+			$('#prev').hide()
+		else
+			$('#prev').show()
 #			$('#next').hide()
 #		$('.current').
 #			show().
@@ -328,11 +339,11 @@ $ ->
 				if event.shiftKey
 					prev()
 				else
-					next()
+					next(false)
 			when KeyEvent.DOM_VK_PAGEUP, KeyEvent.DOM_VK_K, KeyEvent.DOM_VK_P, KeyEvent.DOM_VK_NUMPAD8, KeyEvent.DOM_VK_NUMPAD9 # KeyEvent.DOM_VK_UP,
 				event.preventDefault()
 				if event.shiftKey
-					next()
+					next(false)
 				else
 					prev()
 			when KeyEvent.DOM_VK_RIGHT, KeyEvent.DOM_VK_NUMPAD5, KeyEvent.DOM_VK_ENTER, KeyEvent.DOM_VK_RETURN
@@ -351,8 +362,6 @@ $ ->
 				return true
 		return false
 
-	$('#prev').hide()
-
 	$('#prev').click (event) ->
 		event.preventDefault()
 		prev()
@@ -360,16 +369,16 @@ $ ->
 
 	$('#next').click (event) ->
 		event.preventDefault()
-		next()
+		next(false)
 		false
 
 	$('<section/>').
 		attr('id', 'articles').
 		insertBefore('#next') if not $('#articles').exists()
 
-	next() if not $('.unread').exists()
-
 	$('#prev').hide()
+
+	next(true) if not $('.unread').exists()
 
 	$('.subscribe').click (event) ->
 		event.preventDefault()

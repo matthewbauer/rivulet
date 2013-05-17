@@ -108,11 +108,11 @@ func getDate(dateString string) (date time.Time, err error) {
 	return
 }
 
-func getRSS(context appengine.Context, body []byte) (feedCache FeedCache, err error) {
+func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedCache, err error) {
 	var rss RSSStruct
 	err = xml.Unmarshal(body, &rss)
 	if err != nil {
-		printError(context, err)
+		printError(context, err, url)
 	}
 	var date time.Time
 	for _, channel := range rss.Channel {
@@ -128,7 +128,7 @@ func getRSS(context appengine.Context, body []byte) (feedCache FeedCache, err er
 			if err == memcache.ErrCacheMiss {
 				date, err = getDate(item.PubDate)
 				if err != nil {
-					printError(context, fmt.Errorf("rss feed %v has dates that look like %v", channel.Link, item.PubDate))
+					printError(context, fmt.Errorf("rss feed %v has dates that look like %v", channel.Link, item.PubDate), url)
 					continue
 				}
 				var content string
@@ -147,7 +147,7 @@ func getRSS(context appengine.Context, body []byte) (feedCache FeedCache, err er
 				}
 				err = memcache.Gob.Set(context, &memcache.Item{Key: item.Guid, Object: article})
 				if err != nil {
-					printError(context, err)
+					printError(context, err, url)
 					continue
 				}
 				feedCache.Articles = append(feedCache.Articles, article)
@@ -159,11 +159,11 @@ func getRSS(context appengine.Context, body []byte) (feedCache FeedCache, err er
 	return
 }
 
-func getAtom(context appengine.Context, body []byte) (feedCache FeedCache, err error) {
+func getAtom(context appengine.Context, body []byte, url string) (feedCache FeedCache, err error) {
 	var feed AtomFeed
 	err = xml.Unmarshal(body, &feed)
 	if err != nil {
-		printError(context, err)
+		printError(context, err, url)
 	}
 	feedCache.Title = feed.Title
 	var date time.Time
@@ -175,7 +175,7 @@ func getAtom(context appengine.Context, body []byte) (feedCache FeedCache, err e
 		if err == memcache.ErrCacheMiss {
 			date, err = getDate(item.Updated)
 			if err != nil {
-				printError(context, fmt.Errorf("atom feed %v has dates that look like %v", feed.Link[0].Href, item.Updated))
+				printError(context, fmt.Errorf("atom feed %v has dates that look like %v", feed.Link[0].Href, item.Updated), url)
 				continue
 			}
 			var url string
@@ -200,7 +200,7 @@ func getAtom(context appengine.Context, body []byte) (feedCache FeedCache, err e
 			}
 			err = memcache.Gob.Set(context, &memcache.Item{Key: item.Id, Object: article})
 			if err != nil {
-				printError(context, err)
+				printError(context, err, url)
 				continue
 			}
 			feedCache.Articles = append(feedCache.Articles, article)
@@ -211,12 +211,12 @@ func getAtom(context appengine.Context, body []byte) (feedCache FeedCache, err e
 	return
 }
 
-func getSubscription(context appengine.Context, format FeedFormat, body []byte) (feed FeedCache, err error) {
+func getSubscription(context appengine.Context, format FeedFormat, body []byte, url string) (feed FeedCache, err error) { // url is only used for debugging purposes
 	switch format {
 	case RSS:
-		return getRSS(context, body)
+		return getRSS(context, body, url)
 	case ATOM:
-		return getAtom(context, body)
+		return getAtom(context, body, url)
 	case OTHER:
 		err = errors.New(fmt.Sprintf("not a feed")) // later we can delete the feed
 	}
@@ -238,7 +238,7 @@ func getSubscriptionURL(context appengine.Context, url string) (feed FeedCache, 
 		return
 	}
 	format := getFeedType(response, body)
-	return getSubscription(context, format, body)
+	return getSubscription(context, format, body, url)
 }
 
 func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedFeeds []FeedCache, err error) {
@@ -337,13 +337,13 @@ func feedPOST(context appengine.Context, user *user.User, request *http.Request)
 		if feed.Subscribed {
 			err = subscribeUser(context, user, feed.URL)
 			if err != nil {
-				printError(context, err)
+				printError(context, err, feed.URL)
 				continue
 			}
 		} else {
 			err = unsubscribe(context, user.String(), feed.URL)
 			if err != nil {
-				printError(context, err)
+				printError(context, err, feed.URL)
 				continue
 			}
 		}

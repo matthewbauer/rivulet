@@ -75,7 +75,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 					return errors.New(fmt.Sprintf("%v is not a feed, deleted", feed.URL))
 				}
 				var feedCache FeedCache
-				feedCache, err = getSubscription(context, subscription.Format, body)
+				feedCache, err = getSubscription(context, subscription.Format, body, feed.URL)
 				if err != nil {
 					return
 				}
@@ -87,7 +87,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 						feed.Articles = append(feed.Articles, article.ID)
 						err = addArticle(context, feed, article)
 						if err != nil {
-							printError(context, err)
+							printError(context, err, article.ID)
 							continue
 						}
 					}
@@ -134,7 +134,7 @@ func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 		if err == datastore.Done {
 			break
 		} else if err != nil {
-			printError(context, err)
+			printError(context, err, feed.URL)
 			continue
 		}
 		if asNeeded {
@@ -143,7 +143,7 @@ func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 			_, err = getSubscriptionURL(context, feed.URL)
 		}
 		if err != nil {
-			printError(context, err)
+			printError(context, err, feed.URL)
 			continue
 		}
 	}

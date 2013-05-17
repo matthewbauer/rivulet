@@ -12,7 +12,11 @@ var defaultFeeds = []FeedCache{
 	//  FeedCache{
 	//		URL:   "http://rss.csmonitor.com/csmonitor/connectingthedots",
 	//		Title: "Connecting the Dots",
-	//  }
+	//  },
+	FeedCache{
+		URL:   "http://feeds.feedburner.com/ommalik",
+		Title: "GigaOM",
+	},
 	FeedCache{
 		URL:   "http://www.economist.com/blogs/babbage/index.xml",
 		Title: "Babbage",

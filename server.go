@@ -157,7 +157,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		data, err = handlers[request.URL.Path][request.Method](context, u, request)
 	}
 	if err != nil {
-		printError(context, err)
+		printError(context, err, "handler")
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -175,7 +175,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		var bytes []byte
 		bytes, err = json.Marshal(data)
 		if err != nil {
-			printError(context, err)
+			printError(context, err, "json.Marshal")
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -196,9 +196,9 @@ func rootGET(context appengine.Context, user *user.User, request *http.Request) 
 	return article(context, user, request, 0)
 }
 
-func printError(context appengine.Context, err error) {
-	fmt.Fprintf(os.Stderr, "%v\n", err.Error())
-	context.Errorf("%v\n", err.Error())
+func printError(context appengine.Context, err error, info string) {
+	fmt.Fprintf(os.Stderr, "(%v) %v\n", info, err.Error())
+	context.Errorf("(%v) %v\n", info, err.Error())
 }
 
 func printInfo(context appengine.Context, info string) {

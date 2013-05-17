@@ -1,9 +1,12 @@
 application: myrivulet
-version: 76
+version: 85
 runtime: go
 api_version: go1
 
 handlers:
+- url: /jquery-2.0.0.min.js
+  static_files: jquery-2.0.0.min.js
+  upload: jquery-2.0.0.min.js
 - url: /(.*\.(gif|png|jpg|js|ico))
   static_files: static/\1
   upload: static/(.*)

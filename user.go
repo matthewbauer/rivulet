@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"net/http"
-	"sort"
 )
 
 import (
@@ -70,7 +69,7 @@ func newUserData(context appengine.Context, id string) (key *datastore.Key, user
 	for _, url := range defaultFeeds {
 		err = subscribe(context, &userdata, url.URL)
 		if err != nil {
-			printError(context, err)
+			printError(context, err, url.URL)
 			continue
 		}
 	}
@@ -218,21 +217,6 @@ func userGET(context appengine.Context, user *user.User, request *http.Request) 
 		return redirect, nil
 	}
 	return userdata, nil
-}
-
-func sortUserArticles(context appengine.Context, user string) (err error) {
-	var userdata UserData
-	var userkey *datastore.Key
-	userkey, userdata, err = mustGetUserData(context, user)
-	if err != nil {
-		return
-	}
-	sort.Sort(ArticleList{userdata.Articles})
-	_, err = putUserData(context, userkey, userdata)
-	if err != nil {
-		return
-	}
-	return
 }
 
 func getUserFeedList(context appengine.Context, user string) (feeds []FeedCache, err error) {

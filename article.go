@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -35,6 +36,14 @@ func (ArticleData) Template() string { return "articles.html" }
 func (ArticleData) Redirect() string { return "" }
 func (ArticleData) Send() bool       { return true }
 
+type Article struct {
+	Rank       int64
+	Feed       string
+	ID         string
+	Read       bool
+	Interested bool
+}
+
 type ArticleList struct {
 	Articles []Article
 }
@@ -42,18 +51,6 @@ type ArticleList struct {
 func (ArticleList) Template() string { return "articles.html" }
 func (ArticleList) Redirect() string { return "" }
 func (ArticleList) Send() bool       { return true }
-
-func (al ArticleList) Len() int           { return len(al.Articles) }
-func (al ArticleList) Swap(i, j int)      { al.Articles[i], al.Articles[j] = al.Articles[j], al.Articles[i] }
-func (al ArticleList) Less(i, j int) bool { return al.Articles[i].Rank > al.Articles[j].Rank }
-
-type Article struct { // child of User
-	Rank       int64
-	Feed       string
-	ID         string
-	Read       bool
-	Interested bool
-}
 
 func articlePOST(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	var body []byte
@@ -72,6 +69,10 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 	if err != nil {
 		return
 	}
+	read := false
+	if request.FormValue("read") == "1" {
+		read = true
+	}
 	for _, article := range articleList.Articles {
 		var n int
 		var a Article
@@ -83,18 +84,18 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 			}
 		}
 		if found {
-			//			if article.Interested {
-			//				userdata, err = selected(context, userdata, article)
-			//				if err != nil {
-			//					printError(context, err)
-			//				}
-			//			}
-			//			if read || article.Read {
-			//				//userdata.Articles = append(userdata.Articles[:n], userdata.Articles[n+1:]...)
-			//				userdata.Articles[n], userdata.Articles = userdata.Articles[len(userdata.Articles)-1], userdata.Articles[:len(userdata.Articles)-1]
-			//			} else {
-			userdata.Articles[n] = article
-			//			}
+			if article.Interested {
+				userdata, err = selected(context, userdata, article)
+				if err != nil {
+					printError(context, err, article.ID)
+				}
+			}
+			if read || article.Read {
+				userdata.Articles = append(userdata.Articles[:n], userdata.Articles[n+1:]...)
+				userdata.Articles[n], userdata.Articles = userdata.Articles[len(userdata.Articles)-1], userdata.Articles[:len(userdata.Articles)-1]
+			} else {
+				userdata.Articles[n] = article
+			}
 		} else {
 			userdata.Articles = append(userdata.Articles, article)
 		}
@@ -127,7 +128,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 		if err == memcache.ErrCacheMiss { // || articleCache.ID != article.ID
 			feedCache, err = getSubscriptionURL(context, article.Feed)
 			if err != nil {
-				printError(context, err)
+				printError(context, err, article.Feed)
 				continue
 			}
 			for _, articleCache = range feedCache.Articles {
@@ -136,7 +137,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 				}
 			}
 		} else if err != nil {
-			printError(context, err)
+			printError(context, err, article.ID)
 			continue
 		}
 		articleData.Articles = append(articleData.Articles, articleCache)
@@ -212,14 +213,26 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 	for _, subscriber := range feed.Subscribers {
 		userkey, userdata, err := getUserData(context, subscriber)
 		if err != nil {
-			printError(context, err)
+			printError(context, err, subscriber)
 			continue
 		}
 		article.Rank = articleCache.Date - time.Now().Unix() //getRank(articlePrefs, userdata.Prefs)
-		userdata.Articles = append(userdata.Articles, article)
+		if len(userdata.Articles) > MAXARTICLES {
+			userdata.Articles = userdata.Articles[0 : MAXARTICLES-1]
+		}
+
+		n := sort.Search(len(userdata.Articles), func(i int) bool { return userdata.Articles[i].Rank <= article.Rank })
+		if n == -1 {
+			userdata.Articles = append(userdata.Articles, article)
+		} else {
+			userdata.Articles = append(userdata.Articles, Article{})
+			copy(userdata.Articles[n+1:], userdata.Articles[n:])
+			userdata.Articles[n] = article
+		}
+
 		_, err = putUserData(context, userkey, userdata)
 		if err != nil {
-			printError(context, err)
+			printError(context, err, subscriber)
 			continue
 		}
 	}
