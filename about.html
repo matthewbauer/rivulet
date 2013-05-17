@@ -1,12 +1,29 @@
 <!doctype html>
 <html>
 <head>
-{{template "head.html"}}
+<title>rivulet</title>
+<link rel='stylesheet' href='backbone.css'>
+<link rel='stylesheet' href='default.css'>
+<link rel='stylesheet' href='feed.css'>
 </head>
 <body>
-{{template "header.html" .}}
+<div id='header'>
+	<a href='/feed' class='action' id='add' target='_blank'>+</a>
+	<a href='/'><img id='logo' alt='rivulet' src='/icon64.png'></img></a>
+	<a href='/about' class='action' id='about' target='_blank'>?</a>
+</div>
 <div id='container'>
 <div class='content' id='container-content'>
+<p>
+This is a feed reader that embraces the 'River of News' principle of feed reading. Article reading should be simple and easy to use.
+</p>
+<p>
+Welcome, ex-Google Reader users.
+</p>
+<p>
+This application uses Google Go and Google App Engine.
+</p>
+</div>
 </div>
 </body>
 </html>

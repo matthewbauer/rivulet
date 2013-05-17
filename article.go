@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"sort"
 	"strconv"
 	"time"
 )
@@ -29,6 +28,8 @@ type ArticleData struct {
 	User     string
 	Articles []ArticleCache
 }
+
+const MAXARTICLES = 100
 
 func (ArticleData) Template() string { return "articles.html" }
 func (ArticleData) Redirect() string { return "" }
@@ -216,7 +217,6 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 		}
 		article.Rank = articleCache.Date - time.Now().Unix() //getRank(articlePrefs, userdata.Prefs)
 		userdata.Articles = append(userdata.Articles, article)
-		sort.Sort(ArticleList{userdata.Articles})
 		_, err = putUserData(context, userkey, userdata)
 		if err != nil {
 			printError(context, err)

@@ -23,8 +23,8 @@ type Pref struct {
 type UserData struct {
 	String   string
 	Bytes    []byte    `datastore:",noindex"`
-	Articles []Article `datastore:"-"`
 	Feeds    []string  `datastore:"-"`
+	Articles []Article `datastore:"-"`
 	Prefs    []Pref    `datastore:"-"`
 }
 

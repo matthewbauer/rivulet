@@ -200,3 +200,8 @@ func printError(context appengine.Context, err error) {
 	fmt.Fprintf(os.Stderr, "%v\n", err.Error())
 	context.Errorf("%v\n", err.Error())
 }
+
+func printInfo(context appengine.Context, info string) {
+	fmt.Fprintf(os.Stderr, "%v\n", info)
+	context.Infof("%v\n", info)
+}

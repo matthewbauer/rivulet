@@ -1,14 +1,26 @@
 package main
 
 var defaultFeeds = []FeedCache{
-	FeedCache{
-		URL:   "http://www.marco.org/rss",
-		Title: "Marco Arment",
-	},
+	//	FeedCache{
+	//		URL:   "http://www.reddit.com/.rss",
+	//		Title: "Reddit",
+	//	},
 	//	FeedCache{
 	//		URL:   "http://feeds.theonion.com/theonion/daily",
 	//		Title: "The Onion",
 	//	},
+	//  FeedCache{
+	//		URL:   "http://rss.csmonitor.com/csmonitor/connectingthedots",
+	//		Title: "Connecting the Dots",
+	//  }
+	FeedCache{
+		URL:   "http://www.economist.com/blogs/babbage/index.xml",
+		Title: "Babbage",
+	},
+	FeedCache{
+		URL:   "http://www.marco.org/rss",
+		Title: "Marco Arment",
+	},
 	FeedCache{
 		URL:   "http://www.newyorker.com/online/blogs/newsdesk/rss.xml",
 		Title: "The New Yorker News Desk",
@@ -19,11 +31,7 @@ var defaultFeeds = []FeedCache{
 	},
 	FeedCache{
 		URL:   "http://www.guardian.co.uk/world/us-news-blog/rss",
-		Title: "US News",
-	},
-	FeedCache{
-		URL:   "http://www.newyorker.com/online/blogs/elements/rss.xml",
-		Title: "New Yorker Elements",
+		Title: "The Guardian US News",
 	},
 	FeedCache{
 		URL:   "http://feeds.theonion.com/avclub/newswire/",
@@ -33,10 +41,6 @@ var defaultFeeds = []FeedCache{
 		URL:   "http://www.guardian.co.uk/news/datablog/rss",
 		Title: "Guardian Datablog",
 	},
-	//	FeedCache{
-	//		URL:   "http://www.reddit.com/.rss",
-	//		Title: "Reddit",
-	//	},
 	FeedCache{
 		URL:   "http://daringfireball.net/index.xml",
 		Title: "Daring Fireball",
@@ -46,24 +50,12 @@ var defaultFeeds = []FeedCache{
 		Title: "Scripting News",
 	},
 	FeedCache{
-		URL:   "http://www.newyorker.com/online/blogs/culture/rss.xml",
-		Title: "New Yorker Culture",
-	},
-	FeedCache{
 		URL:   "http://buzzmachine.com/feed/",
 		Title: "Buzz Machine",
-	},
-	FeedCache{
-		URL:   "http://flowingdata.com/feed/",
-		Title: "Flowing Data",
 	},
 	FeedCache{
 		URL:   "http://blogs.wsj.com/numbersguy/feed/",
 		Title: "The Number's Guy",
-	},
-	FeedCache{
-		URL:   "http://buzzmachine.com/feed/",
-		Title: "Buzz Machine",
 	},
 	FeedCache{
 		URL:   "http://flowingdata.com/feed/",
@@ -86,12 +78,20 @@ var defaultFeeds = []FeedCache{
 		Title: "538",
 	},
 	FeedCache{
-		URL:   "http://feeds.feedburner.com/ajaxian",
-		Title: "Ajaxian",
-	},
-	FeedCache{
 		URL:   "http://feeds.feedburner.com/Asymco",
 		Title: "Asymco",
+	},
+	FeedCache{
+		URL:   "http://feeds.arstechnica.com/arstechnica/features",
+		Title: "Ars Features",
+	},
+	FeedCache{
+		URL:   "http://feeds.dashes.com/AnilDash",
+		Title: "Anil Dash",
+	},
+	FeedCache{
+		URL:   "http://feed.torrentfreak.com/Torrentfreak/",
+		Title: "Torrent Freak",
 	},
 	FeedCache{
 		URL:   "http://feeds.feedburner.com/blogspot/MKuf",

@@ -15,7 +15,6 @@ a:hover {
 }
 #header {
 	box-shadow: .5em 0 .5em .5em #ccc;
-	padding-left: 43%;
 }
 #logo {
 	vertical-align: middle;
@@ -24,6 +23,15 @@ a:hover {
 	position: relative;
 	left: 1em;
 	text-transform: lowercase;
+	vertical-align: bottom;
+}
+#add {
+	margin-left: 20%;
+}
+#tag {
+	margin-left: 40%;
+	font-style: italic;
+	text-decoration: bold;
 	vertical-align: bottom;
 }
 #toolbar {

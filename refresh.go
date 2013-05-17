@@ -21,9 +21,12 @@ import (
 const defaultRefreshDelay = time.Minute * 10
 
 var refreshSubscriptionURLDelay = delay.Func("refresh", refreshSubscriptionURL)
-var refreshDelay = delay.Func("refresh", func(context appengine.Context, x string) { refresh(context, true) })
+var refreshDelay = delay.Func("refresh", func(context appengine.Context, x string) { refresh(context, x != "false") })
 
 func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastore.Key) (err error) {
+	if feed.URL == "" {
+		return
+	}
 	now := time.Now()
 	var subscription SubscriptionCache
 	var item *memcache.Item
@@ -93,7 +96,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 				subscription.MD5 = sum
 			}
 		}
-		subscription.Update = time.Now().Add(duration).Unix()
+		subscription.Update = now.Add(duration).Unix()
 		item.Object = subscription
 		err = memcache.Gob.Set(context, item)
 		if err != nil {
@@ -120,18 +123,22 @@ func refreshSubscriptionURL(context appengine.Context, url string) (err error) {
 
 func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 	query := datastore.NewQuery("Feed")
-	for iterator := query.Run(context); ; {
+	var keys []*datastore.Key
+	keys, err = query.KeysOnly().GetAll(context, nil)
+	//	for iterator := query.Run(context); ; {
+	for _, key := range keys {
 		var feed Feed
-		var feedkey *datastore.Key
-		feedkey, err = iterator.Next(&feed)
+		//var key *datastore.Key
+		//feedkey, err = iterator.Next(&feed)
+		err = datastore.Get(context, key, &feed)
 		if err == datastore.Done {
 			break
 		} else if err != nil {
-			//			printError(context, err)
+			printError(context, err)
 			continue
 		}
 		if asNeeded {
-			err = refreshSubscription(context, feed, feedkey)
+			err = refreshSubscription(context, feed, key)
 		} else {
 			_, err = getSubscriptionURL(context, feed.URL)
 		}
@@ -151,7 +158,8 @@ func refreshGET(context appengine.Context, user *user.User, request *http.Reques
 	}
 	force := request.FormValue("force")
 	if force == "1" {
-		return refresh(context, false)
+		refreshDelay.Call(context, "false")
 	}
-	return refresh(context, true)
+	refreshDelay.Call(context, "true")
+	return
 }

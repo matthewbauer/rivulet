@@ -119,7 +119,7 @@ if not KeyEvent?
 OK = 200
 LIST = 1
 NUMBER = 1
-TIMEOUT = 256
+TIMEOUT = 64
 
 $.ajaxSetup
 	async: false
@@ -127,23 +127,23 @@ $.ajaxSetup
 $.fn.exists = -> @length > 0
 
 $.fn.scrollTo = (target, options, callback) ->
-	if typeof options is "function" and arguments_.length is 2
+	if typeof options is 'function' and arguments_.length is 2
 		callback = options
 		options = target
 	settings = $.extend(
 		scrollTarget: target
 		offsetTop: 50
 		duration: 500
-		easing: "swing"
+		easing: 'swing'
 		, options)
 	@each ->
 		scrollPane = $(this)
-		scrollTarget = (if (typeof settings.scrollTarget is "number") then settings.scrollTarget else $(settings.scrollTarget))
-		scrollY = (if (typeof scrollTarget is "number") then scrollTarget else scrollTarget.offset().top + scrollPane.scrollTop() - parseInt(settings.offsetTop))
+		scrollTarget = (if (typeof settings.scrollTarget is 'number') then settings.scrollTarget else $(settings.scrollTarget))
+		scrollY = (if (typeof scrollTarget is 'number') then scrollTarget else scrollTarget.offset().top + scrollPane.scrollTop() - parseInt(settings.offsetTop))
 		scrollPane.animate
 			scrollTop: scrollY
 			, parseInt(settings.duration), settings.easing, ->
-			callback.call this  if typeof callback is "function"
+			callback.call this  if typeof callback is 'function'
 
 $.extend
 	postJSON: (url, data, callback) ->
@@ -232,8 +232,9 @@ nextArticle = (number, timeout, fun) ->
 			for article in articles
 				if not $(document.getElementById(article.attr('id'))).exists()
 					newarticles.push article
-			if newarticles is []
+			if newarticles.length is 0
 				timeout *= 2
+				console.log 'empty'
 				setTimeout nextArticle, timeout, NUMBER, timeout, fun
 			else
 				fun(newarticles)
@@ -251,19 +252,21 @@ next = ->
 		current = $('.current')
 		index = current.index()
 		if index is -1
-			index = $('.unread').index()
+			index = $('.unread').first().index()
 			if index is -1
-				index = 0
+				index = $('.read').last().index()
+				if index is -1
+					index = 0
 		if index + LIST < $('#articles').children().length
 			$('#articles').children().slice(index + 1, index + LIST + 1).addClass('current').show()
 		else
 			nextArticle NUMBER, TIMEOUT, makeCurrent
 		markAsRead current
 		current.removeClass 'current'
-		$('body').scrollTo($('.current').offset().top)
 		#setTimeout nextArticle, TIMEOUT, 1, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() - 1
-		$('#prev').show()
 		$('#next').show()
+		$('body').scrollTo($('.current').offset().top) if $('.current').exists()
+		$('#prev').show()
 
 prev = ->
 	if $('#prev').is ':visible'
@@ -340,7 +343,7 @@ $ ->
 					if $('.current').children('.article-content').is(':visible')
 						window.open $('.current').children('.go').attr('href'), '_blank'
 					else
-						show($('.current')) 
+						show($('.current'))
 			when KeyEvent.DOM_VK_LEFT, KeyEvent.DOM_VK_NUMPAD6
 				event.preventDefault()
 				hide($('.current')) if $('.current').children('.article-content').is(':visible')

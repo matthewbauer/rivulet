@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
@@ -14,7 +12,6 @@ import (
 
 import (
 	"appengine"
-	"appengine/datastore"
 	"appengine/memcache"
 	"appengine/urlfetch"
 	"appengine/user"
@@ -65,42 +62,8 @@ type SubscriptionCache struct {
 
 type Feed struct {
 	URL         string
-	Bytes       []byte   `datastore:",noindex"`
-	Subscribers []string `datastore:"-"`
-	Articles    []string `datastore:"-"`
-}
-
-func (feed *Feed) Load(c <-chan datastore.Property) (err error) {
-	for p := range c {
-		switch p.Name {
-		case "URL":
-			feed.URL = p.Value.(string)
-		case "Bytes":
-			reader := bytes.NewBuffer(p.Value.([]byte))
-			decoder := gob.NewDecoder(reader)
-			err = decoder.Decode(feed)
-			//			if err != nil {
-			//				return
-			//			}
-		}
-	}
-	return
-}
-
-func (feed *Feed) Save(c chan<- datastore.Property) (err error) {
-	defer close(c)
-	c <- datastore.Property{
-		Name:  "URL",
-		Value: feed.URL,
-	}
-	writer := bytes.Buffer{}
-	encoder := gob.NewEncoder(&writer)
-	err = encoder.Encode(feed)
-	//	if err != nil {
-	//		return
-	//	}
-	c <- datastore.Property{Name: "Bytes", Value: writer.Bytes(), NoIndex: true}
-	return
+	Subscribers []string
+	Articles    []string
 }
 
 type GenericFeed struct {
