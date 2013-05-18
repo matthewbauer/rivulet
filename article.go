@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
-	"time"
 )
 
 import (
@@ -118,9 +117,6 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 		return redirect, nil
 	}
 	var articleData ArticleData
-	if user.ID != "default" {
-		articleData.User = user.String()
-	}
 	var articleCache ArticleCache
 	var feedCache FeedCache
 	for _, article := range userdata.Articles[0:limit] {
@@ -163,7 +159,7 @@ func getArticleById(articles []Article, id string) (article Article) {
 
 func articleGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	id := request.FormValue("id")
-	if id != "" && user.String() != "default" {
+	if id != "" {
 		var userkey *datastore.Key
 		var userdata UserData
 		userkey, userdata, err = mustGetUserData(context, user.String())
@@ -210,13 +206,16 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 	*}
 	 */
 	article := Article{Feed: feed.URL, ID: articleCache.ID, Read: false}
+	var userkey *datastore.Key
+	var userdata UserData
+	feed.Subscribers = append(feed.Subscribers, "default") // filter by defaults?
 	for _, subscriber := range feed.Subscribers {
-		userkey, userdata, err := getUserData(context, subscriber)
+		userkey, userdata, err = getUserData(context, subscriber)
 		if err != nil {
 			printError(context, err, subscriber)
 			continue
 		}
-		article.Rank = articleCache.Date - time.Now().Unix() //getRank(articlePrefs, userdata.Prefs)
+		article.Rank = articleCache.Date //getRank(articlePrefs, userdata.Prefs)
 		if len(userdata.Articles) > MAXARTICLES {
 			userdata.Articles = userdata.Articles[0 : MAXARTICLES-1]
 		}

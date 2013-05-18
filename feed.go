@@ -112,7 +112,7 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 	var rss RSSStruct
 	err = xml.Unmarshal(body, &rss)
 	if err != nil {
-		printError(context, err, url)
+		//printError(context, err, url)
 	}
 	var date time.Time
 	for _, channel := range rss.Channel {
@@ -163,7 +163,7 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 	var feed AtomFeed
 	err = xml.Unmarshal(body, &feed)
 	if err != nil {
-		printError(context, err, url)
+		//printError(context, err, url)
 	}
 	feedCache.Title = feed.Title
 	var date time.Time
@@ -268,9 +268,6 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 	url := request.FormValue("url")
 	if url != "" {
 		if request.FormValue("unsubscribe") == "1" {
-			if user.String() == "default" {
-				return
-			}
 			err = unsubscribe(context, user.String(), url)
 			if err != nil {
 				return
@@ -289,9 +286,7 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 		}
 	}
 	var feedData FeedData
-	if user.String() != "default" {
-		feedData.User = user.String()
-	}
+	feedData.User = user.String()
 	var userdata UserData
 	_, userdata, err = mustGetUserData(context, user.String())
 	if err != nil {

@@ -73,6 +73,11 @@ func newUserData(context appengine.Context, id string) (key *datastore.Key, user
 			continue
 		}
 	}
+	if id != "default" {
+		var defaultUser UserData
+		_, defaultUser, err = mustGetUserData(context, "default")
+		userdata.Articles = defaultUser.Articles
+	}
 	key, err = putUserData(context, datastore.NewIncompleteKey(context, "UserData", nil), userdata)
 	return
 }

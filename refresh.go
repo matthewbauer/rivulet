@@ -18,7 +18,7 @@ import (
 	"appengine/user"
 )
 
-const defaultRefreshDelay = time.Minute * 10
+const defaultRefreshDelay = time.Minute * 30
 
 var refreshSubscriptionURLDelay = delay.Func("refresh", refreshSubscriptionURL)
 var refreshDelay = delay.Func("refresh", func(context appengine.Context, x string) { refresh(context, x != "false") })
@@ -41,6 +41,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 		duration := defaultRefreshDelay
 		client := urlfetch.Client(context)
 		var response *http.Response
+		printInfo(context, "fetching...")
 		response, err = client.Get(feed.URL)
 		if err != nil {
 			return

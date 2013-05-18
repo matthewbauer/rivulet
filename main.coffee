@@ -218,13 +218,17 @@ makeCurrent = (articles, current, index) ->
 	makeArticle articles
 	$(document.getElementById(article.attr('id'))).addClass('current').show() for article in articles.slice(0, LIST)
 	removeCurrent current, index
+	if index is 0
+		$('#prev').hide()
+	else
+		$('#prev').show()
 	$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 
 makeArticle = (articles) ->
 	for article in articles
 		article.hide().appendTo '#articles'
 
-nextArticle = (number, timeout, fun, current, index, first) ->
+nextArticle = (number, timeout, fun, current, index) ->
 	$.getJSON('/article?output=json&number=' + number, (data) ->
 		if data['URL']?
 			timeout *= 2
@@ -239,7 +243,6 @@ nextArticle = (number, timeout, fun, current, index, first) ->
 				timeout *= 2
 				setTimeout nextArticle, timeout, number, timeout, fun, current, index
 			else
-				$('#prev').show() if not first
 				fun(newarticles, current, index)
 #			$('#next').hide()
 #			$('.current').
@@ -255,7 +258,7 @@ removeCurrent = (current, index) ->
 	markAsRead current
 	current.removeClass 'current'
 
-next = (first) ->
+next = ->
 	if $('#next').is ':visible'
 		$('#next').hide()
 		current = $('.current')
@@ -269,10 +272,13 @@ next = (first) ->
 		if index + LIST < $('#articles').children().length
 			$('#articles').children().slice(index + 1, index + LIST + 1).addClass('current').show()
 			removeCurrent current, index
-			$('#prev').show() if not first
+			if index is 0
+				$('#prev').hide()
+			else
+				$('#prev').show()
 			$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 		else
-			nextArticle NUMBER, TIMEOUT, makeCurrent, current, index, first
+			nextArticle NUMBER, TIMEOUT, makeCurrent, current, index
 		#setTimeout nextArticle, TIMEOUT, 1, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() - 1
 		$('#next').show()
 
@@ -284,11 +290,6 @@ prev = ->
 			markAsRead $('.current')
 			$('.current').removeClass 'current'
 			$('#articles').children().slice(index - LIST, index).addClass('current').show()
-		if index - LIST is 0
-			$('#prev').hide()
-		else
-			$('#prev').show()
-#			$('#next').hide()
 #		$('.current').
 #			show().
 #			css({position: 'fixed'}).
@@ -305,6 +306,11 @@ prev = ->
 #						else
 #							$('#prev').show()
 #				$('#next').show()
+		if index - LIST is 0
+			$('#prev').hide()
+		else
+			$('#prev').show()
+#			$('#next').hide()
 
 markAsRead = (elements) ->
 	elements.each ->
@@ -339,11 +345,11 @@ $ ->
 				if event.shiftKey
 					prev()
 				else
-					next(false)
+					next()
 			when KeyEvent.DOM_VK_PAGEUP, KeyEvent.DOM_VK_K, KeyEvent.DOM_VK_P, KeyEvent.DOM_VK_NUMPAD8, KeyEvent.DOM_VK_NUMPAD9 # KeyEvent.DOM_VK_UP,
 				event.preventDefault()
 				if event.shiftKey
-					next(false)
+					next()
 				else
 					prev()
 			when KeyEvent.DOM_VK_RIGHT, KeyEvent.DOM_VK_NUMPAD5, KeyEvent.DOM_VK_ENTER, KeyEvent.DOM_VK_RETURN
@@ -369,16 +375,14 @@ $ ->
 
 	$('#next').click (event) ->
 		event.preventDefault()
-		next(false)
+		next()
 		false
 
 	$('<section/>').
 		attr('id', 'articles').
 		insertBefore('#next') if not $('#articles').exists()
 
-	$('#prev').hide()
-
-	next(true) if not $('.unread').exists()
+	next() if not $('.unread').exists()
 
 	$('.subscribe').click (event) ->
 		event.preventDefault()
