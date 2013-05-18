@@ -1,120 +1,151 @@
 package main
 
-var defaultFeeds = []FeedCache{
-	//	FeedCache{
-	//		URL:   "http://www.reddit.com/.rss",
-	//		Title: "Reddit",
-	//	},
-	//	FeedCache{
-	//		URL:   "http://feeds.theonion.com/theonion/daily",
-	//		Title: "The Onion",
-	//	},
-	//  FeedCache{
-	//		URL:   "http://rss.csmonitor.com/csmonitor/connectingthedots",
-	//		Title: "Connecting the Dots",
-	//  },
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/ommalik",
-		Title: "GigaOM",
+var builtinFeeds = []Feed{
+	Feed{
+		//URL:   "http://www.reddit.com/.rss",
+		URL: "http://inline-reddit.com/feed/",
+		//Title: "Reddit",
+		Title:   "Reddit Inline",
+		Default: false,
 	},
-	FeedCache{
-		URL:   "http://www.economist.com/blogs/babbage/index.xml",
-		Title: "Babbage",
+	Feed{
+		URL:     "http://feeds.theonion.com/theonion/daily",
+		Title:   "The Onion",
+		Default: false,
 	},
-	FeedCache{
-		URL:   "http://www.marco.org/rss",
-		Title: "Marco Arment",
+	Feed{
+		URL:     "http://rss.csmonitor.com/csmonitor/connectingthedots",
+		Title:   "Connecting the Dots",
+		Default: false,
 	},
-	FeedCache{
-		URL:   "http://www.newyorker.com/online/blogs/newsdesk/rss.xml",
-		Title: "The New Yorker News Desk",
+	Feed{
+		URL:     "http://feeds.feedburner.com/marginalrevolution",
+		Title:   "Marginal Revolution",
+		Default: false,
 	},
-	FeedCache{
-		URL:   "http://www.theverge.com/rss/index.xml",
-		Title: "The Verge",
+	Feed{
+		URL:     "http://feeds.feedburner.com/ommalik",
+		Title:   "GigaOM",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://www.guardian.co.uk/world/us-news-blog/rss",
-		Title: "The Guardian US News",
+	Feed{
+		URL:     "http://www.economist.com/blogs/babbage/index.xml",
+		Title:   "Babbage",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.theonion.com/avclub/newswire/",
-		Title: "AV Club Newswire",
+	Feed{
+		URL:     "http://www.marco.org/rss",
+		Title:   "Marco Arment",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://www.guardian.co.uk/news/datablog/rss",
-		Title: "Guardian Datablog",
+	Feed{
+		URL:     "http://www.newyorker.com/online/blogs/newsdesk/rss.xml",
+		Title:   "The New Yorker News Desk",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://daringfireball.net/index.xml",
-		Title: "Daring Fireball",
+	Feed{
+		URL:     "http://www.theverge.com/rss/index.xml",
+		Title:   "The Verge",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://scripting.com/rss.xml",
-		Title: "Scripting News",
+	Feed{
+		URL:     "http://www.guardian.co.uk/world/us-news-blog/rss",
+		Title:   "The Guardian US News",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://buzzmachine.com/feed/",
-		Title: "Buzz Machine",
+	Feed{
+		URL:     "http://feeds.theonion.com/avclub/newswire/",
+		Title:   "AV Club Newswire",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://blogs.wsj.com/numbersguy/feed/",
-		Title: "The Number's Guy",
+	Feed{
+		URL:     "http://www.guardian.co.uk/news/datablog/rss",
+		Title:   "Guardian Datablog",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://flowingdata.com/feed/",
-		Title: "Flowing Data",
+	Feed{
+		URL:     "http://daringfireball.net/index.xml",
+		Title:   "Daring Fireball",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.kottke.org/main",
-		Title: "Jason Kottke",
+	Feed{
+		URL:     "http://scripting.com/rss.xml",
+		Title:   "Scripting News",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.washingtonpost.com/rss/rss_ezra-klein",
-		Title: "Wonk Blog",
+	Feed{
+		URL:     "http://buzzmachine.com/feed/",
+		Title:   "Buzz Machine",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/43folders",
-		Title: "43 Folders",
+	Feed{
+		URL:     "http://blogs.wsj.com/numbersguy/feed/",
+		Title:   "The Number's Guy",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/538dotcom",
-		Title: "538",
+	Feed{
+		URL:     "http://flowingdata.com/feed/",
+		Title:   "Flowing Data",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/Asymco",
-		Title: "Asymco",
+	Feed{
+		URL:     "http://feeds.kottke.org/main",
+		Title:   "Jason Kottke",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.arstechnica.com/arstechnica/features",
-		Title: "Ars Features",
+	Feed{
+		URL:     "http://feeds.washingtonpost.com/rss/rss_ezra-klein",
+		Title:   "Wonk Blog",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.dashes.com/AnilDash",
-		Title: "Anil Dash",
+	Feed{
+		URL:     "http://feeds.feedburner.com/43folders",
+		Title:   "43 Folders",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feed.torrentfreak.com/Torrentfreak/",
-		Title: "Torrent Freak",
+	Feed{
+		URL:     "http://feeds.feedburner.com/538dotcom",
+		Title:   "538",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/blogspot/MKuf",
-		Title: "Official Google Blog",
+	Feed{
+		URL:     "http://feeds.feedburner.com/Asymco",
+		Title:   "Asymco",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/CalculatedRisk",
-		Title: "Calculated Risk",
+	Feed{
+		URL:     "http://feeds.arstechnica.com/arstechnica/features",
+		Title:   "Ars Features",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/GoogleOperatingSystem",
-		Title: "Google Operating System",
+	Feed{
+		URL:     "http://feeds.dashes.com/AnilDash",
+		Title:   "Anil Dash",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/marginalrevolution",
-		Title: "Marginal Revolution",
+	Feed{
+		URL:     "http://feed.torrentfreak.com/Torrentfreak/",
+		Title:   "Torrent Freak",
+		Default: true,
 	},
-	FeedCache{
-		URL:   "http://feeds.feedburner.com/thebrowser/xrdJ",
-		Title: "The Browser",
+	Feed{
+		URL:     "http://feeds.feedburner.com/blogspot/MKuf",
+		Title:   "Official Google Blog",
+		Default: true,
+	},
+	Feed{
+		URL:     "http://feeds.feedburner.com/CalculatedRisk",
+		Title:   "Calculated Risk",
+		Default: true,
+	},
+	Feed{
+		URL:     "http://feeds.feedburner.com/GoogleOperatingSystem",
+		Title:   "Google Operating System",
+		Default: true,
+	},
+	Feed{
+		URL:     "http://feeds.feedburner.com/thebrowser/xrdJ",
+		Title:   "The Browser",
+		Default: true,
 	},
 }

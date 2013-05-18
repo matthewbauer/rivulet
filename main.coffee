@@ -214,11 +214,11 @@ addArticles = (object) ->
 		list.push element if element?
 	list
 
-makeCurrent = (articles, current, index) ->
+makeCurrent = (articles, current) ->
 	makeArticle articles
 	$(document.getElementById(article.attr('id'))).addClass('current').show() for article in articles.slice(0, LIST)
-	removeCurrent current, index
-	if index is 0
+	removeCurrent current
+	if $('.current').index() is 0
 		$('#prev').hide()
 	else
 		$('#prev').show()
@@ -228,11 +228,11 @@ makeArticle = (articles) ->
 	for article in articles
 		article.hide().appendTo '#articles'
 
-nextArticle = (number, timeout, fun, current, index) ->
+nextArticle = (number, timeout, fun, current) ->
 	$.getJSON('/article?output=json&number=' + number, (data) ->
 		if data['URL']?
 			timeout *= 2
-			setTimeout nextArticle, timeout, number, timeout, fun, current, index
+			setTimeout nextArticle, timeout, number, timeout, fun, current
 		else
 			articles = addArticles data
 			newarticles = []
@@ -241,9 +241,9 @@ nextArticle = (number, timeout, fun, current, index) ->
 					newarticles.push article
 			if newarticles.length is 0
 				timeout *= 2
-				setTimeout nextArticle, timeout, number, timeout, fun, current, index
+				setTimeout nextArticle, timeout, number, timeout, fun, current
 			else
-				fun(newarticles, current, index)
+				fun(newarticles, current)
 #			$('#next').hide()
 #			$('.current').
 #				css({position: 'fixed', top: $(document).height(), left: $('#articles').offset().left}).
@@ -252,9 +252,9 @@ nextArticle = (number, timeout, fun, current, index) ->
 #								$(this).css({position: 'static'})
 #								$('#next').show()
 	).
-		fail -> setTimeout nextArticle, timeout, number, timeout, fun, current, index
+		fail -> setTimeout nextArticle, timeout, number, timeout, fun, current
 
-removeCurrent = (current, index) ->
+removeCurrent = (current) ->
 	markAsRead current
 	current.removeClass 'current'
 
@@ -271,7 +271,8 @@ next = ->
 					index = 0
 		if index + LIST < $('#articles').children().length
 			$('#articles').children().slice(index + 1, index + LIST + 1).addClass('current').show()
-			removeCurrent current, index
+			removeCurrent current
+			index = $('.current').index()
 			if index is 0
 				$('#prev').hide()
 			else

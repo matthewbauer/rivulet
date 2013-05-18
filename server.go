@@ -15,9 +15,9 @@ import (
 	"appengine/user"
 )
 
-func ContainsFeedCache(list []FeedCache, elem FeedCache) bool {
+func ContainsFeed(list []Feed, elem string) bool {
 	for _, t := range list {
-		if t.URL == elem.URL {
+		if t.URL == elem {
 			return true
 		}
 	}

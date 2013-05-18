@@ -8,6 +8,7 @@
 <div id='container'>
 	<div class='content' id='container-content'>
 		{{with .Feeds}}
+		<div id='feeds'>
 		<h2>Subscribed</h2>
 		<ul id='feeds'>
 			{{range .}}
@@ -17,10 +18,12 @@
 			</li>
 			{{end}}
 		</ul>
+		</div>
 		{{end}}
 		{{with .SuggestedFeeds}}
+		<div id='suggested'>
 		<h2>Suggested</h2>
-		<ul id='suggested'>
+		<ul>
 			{{range .}}
 			<li class='feed' id='{{.URL}}'>
 				<a class='subscribe' href='/feed?subscribe=1&url={{.URL}}'>+</a>
@@ -28,6 +31,7 @@
 			</li>
 			{{end}}
 		</ul>
+		</div>
 		{{end}}
 		<form id='addfeed' action='/feed' method='post'>
 			<input type='url' name='url'/>

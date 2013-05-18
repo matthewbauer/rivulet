@@ -66,11 +66,13 @@ func (userdata *UserData) Save(c chan<- datastore.Property) (err error) {
 
 func newUserData(context appengine.Context, id string) (key *datastore.Key, userdata UserData, err error) {
 	userdata.String = id
-	for _, url := range defaultFeeds {
-		err = subscribe(context, &userdata, url.URL)
-		if err != nil {
-			printError(context, err, url.URL)
-			continue
+	for _, feed := range builtinFeeds {
+		if feed.Default {
+			err = subscribe(context, &userdata, feed.URL)
+			if err != nil {
+				printError(context, err, feed.URL)
+				continue
+			}
 		}
 	}
 	if id != "default" {
@@ -230,10 +232,38 @@ func getUserFeedList(context appengine.Context, user string) (feeds []FeedCache,
 	if err != nil {
 		return
 	}
+	var item FeedCache
 	for _, feed := range userdata.Feeds {
-		var item FeedCache
 		_, err = memcache.Gob.Get(context, feed, &item)
+		if err != nil {
+			continue
+		}
 		feeds = append(feeds, item)
 	}
+	err = nil
+	return
+}
+
+func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedFeeds []Feed, err error) {
+	for _, feed := range builtinFeeds {
+		if !ContainsFeed(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
+			suggestedFeeds = append(suggestedFeeds, feed)
+		}
+	}
+	query := datastore.NewQuery("Feed")
+	var feed Feed
+	for iterator := query.Run(context); ; {
+		_, err = iterator.Next(&feed)
+		if err == datastore.Done {
+			break
+		} else if err != nil {
+			printError(context, err, feed.URL)
+			continue
+		}
+		if !ContainsFeed(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
+			suggestedFeeds = append(suggestedFeeds, feed)
+		}
+	}
+	err = nil
 	return
 }

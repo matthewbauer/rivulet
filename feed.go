@@ -12,6 +12,7 @@ import (
 
 import (
 	"appengine"
+	"appengine/datastore"
 	"appengine/memcache"
 	"appengine/urlfetch"
 	"appengine/user"
@@ -37,8 +38,8 @@ type FeedList struct {
 
 type FeedData struct {
 	User           string
-	Feeds          []FeedCache
-	SuggestedFeeds []FeedCache
+	Feeds          []Feed
+	SuggestedFeeds []Feed
 }
 
 func (FeedData) Template() string { return "feeds.html" }
@@ -62,6 +63,8 @@ type SubscriptionCache struct {
 
 type Feed struct {
 	URL         string
+	Title       string
+	Default     bool
 	Subscribers []string
 	Articles    []string
 }
@@ -113,6 +116,7 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 	err = xml.Unmarshal(body, &rss)
 	if err != nil {
 		//printError(context, err, url)
+		err = nil
 	}
 	var date time.Time
 	for _, channel := range rss.Channel {
@@ -164,6 +168,7 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 	err = xml.Unmarshal(body, &feed)
 	if err != nil {
 		//printError(context, err, url)
+		err = nil
 	}
 	feedCache.Title = feed.Title
 	var date time.Time
@@ -241,29 +246,6 @@ func getSubscriptionURL(context appengine.Context, url string) (feed FeedCache, 
 	return getSubscription(context, format, body, url)
 }
 
-func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedFeeds []FeedCache, err error) {
-	for _, defaultFeed := range defaultFeeds {
-		if !ContainsFeedCache(suggestedFeeds, defaultFeed) && !ContainsString(userdata.Feeds, defaultFeed.URL) {
-			suggestedFeeds = append(suggestedFeeds, defaultFeed)
-		}
-	}
-	/*query := datastore.NewQuery("Feed")
-	var feed Feed
-	for iterator := query.Run(context); ; {
-		_, err = iterator.Next(&feed)
-		if err == datastore.Done {
-			break
-		} else if err != nil {
-			printError(context, err)
-			continue
-		}
-		if !ContainsString(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
-			suggestedFeeds = append(suggestedFeeds, feed.URL)
-		}
-	}*/
-	return
-}
-
 func feedGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	url := request.FormValue("url")
 	if url != "" {
@@ -294,19 +276,25 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 	}
 
 	for _, feed := range userdata.Feeds {
-		var item FeedCache
-		for _, defaultFeed := range defaultFeeds {
+		var item Feed
+		for _, defaultFeed := range builtinFeeds {
 			if defaultFeed.URL == feed {
 				item = defaultFeed
 				break
 			}
 		}
 		if item.URL == "" {
-			_, err = memcache.Gob.Get(context, feed, &item)
-			if err == memcache.ErrCacheMiss {
+			query := datastore.NewQuery("Feed").Filter("URL=", feed)
+			iterator := query.Run(context)
+			_, err = iterator.Next(&item)
+			if err == datastore.Done {
+				continue
+			} else if err != nil {
+				printError(context, err, feed)
 				continue
 			}
 		}
+		err = nil
 		feedData.Feeds = append(feedData.Feeds, item)
 	}
 

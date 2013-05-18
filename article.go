@@ -208,11 +208,12 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 	article := Article{Feed: feed.URL, ID: articleCache.ID, Read: false}
 	var userkey *datastore.Key
 	var userdata UserData
-	feed.Subscribers = append(feed.Subscribers, "default") // filter by defaults?
+	if feed.Default {
+		feed.Subscribers = append(feed.Subscribers, "default")
+	}
 	for _, subscriber := range feed.Subscribers {
 		userkey, userdata, err = getUserData(context, subscriber)
 		if err != nil {
-			printError(context, err, subscriber)
 			continue
 		}
 		article.Rank = articleCache.Date //getRank(articlePrefs, userdata.Prefs)
@@ -235,5 +236,6 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 			continue
 		}
 	}
+	err = nil
 	return
 }

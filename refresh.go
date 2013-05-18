@@ -41,7 +41,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 		duration := defaultRefreshDelay
 		client := urlfetch.Client(context)
 		var response *http.Response
-		printInfo(context, "fetching...")
+		printInfo(context, fmt.Sprintf("fetching... %v", feed.URL))
 		response, err = client.Get(feed.URL)
 		if err != nil {
 			return

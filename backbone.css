@@ -85,12 +85,12 @@ a:hover {
 	display: block;
 }
 .feed {
-	margin-bottom: 1em;
 	list-style-type: none;
 }
 .unsubscribe {
 	font-size: 3em;
 	color: red;
+	text-align: center;
 }
 .unsubscribe:hover {
 	text-decoration: none;
@@ -98,9 +98,16 @@ a:hover {
 .subscribe {
 	font-size: 3em;
 	color: green;
+	text-align: center;
 }
 .subscribe:hover {
 	text-decoration: none;
+}
+#feeds {
+	float: left;
+	margin-right: 3em;
+}
+#suggested {
 }
 .go {
 	float: right;
