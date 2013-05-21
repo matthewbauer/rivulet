@@ -104,11 +104,19 @@ a:hover {
 	text-decoration: none;
 }
 #feeds {
-	float: left;
-	margin-right: 3em;
 }
 #suggested {
+	float: right;
+	margin-left: 3em;
+}
+#addfeed {
 }
 .go {
 	float: right;
+}
+#tag {
+	display: inline;
+}
+#tag:link, #tag:visited {
+	color: inherit;
 }

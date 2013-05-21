@@ -118,7 +118,7 @@ if not KeyEvent?
 
 OK = 200
 LIST = 1
-NUMBER = 1
+COUNT = 10
 TIMEOUT = 64
 
 $.ajaxSetup
@@ -199,7 +199,7 @@ addArticle = (data) ->
 		append(
 			$('<div/>').
 				addClass('article-content').
-				html(data['Summary']).
+				html($.parseHTML(data['Summary'])).
 				click (event) ->
 					event.preventDefault()
 					false
@@ -228,11 +228,11 @@ makeArticle = (articles) ->
 	for article in articles
 		article.hide().appendTo '#articles'
 
-nextArticle = (number, timeout, fun, current) ->
-	$.getJSON('/article?output=json&number=' + number, (data) ->
+nextArticle = (count, timeout, fun, current) ->
+	$.getJSON('/article?output=json&count=' + count, (data) ->
 		if data['URL']?
 			timeout *= 2
-			setTimeout nextArticle, timeout, number, timeout, fun, current
+			setTimeout nextArticle, timeout, count, timeout, fun, current
 		else
 			articles = addArticles data
 			newarticles = []
@@ -241,8 +241,11 @@ nextArticle = (number, timeout, fun, current) ->
 					newarticles.push article
 			if newarticles.length is 0
 				timeout *= 2
-				setTimeout nextArticle, timeout, number, timeout, fun, current
+				setTimeout nextArticle, timeout, count, timeout, fun, current
 			else
+				localArticles = localStorage.getObj('articles')
+				localArticles = localArticles.concat(data.Articles)
+				localStorage.setObj('articles', localArticles)
 				fun(newarticles, current)
 #			$('#next').hide()
 #			$('.current').
@@ -252,7 +255,7 @@ nextArticle = (number, timeout, fun, current) ->
 #								$(this).css({position: 'static'})
 #								$('#next').show()
 	).
-		fail -> setTimeout nextArticle, timeout, number, timeout, fun, current
+		fail -> setTimeout nextArticle, timeout, count, timeout, fun, current
 
 removeCurrent = (current) ->
 	markAsRead current
@@ -279,8 +282,8 @@ next = ->
 				$('#prev').show()
 			$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 		else
-			nextArticle NUMBER, TIMEOUT, makeCurrent, current, index
-		#setTimeout nextArticle, TIMEOUT, 1, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() - 1
+			nextArticle COUNT, TIMEOUT, makeCurrent, current, index
+		setTimeout nextArticle, TIMEOUT, COUNT, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() / 2
 		$('#next').show()
 
 prev = ->
@@ -313,12 +316,22 @@ prev = ->
 			$('#prev').show()
 #			$('#next').hide()
 
+Storage.prototype.setObj = (key, obj) -> @setItem(key, JSON.stringify(obj))
+
+Storage.prototype.getObj = (key) -> JSON.parse(@getItem(key))
+
 markAsRead = (elements) ->
+	localArticles = localStorage.getObj('articles')
 	elements.each ->
 		$(this).
 			hide().
 			removeClass('unread').
 			addClass('read')
+		for article, i in localArticles
+			if article['ID'] is $(this).attr('id')
+				localArticles.remove(i)
+				break
+	localStorage.setObj('articles', localArticles)
 
 addFeed = (url) ->
 	data = Feeds: [
@@ -338,7 +351,28 @@ removeFeed = (url) ->
 	$(document.getElementById(url)).remove()
 	location.reload()
 
+Array.prototype.remove = (from, to) ->
+	rest = this.slice((to || from) + 1 || this.length)
+	this.length = from < 0 ? this.length + from : from
+	return this.push.apply(this, rest)
+
 $ ->
+	$('<section/>').
+		attr('id', 'articles').
+		insertBefore('#next') if not $('#articles').exists()
+
+	localArticles = localStorage.getObj('articles')
+	if localArticles? and localArticles.length > 0
+		articles = []
+		for article in localArticles
+			articles.push(addArticle(article))
+		makeCurrent(articles, $('.current'))
+	else
+		localStorage.setObj('articles', [])
+
+	$('#next').show()
+	next() if not $('.unread').exists()
+
 	$(window).keyup (event) ->
 		switch event.which
 			when KeyEvent.DOM_VK_J, KeyEvent.DOM_VK_N, KeyEvent.DOM_VK_NUMPAD2, KeyEvent.DOM_VK_NUMPAD3 #KeyEvent.DOM_VK_SPACE, KeyEvent.DOM_VK_PAGEDOWN, KeyEvent.DOM_VK_DOWN, 
@@ -378,12 +412,6 @@ $ ->
 		event.preventDefault()
 		next()
 		false
-
-	$('<section/>').
-		attr('id', 'articles').
-		insertBefore('#next') if not $('#articles').exists()
-
-	next() if not $('.unread').exists()
 
 	$('.subscribe').click (event) ->
 		event.preventDefault()

@@ -37,7 +37,7 @@ var templates *template.Template
 
 func init() {
 	http.HandleFunc("/", server)
-	templates = template.Must(template.ParseFiles("articles.html", "feeds.html", "article.html", "head.html", "header.html", "toolbar.html", "user.html"))
+	templates = template.Must(template.ParseFiles("api.html", "about.html", "articles.html", "feeds.html", "article.html", "head.html", "header.html", "toolbar.html", "user.html"))
 }
 
 type Data interface {
@@ -73,6 +73,15 @@ var handlers = map[string]map[string]MethodHandler{
 	},
 	"/user": {
 		"GET": userGET,
+	},
+	"/about": {
+		"GET": aboutGET,
+	},
+	"/api": {
+		"GET": apiGET,
+	},
+	"/offline": {
+		"GET": offlineGET,
 	},
 }
 
@@ -193,7 +202,31 @@ func server(writer http.ResponseWriter, request *http.Request) {
 }
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	return article(context, user, request, DEFAULTCOUNT)
+}
+
+func offlineGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	return article(context, user, request, 0)
+}
+
+type Info struct {
+	TemplateName string
+}
+
+func (i Info) Template() string { return i.TemplateName }
+func (Info) Redirect() string   { return "" }
+func (Info) Send() bool         { return true }
+
+func aboutGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	var info Info
+	info.TemplateName = "about.html"
+	return info, nil
+}
+
+func apiGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	var info Info
+	info.TemplateName = "api.html"
+	return info, nil
 }
 
 func printError(context appengine.Context, err error, info string) {

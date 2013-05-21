@@ -1,0 +1,15 @@
+CACHE MANIFEST
+#95
+NETWORK:
+/article
+/user
+/feed
+FALLBACK:
+/ /offline
+CACHE:
+/backbone.css
+/default.css
+/feed.css
+/main.js
+/jquery-2.0.0.min.js
+

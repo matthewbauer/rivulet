@@ -30,6 +30,7 @@ type ArticleData struct {
 }
 
 const MAXARTICLES = 100
+const DEFAULTCOUNT = 1
 
 func (ArticleData) Template() string { return "articles.html" }
 func (ArticleData) Redirect() string { return "" }
@@ -73,7 +74,7 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 		read = true
 	}
 	for _, article := range articleList.Articles {
-		var n int
+		n := 0
 		var a Article
 		found := false
 		for n, a = range userdata.Articles {
@@ -103,25 +104,25 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 	return
 }
 
-func article(context appengine.Context, user *user.User, request *http.Request, limit int) (data Data, err error) {
+func article(context appengine.Context, user *user.User, request *http.Request, count int) (data Data, err error) {
 	var userdata UserData
 	var userkey *datastore.Key
 	userkey, userdata, err = mustGetUserData(context, user.String())
 	if err != nil {
 		return
 	}
-	if limit > len(userdata.Articles) {
+	var articleData ArticleData
+	var articleCache ArticleCache
+	var feedCache FeedCache
+	if count > len(userdata.Articles) {
 		refreshDelay.Call(context, "")
 		var redirect Redirect
 		redirect.URL = "/feed"
 		return redirect, nil
 	}
-	var articleData ArticleData
-	var articleCache ArticleCache
-	var feedCache FeedCache
-	for _, article := range userdata.Articles[0:limit] {
+	for _, article := range userdata.Articles[0:count] {
 		_, err = memcache.Gob.Get(context, article.ID, &articleCache)
-		if err == memcache.ErrCacheMiss { // || articleCache.ID != article.ID
+		if err == memcache.ErrCacheMiss {
 			feedCache, err = getSubscriptionURL(context, article.Feed)
 			if err != nil {
 				printError(context, err, article.Feed)
@@ -138,12 +139,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 		}
 		articleData.Articles = append(articleData.Articles, articleCache)
 	}
-	if len(articleData.Articles) < limit {
-		var redirect Redirect
-		redirect.URL = "/feed"
-		return redirect, nil
-	}
-	userdata.Articles = userdata.Articles[limit:]
+	userdata.Articles = userdata.Articles[count:]
 	_, err = putUserData(context, userkey, userdata)
 	return articleData, nil
 }
@@ -179,17 +175,18 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 		redirect.URL = url
 		return redirect, nil
 	}
-	requestNumber := request.FormValue("number")
-	var number int
-	if requestNumber == "" {
-		number = 1
-	} else {
-		number, err = strconv.Atoi(requestNumber)
+	countStr := request.FormValue("count")
+	count := 0
+	if countStr != "" {
+		count, err = strconv.Atoi(countStr)
 		if err != nil {
 			return
 		}
+	} else {
+		count = DEFAULTCOUNT
 	}
-	return article(context, user, request, number)
+
+	return article(context, user, request, count)
 }
 
 func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache) (err error) {

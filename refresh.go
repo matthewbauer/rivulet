@@ -55,7 +55,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 		if len(body) != subscription.Length {
 			subscription.Length = len(body)
 			hash := md5.New()
-			var hashLength int
+			hashLength := 0
 			hashLength, err = hash.Write(body)
 			if hashLength != len(body) {
 				return errors.New("couldn't make md5 hash")
