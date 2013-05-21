@@ -221,7 +221,7 @@ makeCurrent = (articles, current) ->
 	if $('.current').index() is 0
 		$('#prev').hide()
 	else
-		$('#prev').show()
+		$('#prev').css('display', 'block')
 	$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 
 makeArticle = (articles) ->
@@ -263,6 +263,7 @@ removeCurrent = (current) ->
 
 next = ->
 	if $('#next').is ':visible'
+		console.log 'next'
 		$('#next').hide()
 		current = $('.current')
 		index = current.index()
@@ -279,7 +280,7 @@ next = ->
 			if index is 0
 				$('#prev').hide()
 			else
-				$('#prev').show()
+				$('#prev').css('display', 'block')
 			$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 		else
 			nextArticle COUNT, TIMEOUT, makeCurrent, current, index
@@ -294,6 +295,7 @@ prev = ->
 			markAsRead $('.current')
 			$('.current').removeClass 'current'
 			$('#articles').children().slice(index - LIST, index).addClass('current').show()
+			$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 #		$('.current').
 #			show().
 #			css({position: 'fixed'}).
@@ -313,7 +315,7 @@ prev = ->
 		if index - LIST is 0
 			$('#prev').hide()
 		else
-			$('#prev').show()
+			$('#prev').css('display', 'block')
 #			$('#next').hide()
 
 Storage.prototype.setObj = (key, obj) -> @setItem(key, JSON.stringify(obj))
@@ -366,7 +368,6 @@ $ ->
 		articles = []
 		for article in localArticles
 			articles.push(addArticle(article))
-		makeCurrent(articles, $('.current'))
 	else
 		localStorage.setObj('articles', [])
 

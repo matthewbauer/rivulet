@@ -3,11 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"mime"
 	"net/http"
 	"os"
 	"strings"
+	"text/template"
 )
 
 import (
@@ -57,9 +57,6 @@ func (redirect Redirect) Send() bool       { return true }
 type MethodHandler func(appengine.Context, *user.User, *http.Request) (data Data, err error)
 
 var handlers = map[string]map[string]MethodHandler{
-	"/": {
-		"GET": rootGET,
-	},
 	"/refresh": {
 		"GET": refreshGET,
 	},
@@ -80,8 +77,14 @@ var handlers = map[string]map[string]MethodHandler{
 	"/api": {
 		"GET": apiGET,
 	},
+	"/": {
+		"GET": rootGET,
+	},
 	"/offline": {
 		"GET": offlineGET,
+	},
+	"/noscript": {
+		"GET": noscriptGET,
 	},
 }
 
@@ -207,6 +210,10 @@ func rootGET(context appengine.Context, user *user.User, request *http.Request) 
 
 func offlineGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	return article(context, user, request, 0)
+}
+
+func noscriptGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	return article(context, user, request, 1)
 }
 
 type Info struct {
