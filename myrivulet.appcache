@@ -3,7 +3,10 @@ CACHE MANIFEST
 #107
 
 CACHE:
-/jquery-2.0.0.min.js
+//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css
+//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css
+//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js
+
 /script.js
 /style.css
 /logo.png
