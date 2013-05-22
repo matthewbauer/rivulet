@@ -252,7 +252,7 @@ makeArticle = (articles) ->
 nextArticle = (count, timeout, fun, current) ->
 	$.getJSON('/article?output=json&count=' + count, (data) ->
 		if data['URL'] is '/feed'
-			window.open '/feed'
+			window.location = '/feed'
 		else if data['URL']?
 			timeout *= 2
 			setTimeout nextArticle, timeout, count, timeout, fun, current
@@ -381,6 +381,7 @@ $ ->
 		articles = []
 		for article in localArticles
 			articles.push addArticle(article)
+		makeArticle articles
 	else
 		localStorage.setObj 'articles', []
 
