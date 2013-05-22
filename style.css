@@ -2,6 +2,9 @@ body {
 	padding: 0;
 	margin: 0;
 	-webkit-overflow-scrolling: touch;
+	color: #121F36;
+	background-color: #E8E8E8;
+	font-family: helvetica,arial,sans-serif;
 }
 a {
 	text-decoration: none;
@@ -17,6 +20,7 @@ a:hover {
 	box-shadow: .5em 0 .5em .5em #ccc;
 }
 #logo {
+	margin-left: 20%;
 	vertical-align: middle;
 }
 #credit {
@@ -24,9 +28,6 @@ a:hover {
 	left: 1em;
 	text-transform: lowercase;
 	vertical-align: bottom;
-}
-#add {
-	margin-left: 20%;
 }
 #tag {
 	margin-left: 40%;
@@ -99,13 +100,9 @@ a:hover {
 .subscribe:hover {
 	text-decoration: none;
 }
-#feeds {
-}
 #suggested {
 	float: right;
 	margin-left: 2em;
-}
-#addfeed {
 }
 .actions {
 	display: none;
@@ -120,4 +117,29 @@ a:hover {
 .feed-link, .feed-link:visited {
 	font-size: 1.5em;
 	color: blue;
+}
+#header {
+	color: #AFAFAF;
+	background-color: #484848;
+}
+.action {
+	color: black;
+}
+#container > a:hover {
+	color: #FF5100;
+}
+#container > a {
+	color: #AFAFAF;
+}
+.article {
+	color: #484848;
+}
+.article-header {
+	color: #484848;
+}
+.article-link {
+	color: #484848;
+}
+.article-content {
+	color: #484848;
 }

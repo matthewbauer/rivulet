@@ -157,6 +157,15 @@ $.extend
 			processData: false
 			async: false
 
+Array.prototype.remove = (from, to) ->
+	rest = this.slice((to || from) + 1 || this.length)
+	this.length = from < 0 ? this.length + from : from
+	this.push.apply this, rest
+
+Storage.prototype.setObj = (key, obj) -> @setItem(key, JSON.stringify(obj))
+
+Storage.prototype.getObj = (key) -> JSON.parse(@getItem(key))
+
 show = (element) ->
 	$.getJSON '/article?id=' + encodeURIComponent(element.attr('id'))
 	element.children('.article-content').slideToggle()
@@ -202,7 +211,7 @@ addArticle = (data) ->
 						click (event) ->
 							event.preventDefault()
 							#if event.ctrlKey
-							window.open $('.current').children('.go').attr('href'), '_blank'
+							window.open $('.current').children('.article-header').children('.article-link').attr('href'), '_blank'
 							#else
 							#show($(this).parent().parent())
 							false
@@ -233,8 +242,8 @@ makeCurrent = (articles, current) ->
 	if $('.current').index() is 0
 		$('#prev').hide()
 	else
-		$('#prev').css('display', 'block')
-	$('body').scrollTo($('.current').offset().top) if $('.current').exists()
+		$('#prev').css 'display', 'block'
+	$('body').scrollTo $('.current').offset().top if $('.current').exists()
 
 makeArticle = (articles) ->
 	for article in articles
@@ -242,7 +251,9 @@ makeArticle = (articles) ->
 
 nextArticle = (count, timeout, fun, current) ->
 	$.getJSON('/article?output=json&count=' + count, (data) ->
-		if data['URL']?
+		if data['URL'] is '/feed'
+			window.open '/feed'
+		else if data['URL']?
 			timeout *= 2
 			setTimeout nextArticle, timeout, count, timeout, fun, current
 		else
@@ -257,8 +268,8 @@ nextArticle = (count, timeout, fun, current) ->
 			else
 				localArticles = localStorage.getObj('articles')
 				localArticles = localArticles.concat(data.Articles)
-				localStorage.setObj('articles', localArticles)
-				fun(newarticles, current)
+				localStorage.setObj 'articles', localArticles
+				fun newarticles, current
 #			$('#next').hide()
 #			$('.current').
 #				css({position: 'fixed', top: $(document).height(), left: $('#articles').offset().left}).
@@ -292,7 +303,7 @@ next = ->
 				$('#prev').hide()
 			else
 				$('#prev').css('display', 'block')
-			$('body').scrollTo($('.current').offset().top) if $('.current').exists()
+			$('body').scrollTo $('.current').offset().top if $('.current').exists()
 		else
 			nextArticle COUNT, TIMEOUT, makeCurrent, current, index
 		setTimeout nextArticle, TIMEOUT, COUNT, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() / 2
@@ -325,26 +336,22 @@ prev = ->
 		if index - LIST is 0
 			$('#prev').hide()
 		else
-			$('#prev').css('display', 'block')
+			$('#prev').css 'display', 'block'
 #			$('#next').hide()
-		$('body').scrollTo($('.current').offset().top) if $('.current').exists()
-
-Storage.prototype.setObj = (key, obj) -> @setItem(key, JSON.stringify(obj))
-
-Storage.prototype.getObj = (key) -> JSON.parse(@getItem(key))
+		$('body').scrollTo $('.current').offset().top if $('.current').exists()
 
 markAsRead = (elements) ->
-	localArticles = localStorage.getObj('articles')
+	localArticles = localStorage.getObj 'articles'
 	elements.each ->
 		$(this).
 			hide().
 			removeClass('unread').
 			addClass('read')
 		for article, i in localArticles
-			if article['ID'] is $(this).attr('id')
-				localArticles.remove(i)
+			if article['ID'] is $(this).attr 'id'
+				localArticles.remove i
 				break
-	localStorage.setObj('articles', localArticles)
+	localStorage.setObj 'articles', localArticles
 
 addFeed = (url) ->
 	data = Feeds: [
@@ -364,26 +371,24 @@ removeFeed = (url) ->
 	$(document.getElementById(url)).remove()
 	location.reload()
 
-Array.prototype.remove = (from, to) ->
-	rest = this.slice((to || from) + 1 || this.length)
-	this.length = from < 0 ? this.length + from : from
-	return this.push.apply(this, rest)
-
 $ ->
 	$('<section/>').
 		attr('id', 'articles').
 		insertBefore('#next') if not $('#articles').exists()
 
-	localArticles = localStorage.getObj('articles')
+	localArticles = localStorage.getObj 'articles'
 	if localArticles? and localArticles.length > 0
 		articles = []
 		for article in localArticles
-			articles.push(addArticle(article))
+			articles.push addArticle(article)
 	else
-		localStorage.setObj('articles', [])
+		localStorage.setObj 'articles', []
 
 	$('#next').show()
-	next() if not $('.unread').exists()
+	if not $('.unread').exists()
+		next()
+	else
+		$('body').scrollTo $('.current').offset().top if $('.current').exists()
 
 	$(window).keyup (event) ->
 		switch event.which
@@ -402,15 +407,15 @@ $ ->
 			when KeyEvent.DOM_VK_RIGHT, KeyEvent.DOM_VK_NUMPAD5, KeyEvent.DOM_VK_ENTER, KeyEvent.DOM_VK_RETURN
 				event.preventDefault()
 				if event.shiftKey
-					window.open $('.current').children('.go').attr('href'), '_blank'
+					window.open $('.current').children('.article-header').children('.article-link').attr('href'), '_blank'
 				else
 					if $('.current').children('.article-content').is(':visible')
-						window.open $('.current').children('.go').attr('href'), '_blank'
+						window.open $('.current').children('.article-header').children('.article-link').attr('href'), '_blank'
 					else
-						show($('.current'))
+						show $('.current')
 			when KeyEvent.DOM_VK_LEFT, KeyEvent.DOM_VK_NUMPAD6
 				event.preventDefault()
-				hide($('.current')) if $('.current').children('.article-content').is(':visible')
+				hide $('.current') if $('.current').children('.article-content').is ':visible'
 			else
 				return true
 		return false

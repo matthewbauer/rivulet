@@ -1,5 +1,5 @@
 application: myrivulet
-version: 97
+version: 100
 runtime: go
 api_version: go1
 

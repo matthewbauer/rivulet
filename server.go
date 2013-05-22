@@ -37,7 +37,7 @@ var templates *template.Template
 
 func init() {
 	http.HandleFunc("/", server)
-	templates = template.Must(template.ParseFiles("api.html", "about.html", "articles.html", "feeds.html", "article.html", "head.html", "header.html", "toolbar.html", "user.html"))
+	templates = template.Must(template.ParseFiles("api.html", "about.html", "articles.html", "feeds.html", "head.html", "header.html", "toolbar.html", "user.html"))
 }
 
 type Data interface {
@@ -205,7 +205,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 }
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	return article(context, user, request, DEFAULTCOUNT)
+	return article(context, user, request, 0)
 }
 
 func offlineGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {

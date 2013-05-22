@@ -1,5 +1,6 @@
 CACHE MANIFEST
-#97
+
+#100
 
 NETWORK:
 /article
@@ -8,21 +9,3 @@ NETWORK:
 
 FALLBACK:
 / /offline
-
-CACHE:
-/backbone.css
-/default.css
-/feed.css
-/main.js
-/jquery-2.0.0.min.js
-/icon16.png
-/icon24.png
-/icon32.png
-/icon57.png
-/icon64.png
-/icon72.png
-/icon96.png
-/icon114.png
-/icon128.png
-/icon256.png
-/icon.svg

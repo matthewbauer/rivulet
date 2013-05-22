@@ -1,4 +1,4 @@
 #!/bin/sh
 
 appcfg-go --oauth2 update .
-appcfg-go --oauth2 set_default_version .
+#appcfg-go --oauth2 set_default_version .
