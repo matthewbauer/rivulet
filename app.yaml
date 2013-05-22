@@ -1,7 +1,7 @@
 application: myrivulet
-version: 105
+version: 106
 runtime: go
-api_version: go1
+api_version: go1.1beta
 
 handlers:
 - url: /(.*\.(css|json|svg|appcache|gif|png|jpg|js|ico))

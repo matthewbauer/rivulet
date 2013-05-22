@@ -13,8 +13,8 @@
 		{{range .}}
 		<article class='article static unread current' id='{{.ID}}'>
 			<span class='actions'>
-				<a class='go action' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}&action=go'>→</a>
 				<a class='star action' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}&action=star'>☆</a>
+				<a class='go action' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}&action=go'>→</a>
 			</span>
 			<header class='article-header'>
 				<a class='article-link' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}'>{{.Title}}</a>

@@ -69,7 +69,8 @@ var handlers = map[string]map[string]MethodHandler{
 		"POST": feedPOST,
 	},
 	"/user": {
-		"GET": userGET,
+		"GET":  userGET,
+		"POST": userPOST,
 	},
 	"/about": {
 		"GET": aboutGET,

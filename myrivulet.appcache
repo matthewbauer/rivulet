@@ -1,7 +1,8 @@
 CACHE MANIFEST
 
-#105.1
+#106
 
+CACHE:
 /jquery-2.0.0.min.js
 /script.js
 /style.css

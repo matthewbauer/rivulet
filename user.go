@@ -226,6 +226,10 @@ func userGET(context appengine.Context, user *user.User, request *http.Request) 
 	return userdata, nil
 }
 
+func userPOST(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	return
+}
+
 func getUserFeedList(context appengine.Context, user string) (feeds []FeedCache, err error) {
 	var userdata UserData
 	_, userdata, err = mustGetUserData(context, user)
