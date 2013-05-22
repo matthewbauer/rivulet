@@ -55,6 +55,7 @@ type RSSItem struct {
 	Enclosure   RSSEnclosure `xml:"enclosure"`
 	Guid        string       `xml:"guid"`
 	PubDate     string       `xml:"pubDate"`
+	DCDate      string       `xml:"date"`
 	Source      RSSSource    `xml:"source"`
 	Content     string       `xml:"encoded"`
 }

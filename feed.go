@@ -130,6 +130,9 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 			}
 			_, err = memcache.Gob.Get(context, item.Guid, nil)
 			if err == memcache.ErrCacheMiss {
+				if item.DCDate != "" {
+					item.PubDate = item.DCDate
+				}
 				date, err = getDate(item.PubDate)
 				if err != nil {
 					printError(context, fmt.Errorf("rss feed %v has dates that look like %v", channel.Link, item.PubDate), url)

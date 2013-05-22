@@ -105,7 +105,7 @@ a:hover {
 	margin-left: 2em;
 }
 .actions {
-	display: none;
+	font-size: .5em;
 	float: right;
 }
 #tag {

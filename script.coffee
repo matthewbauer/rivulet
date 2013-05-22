@@ -210,10 +210,7 @@ addArticle = (data) ->
 						addClass('article-link').
 						click (event) ->
 							event.preventDefault()
-							#if event.ctrlKey
 							window.open $('.current').children('.article-header').children('.article-link').attr('href'), '_blank'
-							#else
-							#show($(this).parent().parent())
 							false
 				)
 		).
@@ -251,6 +248,7 @@ makeArticle = (articles) ->
 
 nextArticle = (count, timeout, fun, current) ->
 	$.getJSON('/article?output=json&count=' + count, (data) ->
+		console.log 'fetching ' + count + ' articles'
 		if data['URL'] is '/feed'
 			fun [addArticle {'Title': 'No more articles', 'URL': '/feed'}], current
 		else if data['URL']?
@@ -270,13 +268,6 @@ nextArticle = (count, timeout, fun, current) ->
 				localArticles = localArticles.concat(data.Articles)
 				localStorage.setObj 'articles', localArticles
 				fun newarticles, current
-#			$('#next').hide()
-#			$('.current').
-#				css({position: 'fixed', top: $(document).height(), left: $('#articles').offset().left}).
-#				show().
-#				animate {top: $('#articles').offset().top}, ->
-#								$(this).css({position: 'static'})
-#								$('#next').show()
 	).
 		fail -> setTimeout nextArticle, timeout, count, timeout, fun, current
 
@@ -293,8 +284,8 @@ next = ->
 			index = $('.unread').first().index()
 			if index is -1
 				index = $('.read').last().index()
-				if index is -1
-					index = 0
+			else if index is 0
+				index = -1
 		if index + LIST < $('#articles').children().length
 			$('#articles').children().slice(index + 1, index + LIST + 1).addClass('current').show()
 			removeCurrent current
@@ -317,27 +308,10 @@ prev = ->
 			markAsRead $('.current')
 			$('.current').removeClass 'current'
 			$('#articles').children().slice(index - LIST, index).addClass('current').show()
-#		$('.current').
-#			show().
-#			css({position: 'fixed'}).
-#			animate {top: $(document).height(), left: $('#articles').offset().left}, ->
-#				$(this).css({position: 'static'})
-#				$('#next').show()
-#				$('#prev').hide()
-#					css({position: 'fixed', top: 0, left: $('#articles').offset().left}).
-#					animate {top: $('#articles').offset().top}, ->
-#						$(this).css({position: 'static'}).
-#							addClass('current').show()
-#						if $('.current').first().index() < LIST
-#							$('#prev').hide()
-#						else
-#							$('#prev').show()
-#				$('#next').show()
 		if index - LIST is 0
 			$('#prev').hide()
 		else
 			$('#prev').css 'display', 'block'
-#			$('#next').hide()
 		$('body').scrollTo $('.current').offset().top if $('.current').exists()
 
 markAsRead = (elements) ->
