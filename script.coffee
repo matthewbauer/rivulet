@@ -252,7 +252,7 @@ makeArticle = (articles) ->
 nextArticle = (count, timeout, fun, current) ->
 	$.getJSON('/article?output=json&count=' + count, (data) ->
 		if data['URL'] is '/feed'
-			window.location = '/feed'
+			fun [addArticle {'Title': 'No more articles', 'URL': '/feed'}], current
 		else if data['URL']?
 			timeout *= 2
 			setTimeout nextArticle, timeout, count, timeout, fun, current
@@ -371,10 +371,9 @@ removeFeed = (url) ->
 	$(document.getElementById(url)).remove()
 	location.reload()
 
-$ ->
-	$('<section/>').
-		attr('id', 'articles').
-		insertBefore('#next') if not $('#articles').exists()
+offlineSetup = ->
+	appCache = window.applicationCache
+	localStorage = window.localStorage
 
 	localArticles = localStorage.getObj 'articles'
 	if localArticles? and localArticles.length > 0
@@ -385,8 +384,15 @@ $ ->
 	else
 		localStorage.setObj 'articles', []
 
+$ ->
+	$('<section/>').
+		attr('id', 'articles').
+		insertBefore('#next') if not $('#articles').exists()
+
+	offlineSetup()
+
 	$('#next').show()
-	if not $('.unread').exists()
+	if not $('.current').exists()
 		next()
 	else
 		$('body').scrollTo $('.current').offset().top if $('.current').exists()

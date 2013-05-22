@@ -6,38 +6,38 @@
 <body>
 {{template "header.html" .}}
 <div id='container'>
-	<div class='content' id='container-content'>
-		{{with .SuggestedFeeds}}
-		<div id='suggested'>
-			<h2>Suggested</h2>
-			<ul>
-				{{range .}}
-				<li class='feed' id='{{.URL}}'>
-					<a class='subscribe' href='/feed?subscribe=1&url={{.URL}}'>+</a>
-					<a class='feed-link' href='{{.URL}}'>{{.Title}}</a>
-				</li>
-				{{end}}
-			</ul>
-			<form id='addfeed' action='/feed' method='post'>
-				<input type='url' name='url'/>
-				<input type='submit' value='subscribe'/>
-			</form>
-		</div>
-		{{end}}
-		{{with .Feeds}}
-		<div id='feeds'>
-			<h2>Subscribed</h2>
-			<ul id='feeds'>
-				{{range .}}
-				<li class='feed' id='{{.URL}}'>
-					<a class='unsubscribe' href='/feed?unsubscribe=1&url={{.URL}}'>-</a>
-					<a class='feed-link' href='{{.URL}}'>{{.Title}}</a>
-				</li>
-				{{end}}
-			</ul>
-		</div>
-		{{end}}
+<div class='content' id='container-content'>
+	{{with .SuggestedFeeds}}
+	<div id='suggested'>
+		<h2>Suggested</h2>
+		<ul>
+			{{range .}}
+			<li class='feed' id='{{.URL}}'>
+				<a class='subscribe' href='/feed?subscribe=1&url={{.URL}}'>+</a>
+				<a class='feed-link' href='{{.URL}}'>{{.Title}}</a>
+			</li>
+			{{end}}
+		</ul>
+		<form id='addfeed' action='/feed' method='post'>
+			<input type='url' name='url'/>
+			<input type='submit' value='subscribe'/>
+		</form>
 	</div>
+	{{end}}
+	{{with .Feeds}}
+	<div id='feeds'>
+		<h2>Subscribed</h2>
+		<ul id='feeds'>
+			{{range .}}
+			<li class='feed' id='{{.URL}}'>
+				<a class='unsubscribe' href='/feed?unsubscribe=1&url={{.URL}}'>-</a>
+				<a class='feed-link' href='{{.URL}}'>{{.Title}}</a>
+			</li>
+			{{end}}
+		</ul>
+	</div>
+	{{end}}
+</div>
 </div>
 </body>
 </html>

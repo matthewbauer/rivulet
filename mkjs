@@ -1,4 +1,4 @@
 #!/bin/sh
 
-coffee --compile --output static .
+coffee --compile .
 

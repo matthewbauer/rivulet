@@ -1,6 +1,12 @@
 CACHE MANIFEST
 
-#101
+#102
+
+/jquery-2.0.0.min.js
+/script.js
+/style.css
+/logo.png
+/favicon.ico
 
 NETWORK:
 /article

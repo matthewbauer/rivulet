@@ -128,6 +128,11 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
+		URL:     "http://feeds.feedburner.com/alistapart/main",
+		Title:   "A List Apart",
+		Default: true,
+	},
+	Feed{
 		URL:     "http://feeds.feedburner.com/ommalik",
 		Title:   "GigaOM",
 		Default: true,

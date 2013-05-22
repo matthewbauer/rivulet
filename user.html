@@ -6,30 +6,30 @@
 <body>
 {{template "header.html" .}}
 <div id='container'>
-	<div class='content' id='container-content'>
-		<h1>{{.String}}</h1>
-		{{with .Feeds}}
-		<ul>
-			{{range .}}
-			<li>{{.}}</li>
-			{{end}}
-		</ul>
+<div class='content' id='container-content'>
+	<h1>{{.String}}</h1>
+	{{with .Feeds}}
+	<ul>
+		{{range .}}
+		<li>{{.}}</li>
 		{{end}}
-		{{with .Articles}}
-		<ul>
-			{{range .}}
-			<li>{{.ID}}</li>
-			{{end}}
-		</ul>
+	</ul>
+	{{end}}
+	{{with .Articles}}
+	<ul>
+		{{range .}}
+		<li>{{.ID}}</li>
 		{{end}}
-		{{with .Prefs}}
-		<ul>
-			{{range .}}
-			<li>{{.Field}}/{{.Value}}={{.Score}}</li>
-			{{end}}
-		</ul>
+	</ul>
+	{{end}}
+	{{with .Prefs}}
+	<ul>
+		{{range .}}
+		<li>{{.Field}}/{{.Value}}={{.Score}}</li>
 		{{end}}
-	</div>
+	</ul>
+	{{end}}
+</div>
 </div>
 </body>
 </html>

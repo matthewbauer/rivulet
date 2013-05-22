@@ -29,7 +29,7 @@ type ArticleData struct {
 	Articles []ArticleCache
 }
 
-const MAXARTICLES = 100
+const MAXARTICLES = 200
 const DEFAULTCOUNT = 1
 
 func (ArticleData) Template() string { return "articles.html" }
