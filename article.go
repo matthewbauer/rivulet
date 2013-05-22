@@ -161,7 +161,7 @@ func getArticleById(articles []Article, id string) (article Article) {
 	return
 }
 
-func articleGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+func articleGo(context appengine.Context, request *http.Request) (data Data, err error) {
 	id := request.FormValue("id")
 	if id != "" {
 		var userkey *datastore.Key
@@ -182,6 +182,25 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 		var redirect Redirect
 		redirect.URL = url
 		return redirect, nil
+	}
+	return
+}
+
+func articleStar(context appengine.Context, request *http.Request) (data Data, err error) {
+	printInfo(context, "article star")
+	return
+}
+
+func articleGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	action := request.FormValue("action")
+	if action != "" {
+		switch action {
+		case "go":
+			return articleGo(context, request)
+		case "star":
+			return articleStar(context, request)
+		}
+		return
 	}
 	countStr := request.FormValue("count")
 	count := 0
