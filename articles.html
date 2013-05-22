@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<head manifest='cache.manifest'>
+<head manifest='myrivulet.appcache'>
 {{template "head.html"}}
 </head>
 <body>
@@ -11,15 +11,22 @@
 		{{with .Articles}}
 		<section id='articles'>
 			{{range .}}
-			<article class='article static unread current' id='{{.ID}}'>
-				<a class='go action' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}'>→</a>
-				<header class='article-header'>
-					<a class='article-link' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}'>{{.Title}}</a>
-				</header>
-				<div class='article-content'>{{.Summary}}</div>
-			</article>
+				<article class='article static unread current' id='{{.ID}}'>
+					<span class='actions'>
+						<a class='go action' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}&action=go'>→</a>
+						<a class='star action' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}&action=star'>☆</a>
+					</span>
+					<header class='article-header'>
+						<a class='article-link' target='_blank' href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}'>{{.Title}}</a>
+					</header>
+					<div class='article-content'>{{.Summary}}</div>
+				</article>
 			{{end}}
 		</section>
+		{{else}}
+		<noscript>
+			Article could not be loaded, hit <a href='/article'>next</a> to continue
+		</noscript>
 		{{end}}
 		<a id='next' class='action' href='/article'>↓</a>
 	</div>

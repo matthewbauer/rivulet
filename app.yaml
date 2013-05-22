@@ -1,5 +1,5 @@
 application: myrivulet
-version: 96
+version: 97
 runtime: go
 api_version: go1
 
@@ -7,15 +7,19 @@ handlers:
 - url: /jquery-2.0.0.min.js
   static_files: jquery-2.0.0.min.js
   upload: jquery-2.0.0.min.js
+
 - url: /(.*\.(gif|png|jpg|js|ico))
   static_files: static/\1
   upload: static/(.*)
+
 - url: /(.*\.(css|json|svg|appcache))
   static_files: \1
   upload: (.*\.(css|json|coffee|svg|appcache))
+
 - url: /(.*\.(coffee))
   static_files: \1
   mime_type: text/x-coffeescript
   upload: (.*\.(coffee))
+
 - url: /.*
   script: _go_app

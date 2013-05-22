@@ -171,12 +171,24 @@ addArticle = (data) ->
 		attr('id', data['ID']).
 		hide().
 		append(
-			$('<a/>').
-				addClass('go').
-				addClass('action').
-				attr('target', '_blank').
-				attr('href', '/article?url=' + data['URL'] + '&id=' + data['ID']).
-				html('▶')
+			$('<span/>').
+				addClass('actions').
+				append(
+					$('<a/>').
+						addClass('go').
+						addClass('action').
+						attr('target', '_blank').
+						attr('href', '/article?action=go&url=' + data['URL'] + '&id=' + data['ID']).
+						html('▶')
+				).
+				append(
+					$('<a/>').
+						addClass('star').
+						addClass('action').
+						attr('target', '_blank').
+						attr('href', '/article?action=star&url=' + data['URL'] + '&id=' + data['ID']).
+						html('☆')
+				)
 		).
 		append(
 			$('<header/>').
@@ -263,7 +275,6 @@ removeCurrent = (current) ->
 
 next = ->
 	if $('#next').is ':visible'
-		console.log 'next'
 		$('#next').hide()
 		current = $('.current')
 		index = current.index()
@@ -295,7 +306,6 @@ prev = ->
 			markAsRead $('.current')
 			$('.current').removeClass 'current'
 			$('#articles').children().slice(index - LIST, index).addClass('current').show()
-			$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 #		$('.current').
 #			show().
 #			css({position: 'fixed'}).
@@ -317,6 +327,7 @@ prev = ->
 		else
 			$('#prev').css('display', 'block')
 #			$('#next').hide()
+		$('body').scrollTo($('.current').offset().top) if $('.current').exists()
 
 Storage.prototype.setObj = (key, obj) -> @setItem(key, JSON.stringify(obj))
 

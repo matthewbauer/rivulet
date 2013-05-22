@@ -3,10 +3,8 @@ package main
 // many of these are pulled directly from Technorati's Top 100 http://technorati.com/blogs/top100/
 var builtinFeeds = []Feed{
 	Feed{
-		//URL:   "http://www.reddit.com/.rss",
-		URL: "http://inline-reddit.com/feed/",
-		//Title: "Reddit",
-		Title:   "Reddit Inline",
+		URL:     "http://www.reddit.com/.rss",
+		Title:   "Reddit",
 		Default: false,
 	},
 	Feed{

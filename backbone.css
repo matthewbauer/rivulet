@@ -72,9 +72,6 @@ a:hover {
 	text-align: center;
 	font-size: 4em;
 }
-.go {
-	display: none;
-}
 .read {
 	display: none;
 }
@@ -110,7 +107,8 @@ a:hover {
 }
 #addfeed {
 }
-.go {
+.actions {
+	display: none;
 	float: right;
 }
 #tag {

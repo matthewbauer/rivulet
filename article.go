@@ -137,7 +137,15 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 			printError(context, err, article.ID)
 			continue
 		}
-		articleData.Articles = append(articleData.Articles, articleCache)
+		if articleCache.URL != "" {
+			articleData.Articles = append(articleData.Articles, articleCache)
+		}
+	}
+	if count > len(articleData.Articles) {
+		refreshDelay.Call(context, "")
+		var redirect Redirect
+		redirect.URL = "/feed"
+		return redirect, nil
 	}
 	userdata.Articles = userdata.Articles[count:]
 	_, err = putUserData(context, userkey, userdata)

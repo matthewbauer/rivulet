@@ -1,7 +1,7 @@
 CACHE MANIFEST
-#96
-NETWORK:
+#97
 
+NETWORK:
 /article
 /user
 /feed
@@ -26,4 +26,3 @@ CACHE:
 /icon128.png
 /icon256.png
 /icon.svg
-

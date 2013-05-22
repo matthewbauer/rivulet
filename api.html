@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<head>
+<head manifest='myrivulet.appcache'>
 {{template "head.html"}}
 </head>
 <body>
@@ -8,19 +8,28 @@
 <div id='container'>
 <div class='content' id='container-content'>
 	<h1>API info</h1>
-	<div>
-		Some basic info on the API for developers. This is a full API that the web interfaces uses directly.
-	</div>
-	<div>For an example app, look through the Web app's Javascript: <a href='/main.coffee'>main.coffee</a></div>
+	<p>Some basic info on the API for developers. This is a full API that the web interfaces uses directly.</p>
+	<p>For an example app, look through the Web app's Javascript: <a href='/main.coffee'>main.coffee</a></p>
+	<p>By default, request will respond in HTML. Set output=json for JSON output.</p>
+	<p>You must use OAuth to communicate with app.</p>
 	<h2>/article</h2>
+	<p>All requests related to a news article.</p>
 	<h3>GET</h3>
+	<p>Requests a new article. GET automatically removes the article from the user's article list.</p>
 	<h3>POST</h3>
+	<p>Modify an article. This is used primarily for marking articles as read.</p>
 	<h2>/feed</h2>
+	<p>All requests related to feeds.</p>
 	<h3>GET</h3>
+	<p>Get info on a feed. Basic stuff like last update, title, url, etc.</p>
 	<h3>POST</h3>
+	<p>Madify a feed. Primarily used for subscribing and unsubscribing to feeds.</p>
 	<h2>/user</h2>
+	<p>Requests related to users.</p>
 	<h3>GET</h3>
+	<p>Get info on user such as user name, subscribed feeds, article list, etc.</p>
 	<h3>POST</h3>
+	<p>Change info on user.</p>
 </div>
 </div>
 </body>
