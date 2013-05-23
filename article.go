@@ -161,7 +161,7 @@ func getArticleById(articles []Article, id string) (article Article) {
 	return
 }
 
-func articleGo(context appengine.Context, request *http.Request) (data Data, err error) {
+func articleGo(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	id := request.FormValue("id")
 	if id != "" {
 		var userkey *datastore.Key
@@ -196,7 +196,7 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 	if action != "" {
 		switch action {
 		case "go":
-			return articleGo(context, request)
+			return articleGo(context, user, request)
 		case "star":
 			return articleStar(context, request)
 		}

@@ -185,23 +185,22 @@ addArticle = (data) ->
 				append(
 					$('<a/>').
 						addClass('star').
+						addClass('icon-star').
 						addClass('action').
 						attr('target', '_blank').
 						attr('href', '/article?action=star&url=' + data['URL'] + '&id=' + data['ID']).
-						html('☆').
 						click (event) ->
 							event.preventDefault()
-							$(this).html('★')
 							$.getJSON '/article?id=' + encodeURIComponent(element.attr('id'))
 							false
 				).
 				append(
 					$('<a/>').
 						addClass('go').
+						addClass('icon-external-action').
 						addClass('action').
 						attr('target', '_blank').
-						attr('href', '/article?action=go&url=' + data['URL'] + '&id=' + data['ID']).
-						html('▶')
+						attr('href', '/article?action=go&url=' + data['URL'] + '&id=' + data['ID'])
 				)
 		).
 		append(
