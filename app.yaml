@@ -1,17 +1,18 @@
 application: myrivulet
-version: 112
+version: 122
 runtime: go
 api_version: go1
 
 handlers:
-- url: /(.*\.(css|json|svg|appcache|gif|png|jpg|js|ico))
-  static_files: \1
-  upload: (.*\.(css|json|svg|appcache|gif|png|jpg|js|ico))
+- url: /myrivulet.appcache
+  static_files: myrivulet.appcache
+  upload: myrivulet.appcache
 
-- url: /(.*\.(coffee))
-  static_files: \1
-  mime_type: text/x-coffeescript
-  upload: (.*\.(coffee))
+- url: /font-awesome
+  static_dir: font-awesome
+
+- url: /static
+  static_dir: static
 
 - url: /.*
   script: _go_app

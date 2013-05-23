@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./mkjs
+coffee --compile --output static script.coffee

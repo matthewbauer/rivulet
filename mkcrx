@@ -1,3 +1,0 @@
-#!/bin/sh
-
-crxmake --packe-extension=crx --extension-output=myrivulet.crx

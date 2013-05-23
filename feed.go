@@ -147,7 +147,7 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 				article := ArticleCache{
 					URL:     item.Link,
 					Title:   item.Title,
-					Summary: content,
+					Content: content,
 					ID:      item.Guid,
 					Date:    date.Unix(),
 					Feed:    feedCache.Title,
@@ -201,7 +201,7 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 			article := ArticleCache{
 				URL:     url,
 				Title:   item.Title,
-				Summary: item.Content.Text,
+				Content: item.Content.Text,
 				ID:      item.Id,
 				Date:    date.Unix(),
 				Feed:    feedCache.Title,

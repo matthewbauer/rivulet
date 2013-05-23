@@ -17,7 +17,7 @@ import (
 
 type ArticleCache struct {
 	Title   string
-	Summary string
+	Content string
 	URL     string
 	ID      string
 	Feed    string

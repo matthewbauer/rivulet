@@ -1,7 +1,0 @@
-#!/bin/sh
-
-cloc .
-
-coffeelint -f config.json *.coffee
-#golint *.go
-
