@@ -1,0 +1,25 @@
+CACHE MANIFEST
+
+#141
+
+NETWORK:
+*
+
+CACHE:
+/static/jquery.min.js
+/static/script.js
+/static/style.css
+/static/logo.png
+/static/favicon.ico
+/font-awesome/css/font-awesome.min.css
+/font-awesome/font/FontAwesome.otf
+/font-awesome/font/fontawesome-webfont.eot
+/font-awesome/font/fontawesome-webfont.svg
+/font-awesome/font/fontawesome-webfont.ttf
+/font-awesome/font/fontawesome-webfont.woff
+
+FALLBACK:
+/ /offline
+
+SETTINGS:
+fast

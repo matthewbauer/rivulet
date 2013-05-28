@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /article
+Disallow: /feed
+Disallow: /user
+Disallow: /refresh
+Allow: /offline
+Allow: /api
+Allow: /about
