@@ -29,7 +29,7 @@ type ArticleData struct {
 	Articles []ArticleCache
 }
 
-const MAXARTICLES = 200
+const MAXARTICLES = 500
 const DEFAULTCOUNT = 1
 
 func (ArticleData) Template() string { return "articles.html" }
@@ -105,6 +105,9 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 }
 
 func article(context appengine.Context, user *user.User, request *http.Request, count int) (data Data, err error) {
+	if count == 0 {
+		return ArticleData{}, nil
+	}
 	var userdata UserData
 	var userkey *datastore.Key
 	userkey, userdata, err = mustGetUserData(context, user.String())

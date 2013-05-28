@@ -1,3 +1,5 @@
 #!/bin/sh
 
-coffee --compile --output static script.coffee
+coffee --compile --lint --output static script.coffee
+#closure static/script.js > static/script.js
+

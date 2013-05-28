@@ -121,8 +121,11 @@ LIST = 1
 COUNT = 10
 TIMEOUT = 64
 
+online = true
+
 $.ajaxSetup
 	async: false
+	cache: false
 
 $.fn.exists = -> @length > 0
 
@@ -166,12 +169,22 @@ Storage.prototype.setObj = (key, obj) -> @setItem(key, JSON.stringify(obj))
 
 Storage.prototype.getObj = (key) -> JSON.parse(@getItem(key))
 
+parseURL = (url) ->
+	a = document.createElement('a')
+	a.href = url
+	host: a.host
+	hostname: a.hostname
+	pathname: a.pathname
+	port: a.port
+	protocol: a.protocol
+	search: a.search
+	hash: a.hash
+
 show = (element) ->
 	$.getJSON '/article?id=' + encodeURIComponent(element.attr('id'))
 	element.children('.article-content').slideToggle()
 
 hide = (element) ->
-	element.children('.article-content').slideToggle()
 
 addArticle = (data) ->
 	$('<article/>').
@@ -225,6 +238,22 @@ addArticle = (data) ->
 				click (event) ->
 		)
 
+offlineSetup = ->
+	window.addEventListener "offline", -> online = false
+	window.addEventListener "online", -> online = true
+	online = navigator.onLine
+	window.applicationCache.addEventListener "error", -> online = false
+	applicationCache.addEventListener 'updateready', -> window.location.reload()
+
+	localArticles = localStorage.getObj 'articles'
+	if localArticles? and localArticles.length > 0
+		articles = []
+		for article in localArticles
+			articles.push addArticle(article)
+		makeArticle articles
+	else
+		localStorage.setObj 'articles', []
+
 addArticles = (object) ->
 	list = []
 	return list if not object?
@@ -234,9 +263,15 @@ addArticles = (object) ->
 		list.push element if element?
 	list
 
+makeArticle = (articles) ->
+	for article in articles
+		article.hide().appendTo '#articles'
+
 makeCurrent = (articles, current) ->
 	makeArticle articles
-	$(document.getElementById(article.attr('id'))).addClass('current').show() for article in articles.slice(0, LIST)
+	for article in articles.slick(0, LIST)
+		articleElement = document.getElementById(article.attr('id'))
+		articleElement.classList.add('current')
 	removeCurrent current
 	if $('.current').index() is 0
 		$('#prev').hide()
@@ -244,18 +279,23 @@ makeCurrent = (articles, current) ->
 		$('#prev').css 'display', 'block'
 	$('body').scrollTo $('.current').offset().top if $('.current').exists()
 
-makeArticle = (articles) ->
-	for article in articles
-		article.hide().appendTo '#articles'
-
-nextArticle = (count, timeout, fun, current) ->
-	$.getJSON('/article?output=json&count=' + count, (data) ->
-		console.log 'fetching ' + count + ' articles'
+nextArticle = (count, timeout, fun, current, errornum) ->
+	if not current?
+		current = $('.current')
+	$.getJSON '/article?output=json&count=' + count, (data) ->
+		if data.redirect
+			window.location.href = data.redirect
 		if data['URL'] is '/feed'
-			fun [addArticle {'Title': 'No more articles', 'URL': '/feed'}], current
+			if errornum < MAXERROR
+				nextArticle count, timeout, errornum + 1, fun, current
+				return
+			else
+				fun [addArticle {'Title': 'No more articles', 'URL': '/feed'}], current
+			if fun is makeCurrent
+				$('#next').hide()
 		else if data['URL']?
+			window.location = data['URL']
 			timeout *= 2
-			setTimeout nextArticle, timeout, count, timeout, fun, current
 		else
 			articles = addArticles data
 			newarticles = []
@@ -264,14 +304,11 @@ nextArticle = (count, timeout, fun, current) ->
 					newarticles.push article
 			if newarticles.length is 0
 				timeout *= 2
-				setTimeout nextArticle, timeout, count, timeout, fun, current
 			else
 				localArticles = localStorage.getObj('articles')
 				localArticles = localArticles.concat(data.Articles)
 				localStorage.setObj 'articles', localArticles
 				fun newarticles, current
-	).
-		fail -> setTimeout nextArticle, timeout, count, timeout, fun, current
 
 removeCurrent = (current) ->
 	markAsRead current
@@ -296,11 +333,15 @@ next = ->
 				$('#prev').hide()
 			else
 				$('#prev').css('display', 'block')
+			$('#next').show()
 			$('body').scrollTo $('.current').offset().top if $('.current').exists()
 		else
-			nextArticle COUNT, TIMEOUT, makeCurrent, current, index
-		setTimeout nextArticle, TIMEOUT, COUNT, TIMEOUT, makeArticle if index >= $('#articles').children().last().index() / 2
-		$('#next').show()
+			if online
+				nextArticle COUNT, TIMEOUT, 0, makeCurrent, current, index
+				$('#next').show()
+			else
+				$('#next').hide()
+		setTimeout nextArticle, TIMEOUT, COUNT, TIMEOUT, 0, makeArticle if index >= $('#articles').children().last().index() / 2
 
 prev = ->
 	if $('#prev').is ':visible'
@@ -346,21 +387,6 @@ removeFeed = (url) ->
 	$.postJSON '/feed', data
 	$(document.getElementById(url)).remove()
 	location.reload()
-
-offlineSetup = ->
-	appCache = window.applicationCache
-	localStorage = window.localStorage
-
-	applicationCache.addEventListener('updateready', -> window.location.reload())
-
-	localArticles = localStorage.getObj 'articles'
-	if localArticles? and localArticles.length > 0
-		articles = []
-		for article in localArticles
-			articles.push addArticle(article)
-		makeArticle articles
-	else
-		localStorage.setObj 'articles', []
 
 $ ->
 	$('<section/>').

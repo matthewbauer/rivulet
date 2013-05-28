@@ -37,7 +37,7 @@ var templates *template.Template
 
 func init() {
 	http.HandleFunc("/", server)
-	templates = template.Must(template.ParseFiles("api.html", "about.html", "articles.html", "feeds.html", "head.html", "header.html", "toolbar.html", "user.html"))
+	templates = template.Must(template.ParseFiles("articles.html", "feeds.html", "user.html"))
 }
 
 type Data interface {
@@ -72,20 +72,8 @@ var handlers = map[string]map[string]MethodHandler{
 		"GET":  userGET,
 		"POST": userPOST,
 	},
-	"/about": {
-		"GET": aboutGET,
-	},
-	"/api": {
-		"GET": apiGET,
-	},
 	"/": {
 		"GET": rootGET,
-	},
-	"/offline": {
-		"GET": offlineGET,
-	},
-	"/noscript": {
-		"GET": noscriptGET,
 	},
 }
 
@@ -147,7 +135,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 	u := user.Current(context)
 	if u == nil {
 		var url string
-		url, err = user.LoginURL(context, "/user?new=1")
+		url, err = user.LoginURL(context, request.URL.String())
 		if err != nil {
 			writer.WriteHeader(http.StatusForbidden)
 			fmt.Fprintf(writer, "%v: method not allowed", http.StatusForbidden)
@@ -184,57 +172,27 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusFound)
 		return
 	}
-	if output == JSON {
+	err = writeOutput(writer, data, output)
+}
+
+func writeOutput(writer http.ResponseWriter, data Data, output OUTPUT) (err error) {
+	switch output {
+	case JSON:
 		var bytes []byte
 		bytes, err = json.Marshal(data)
-		if err != nil {
-			printError(context, err, "json.Marshal")
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
-			return
-		}
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusOK)
 		writer.Write(bytes)
-	} else {
+	default:
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 		writer.WriteHeader(http.StatusOK)
 		err = templates.ExecuteTemplate(writer, data.Template(), data)
-		if err != nil {
-			return
-		}
 	}
+	return
 }
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	return article(context, user, request, 0)
-}
-
-func offlineGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	return article(context, user, request, 0)
-}
-
-func noscriptGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	return article(context, user, request, 1)
-}
-
-type Info struct {
-	TemplateName string
-}
-
-func (i Info) Template() string { return i.TemplateName }
-func (Info) Redirect() string   { return "" }
-func (Info) Send() bool         { return true }
-
-func aboutGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	var info Info
-	info.TemplateName = "about.html"
-	return info, nil
-}
-
-func apiGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	var info Info
-	info.TemplateName = "api.html"
-	return info, nil
 }
 
 func printError(context appengine.Context, err error, info string) {
