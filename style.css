@@ -1,0 +1,149 @@
+body {
+	padding: 0;
+	margin: 0;
+	-webkit-overflow-scrolling: touch;
+	color: #121F36;
+	background-color: #E8E8E8;
+	font-family: helvetica,arial,sans-serif;
+}
+a {
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+a, a:visited {
+	color: #24359E;
+}
+.content {
+	width: 61.80340%;
+	margin: 0 auto;
+}
+#header {
+	box-shadow: .5em 0 .5em .5em #ccc;
+	padding-top: .5em;
+	padding-bottom: .5em;
+	color: #AFAFAF;
+	background-color: #302E2E;
+}
+#logo {
+	margin-left: 20%;
+	vertical-align: middle;
+}
+#credit {
+	position: relative;
+	left: 1em;
+	text-transform: lowercase;
+	vertical-align: bottom;
+}
+a#tag {
+	font-style: italic;
+	text-decoration: bold;
+	vertical-align: bottom;
+	color: #AFAFAF;
+	margin-right: 1em;
+	margin-left: 3em;
+}
+a#tag:hover {
+}
+#toolbar {
+	padding-top: 2em;
+}
+#container-content {
+	padding-top: 1em;
+}
+a.star:hover:before,
+a.star:hover ~ a.star:before {
+	content: "\2605";
+}
+a.action, a.action:visited {
+	color: #302E2E;
+	vertical-align: middle;
+	font-size: 3em;
+	padding-left: .1em;
+	padding-right: .1em;
+	opacity: .5;
+}
+a.action:hover {
+	text-decoration: none;
+	opacity: 1;
+}
+.article {
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+.article-header {
+	font-size: 1.5em;
+}
+a.article-link, a.article-link:visited {
+	color: #484848;
+	font-weight: bold;
+}
+.article-content {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+#next {
+	display: block;
+	text-align: center;
+	font-size: 4em;
+}
+#prev {
+	display: none;
+	text-align: center;
+	font-size: 4em;
+}
+.read {
+	display: none;
+}
+.unread {
+}
+a.current {
+	display: block;
+}
+.feed {
+	list-style-type: none;
+}
+.unsubscribe {
+	font-size: 3em;
+	color: #DE0909;
+	text-align: center;
+}
+.unsubscribe:hover {
+	text-decoration: none;
+}
+.subscribe {
+	font-size: 3em;
+	color: #00B518;
+	text-align: center;
+}
+.subscribe:hover {
+	text-decoration: none;
+}
+#suggested {
+	float: right;
+	margin-left: 2em;
+}
+.actions {
+	font-size: .5em;
+	float: right;
+}
+.feed-link, .feed-link:visited {
+	font-size: 1.5em;
+	color: #24359E;
+}
+#container > a:hover {
+	color: #FF5100;
+}
+#container > a {
+	color: #AFAFAF;
+}
+.article {
+	color: #484848;
+}
+.article-header {
+	color: #484848;
+}
+.article-content {
+	color: #484848;
+}
