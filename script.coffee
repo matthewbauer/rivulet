@@ -118,8 +118,9 @@ if not KeyEvent?
 
 OK = 200
 LIST = 1
-COUNT = 10
+COUNT = 5
 TIMEOUT = 64
+MAXERROR = 3
 
 online = true
 
@@ -213,7 +214,7 @@ addArticle = (data) ->
 						addClass('icon-external-link').
 						addClass('action').
 						attr('target', '_blank').
-						attr('href', '/article?action=go&url=' + data['URL'] + '&id=' + data['ID'])
+						attr('href', data['URL'])
 				)
 		).
 		append(
@@ -239,12 +240,6 @@ addArticle = (data) ->
 		)
 
 offlineSetup = ->
-	window.addEventListener "offline", -> online = false
-	window.addEventListener "online", -> online = true
-	online = navigator.onLine
-	window.applicationCache.addEventListener "error", -> online = false
-	applicationCache.addEventListener 'updateready', -> window.location.reload()
-
 	localArticles = localStorage.getObj 'articles'
 	if localArticles? and localArticles.length > 0
 		articles = []
@@ -279,7 +274,7 @@ makeCurrent = (articles, current) ->
 		$('#prev').css 'display', 'block'
 	$('body').scrollTo $('.current').offset().top if $('.current').exists()
 
-nextArticle = (count, timeout, fun, current, errornum) ->
+nextArticle = (count, timeout, errornum, fun, current) ->
 	if not current?
 		current = $('.current')
 	$.getJSON '/article?output=json&count=' + count, (data) ->
@@ -387,6 +382,12 @@ removeFeed = (url) ->
 	$.postJSON '/feed', data
 	$(document.getElementById(url)).remove()
 	location.reload()
+
+window.addEventListener "offline", -> online = false
+window.addEventListener "online", -> online = true
+online = navigator.onLine
+window.applicationCache.addEventListener "error", -> online = false
+applicationCache.addEventListener 'updateready', -> window.location.reload()
 
 $ ->
 	$('<section/>').

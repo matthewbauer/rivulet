@@ -5,3 +5,5 @@ coffee --compile --lint --output static script.coffee
 
 lessc style.css static/style.css
 
+yuicompressor static/script.js -o static/script.js
+yuicompressor static/style.css -o static/style.css

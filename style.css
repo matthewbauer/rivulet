@@ -1,9 +1,18 @@
+@bgbody: #E8E8E8;
+@black: #121F36;
+@bgheader: #484848;
+@fgheader: #AFAFAF;
+@red: #DE0909;
+@green: #00B518;
+@feedcolor: #24359E;
+@fghover: #FF5100;
+
 body {
 	padding: 0;
 	margin: 0;
 	-webkit-overflow-scrolling: touch;
-	color: #121F36;
-	background-color: #E8E8E8;
+	color: @black;
+	background-color: @bgbody;
 	font-family: helvetica,arial,sans-serif;
 }
 a {
@@ -12,8 +21,9 @@ a {
 a:hover {
 	text-decoration: underline;
 }
+@blue: #24359E;
 a, a:visited {
-	color: #24359E;
+	color: @blue
 }
 .content {
 	width: 61.80340%;
@@ -23,8 +33,8 @@ a, a:visited {
 	box-shadow: .5em 0 .5em .5em #ccc;
 	padding-top: .5em;
 	padding-bottom: .5em;
-	color: #AFAFAF;
-	background-color: #302E2E;
+	color: @fgheader;
+	background-color: @bgheader;
 }
 #logo {
 	margin-left: 20%;
@@ -40,11 +50,10 @@ a#tag {
 	font-style: italic;
 	text-decoration: bold;
 	vertical-align: bottom;
-	color: #AFAFAF;
+	color: @fgheader;
 	margin-right: 1em;
 	margin-left: 3em;
-}
-a#tag:hover {
+	float: right;
 }
 #toolbar {
 	padding-top: 2em;
@@ -57,7 +66,7 @@ a.star:hover ~ a.star:before {
 	content: "\2605";
 }
 a.action, a.action:visited {
-	color: #302E2E;
+	color: black;
 	vertical-align: middle;
 	font-size: 3em;
 	padding-left: .1em;
@@ -106,7 +115,7 @@ a.current {
 }
 .unsubscribe {
 	font-size: 3em;
-	color: #DE0909;
+	color: @red;
 	text-align: center;
 }
 .unsubscribe:hover {
@@ -114,7 +123,7 @@ a.current {
 }
 .subscribe {
 	font-size: 3em;
-	color: #00B518;
+	color: @green;
 	text-align: center;
 }
 .subscribe:hover {
@@ -130,20 +139,20 @@ a.current {
 }
 .feed-link, .feed-link:visited {
 	font-size: 1.5em;
-	color: #24359E;
+	color: @feedcolor;
 }
 #container > a:hover {
-	color: #FF5100;
+	color: @fghover;
 }
 #container > a {
-	color: #AFAFAF;
+	color: @bgheader;
 }
 .article {
-	color: #484848;
+	color: @bgheader;
 }
 .article-header {
-	color: #484848;
+	color: @bgheader;
 }
 .article-content {
-	color: #484848;
+	color: @bgheader;
 }

@@ -32,6 +32,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 	var item *memcache.Item
 	item, err = memcache.Gob.Get(context, feed.URL, &subscription)
 	if err == memcache.ErrCacheMiss {
+		err = nil
 		subscription.URL = feed.URL
 		item = &memcache.Item{Key: feed.URL}
 	} else if err != nil {

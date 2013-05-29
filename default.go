@@ -13,11 +13,6 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
-		URL:     "http://rss.csmonitor.com/csmonitor/connectingthedots",
-		Title:   "Connecting the Dots",
-		Default: false,
-	},
-	Feed{
 		URL:     "http://feeds.gawker.com/gawker/full",
 		Title:   "Gawker",
 		Default: false,
@@ -123,13 +118,18 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
+		URL:     "http://feeds.feedburner.com/Best-Of-The-Atlantic",
+		Title:   "The Atlantic",
+		Default: false,
+	},
+	Feed{
 		URL:     "http://feeds.feedburner.com/Asymco",
 		Title:   "Asymco",
 		Default: false,
 	},
 	Feed{
-		URL:     "http://feeds.feedburner.com/Best-Of-The-Atlantic",
-		Title:   "The Atlantic",
+		URL:     "http://rss.csmonitor.com/csmonitor/connectingthedots",
+		Title:   "Connecting the Dots",
 		Default: true,
 	},
 	Feed{

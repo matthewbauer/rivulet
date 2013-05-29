@@ -1,5 +1,5 @@
 application: myrivulet
-version: 142
+version: 149
 runtime: go
 api_version: go1
 
@@ -35,5 +35,21 @@ handlers:
 - url: /static
   static_dir: static
 
-- url: /.*
+- url: /article
+  script: _go_app
+  login: required
+
+- url: /feed
+  script: _go_app
+  login: required
+
+- url: /user
+  script: _go_app
+  login: required
+
+- url: /refresh
+  script: _go_app
+  login: admin
+
+- url: /
   script: _go_app
