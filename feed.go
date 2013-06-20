@@ -130,6 +130,7 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 			}
 			_, err = memcache.Gob.Get(context, item.Guid, nil)
 			if err == memcache.ErrCacheMiss {
+				err = nil
 				if item.DCDate != "" {
 					item.PubDate = item.DCDate
 				}
@@ -181,6 +182,7 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 		}
 		_, err = memcache.Gob.Get(context, item.Id, nil)
 		if err == memcache.ErrCacheMiss {
+			err = nil
 			date, err = getDate(item.Updated)
 			if err != nil {
 				printError(context, fmt.Errorf("atom feed %v has dates that look like %v", feed.Link[0].Href, item.Updated), url)

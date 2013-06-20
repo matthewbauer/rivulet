@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#149
+#151
 
 NETWORK:
 *
@@ -9,7 +9,7 @@ CACHE:
 /static/jquery.min.js
 /static/script.js
 /static/style.css
-/logo.png
+/static/logo.png
 /favicon.ico
 /font-awesome/css/font-awesome.min.css
 /font-awesome/font/FontAwesome.otf

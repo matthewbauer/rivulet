@@ -156,3 +156,6 @@ a.current {
 .article-content {
 	color: @bgheader;
 }
+.mf-viral {
+	display: none;
+}

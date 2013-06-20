@@ -101,9 +101,6 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 		subscription.Update = now.Add(duration).Unix()
 		item.Object = subscription
 		err = memcache.Gob.Set(context, item)
-		if err != nil {
-			return
-		}
 	}
 	return
 }

@@ -126,6 +126,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	for _, article := range userdata.Articles[0:count] {
 		_, err = memcache.Gob.Get(context, article.ID, &articleCache)
 		if err == memcache.ErrCacheMiss {
+			err = nil
 			feedCache, err = getSubscriptionURL(context, article.Feed)
 			if err != nil {
 				printError(context, err, article.Feed)

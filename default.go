@@ -48,6 +48,11 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
+		URL:     "http://www.guardian.co.uk/world/us-news-blog/rss",
+		Title:   "The Guardian US News",
+		Default: false,
+	},
+	Feed{
 		URL:     "http://feeds.feedburner.com/hotair/main",
 		Title:   "Hot Air",
 		Default: false,
@@ -155,11 +160,6 @@ var builtinFeeds = []Feed{
 	Feed{
 		URL:     "http://www.theverge.com/rss/index.xml",
 		Title:   "The Verge",
-		Default: true,
-	},
-	Feed{
-		URL:     "http://www.guardian.co.uk/world/us-news-blog/rss",
-		Title:   "The Guardian US News",
 		Default: true,
 	},
 	Feed{
