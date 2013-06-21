@@ -1,0 +1,3 @@
+#!/bin/sh
+
+vim -p script.coffee style.less article.go feed.go refresh.go user.go

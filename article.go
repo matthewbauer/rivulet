@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"fmt"
 	"sort"
 	"strconv"
 )
@@ -118,7 +119,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	var articleCache ArticleCache
 	var feedCache FeedCache
 	if count > len(userdata.Articles) {
-		refreshDelay.Call(context, "")
+		refreshDelay.Call(context, "false")
 		var redirect Redirect
 		redirect.URL = "/feed"
 		return redirect, nil
@@ -146,7 +147,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 		}
 	}
 	if count > len(articleData.Articles) {
-		refreshDelay.Call(context, "")
+		refreshDelay.Call(context, "false")
 		var redirect Redirect
 		redirect.URL = "/feed"
 		return redirect, nil
@@ -222,17 +223,17 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 
 func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache) (err error) {
 	if articleCache.ID == "" {
+		printInfo(context, "what?")
 		return
 	}
-	/*
-	*var articlePrefs = []Pref{
-	*    {
-	*        Field: "feed",
-	*        Value: articleCache.URL,
-	*        Score: 1,
-	*    },
-	*}
-	 */
+	var articlePrefs = []Pref{
+		{
+			Field: "feed",
+			Value: feed.URL,
+			Score: 1,
+		},
+	}
+	printInfo(context, fmt.Sprintf("addArticle %v", articleCache.URL))
 	article := Article{Feed: feed.URL, ID: articleCache.ID, Read: false}
 	var userkey *datastore.Key
 	var userdata UserData
@@ -244,7 +245,7 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 		if err != nil {
 			continue
 		}
-		article.Rank = articleCache.Date //getRank(articlePrefs, userdata.Prefs)
+		article.Rank = articleCache.Date + getRank(articlePrefs, userdata.Prefs)
 		if len(userdata.Articles) > MAXARTICLES {
 			userdata.Articles = userdata.Articles[0 : MAXARTICLES-1]
 		}

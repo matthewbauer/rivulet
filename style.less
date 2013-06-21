@@ -27,6 +27,7 @@ a, a:visited {
 }
 .content {
 	width: 61.80340%;
+//	width: 80%;
 	margin: 0 auto;
 }
 #header {
@@ -37,7 +38,6 @@ a, a:visited {
 	background-color: @bgheader;
 }
 #logo {
-	margin-left: 20%;
 	vertical-align: middle;
 }
 #credit {
@@ -49,11 +49,10 @@ a, a:visited {
 a#tag {
 	font-style: italic;
 	text-decoration: bold;
-	vertical-align: bottom;
 	color: @fgheader;
-	margin-right: 1em;
-	margin-left: 3em;
-	float: right;
+	position: absolute;
+	top: 1em;
+	right: 1em;
 }
 #toolbar {
 	padding-top: 2em;
@@ -140,6 +139,11 @@ a.current {
 .feed-link, .feed-link:visited {
 	font-size: 1.5em;
 	color: @feedcolor;
+}
+#tools {
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
 }
 #container > a:hover {
 	color: @fghover;

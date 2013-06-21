@@ -122,6 +122,7 @@ func refreshSubscriptionURL(context appengine.Context, url string) (err error) {
 }
 
 func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
+	printInfo(context, "refreshing")
 	query := datastore.NewQuery("Feed")
 	var keys []*datastore.Key
 	keys, err = query.KeysOnly().GetAll(context, nil)

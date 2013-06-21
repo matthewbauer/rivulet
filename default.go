@@ -83,6 +83,16 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
+		URL:     "http://feeds.nbcnews.com/feeds/topstories",
+		Title:   "NBC News",
+		Default: false,
+	},
+	Feed{
+		URL:     "http://feeds.feedburner.com/foxnews/latest",
+		Title:   "FOX News",
+		Default: false,
+	},
+	Feed{
 		URL:     "http://www.destructoid.com/?mode=atom",
 		Title:   "Destructoid",
 		Default: false,

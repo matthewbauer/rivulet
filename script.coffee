@@ -277,7 +277,7 @@ makeCurrent = (articles, current) ->
 nextArticle = (count, timeout, errornum, fun, current) ->
 	if not current?
 		current = $('.current')
-	$.getJSON '/article?output=json&count=' + count, (data) ->
+	$.getJSON('/article?output=json&count=' + count, (data) ->
 		if data.redirect
 			window.location.href = data.redirect
 		if data['URL'] is '/feed'
@@ -304,6 +304,9 @@ nextArticle = (count, timeout, errornum, fun, current) ->
 				localArticles = localArticles.concat(data.Articles)
 				localStorage.setObj 'articles', localArticles
 				fun newarticles, current
+	).fail((data) ->
+		window.location.href = '/_ah/login'
+	)
 
 removeCurrent = (current) ->
 	markAsRead current
