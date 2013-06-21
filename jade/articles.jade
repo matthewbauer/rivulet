@@ -1,0 +1,25 @@
+!!!
+html(manifest='rivulet.appcache')
+  include head
+  body
+    include header
+    #container
+      #container-content.content
+        a#prev.action.icon-arrow-up
+        | {{with .Articles}}
+        section#articles
+          | {{range .}}
+          article.article.unread(id='{{.ID}}')
+            span.actions
+              a.star.icon-star-empty.action(target='_blank', href='/article?url={{urlquery .URL}}&id={{urlquery .ID}}&action=star')
+              a.go.icon-external-link.action(target='_blank', href='{{urlquery .URL}}')
+            header.article-header
+              a.article-link(target='_blank', href='{{urlquery .URL}}') {{.Title}}
+            .article-content {{.Content}}
+          | {{end}}
+        | {{else}}
+        noscript
+          | Article could not be loaded:
+          a(href='/article?count=5') next
+        | {{end}}
+        a#next.action.icon-arrow-down(href='/article')

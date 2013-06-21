@@ -1,5 +1,5 @@
 application: myrivulet
-version: 169
+version: 177
 runtime: go
 api_version: go1
 
@@ -12,9 +12,13 @@ handlers:
   static_files: \1
   upload: robots.txt
 
+- url: /favicon.ico
+  static_files: favicon.ico
+  upload: favicon.ico
+
 - url: /(api|about|offline)
-  static_files: \1.html
-  upload: (api|about|offline).html
+  static_files: static/\1.html
+  upload: static/(api|about|offline).html
 
 - url: /font-awesome/font
   static_dir: font-awesome/font
@@ -23,14 +27,6 @@ handlers:
 - url: /font-awesome/css
   static_dir: font-awesome/css
   mime_type: text/css
-
-- url: /favicon.ico
-  static_files: favicon.ico
-  upload: favicon.ico
-
-- url: /logo.png
-  static_files: logo.png
-  upload: logo.png
 
 - url: /static
   static_dir: static

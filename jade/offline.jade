@@ -1,0 +1,33 @@
+!!!
+html(manifest='rivulet.appcache')
+  head
+    title rivulet
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    meta(http-equiv='content-type', content='text/html; charset=utf-8')
+    meta(name='format-detection', content='telephone=no')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    link(href='font-awesome/css/font-awesome.min.css', rel='stylesheet')
+    script(src='static/jquery.min.js')
+    link(rel='icon', href='favicon.ico')
+    link(rel='stylesheet', href='static/style.css')
+    script(src='static/script.js')
+  body
+    #header
+      #tools
+        a#about.action.btn.icon-question(href='/about')
+        a#api.action.btn.icon-code(href='/api')
+        a#email.action.btn.icon-envelope(href='mailto:mjbauer95@gmail.com')
+        a(href='/')
+          img#logo(alt='rivulet', src='static/logo.png', height='64', width='64')
+        a#add.action.btn.icon-plus(href='/feed')
+        a#settings.action.btn.icon-cog(href='/user')
+        a#logout.action.btn.icon-signout(href='/logout')
+      a#tag(href='/about') it's twitter for long attention spans
+    #container
+      #container-content.content
+        a#prev.action.icon-arrow-up
+        section#articles
+        noscript
+          | Article could not be loaded:
+          a(href='/article?count=5') next
+        a#next.action.icon-arrow-down(href='/article')

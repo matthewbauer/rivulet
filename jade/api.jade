@@ -1,0 +1,35 @@
+!!!
+html(manifest='rivulet.appcache')
+  include head
+  body
+    include header
+    #container
+      #container-content.content
+        h1 API info
+        p
+          | Some basic info on the API for developers. This is a full API that the web interfaces uses directly.
+        p
+          | For an example app, look through the Web app's Javascript:
+          a(href='/script.coffee') script.coffee
+        p By default, request will respond in HTML. Set output=json for JSON output.
+        p You must use OAuth to communicate with app.
+        h2 /article
+        p All requests related to a news article.
+        h3 GET
+        p
+          | Requests a new article. GET automatically removes the article from the user's article list.
+        p Remember that this is not idempotent!
+        h3 POST
+        p Modify an article. This is used primarily for marking articles as read.
+        h2 /feed
+        p All requests related to feeds.
+        h3 GET
+        p Get info on a feed. Basic stuff like last update, title, url, etc.
+        h3 POST
+        p Madify a feed. Primarily used for subscribing and unsubscribing to feeds.
+        h2 /user
+        p Requests related to users.
+        h3 GET
+        p Get info on user such as user name, subscribed feeds, article list, etc.
+        h3 POST
+        p Change info on user.

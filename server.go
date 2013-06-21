@@ -37,7 +37,7 @@ var templates *template.Template
 
 func init() {
 	http.HandleFunc("/", server)
-	templates = template.Must(template.ParseFiles("articles.html", "feeds.html", "user.html"))
+	templates = template.Must(template.ParseFiles("static/articles.html", "static/feeds.html", "static/user.html"))
 }
 
 type Data interface {

@@ -1,0 +1,26 @@
+!!!
+html(manifest='rivulet.appcache')
+  include head
+  body
+    include header
+    #container
+      #container-content.content
+        h1 {{.String}}
+        | {{with .Feeds}}
+        ul
+          | {{range .}}
+          li {{.}}
+          | {{end}}
+        | {{end}}
+        | {{with .Articles}}
+        ul
+          | {{range .}}
+          li {{.ID}}
+          | {{end}}
+        | {{end}}
+        | {{with .Prefs}}
+        ul
+          | {{range .}}
+          li {{.Field}}/{{.Value}}={{.Score}}
+          | {{end}}
+        | {{end}}
