@@ -75,6 +75,9 @@ var handlers = map[string]map[string]MethodHandler{
 	"/login": {
 		"GET": loginGET,
 	},
+	"/logout": {
+		"GET": logoutGET,
+	},
 	"/": {
 		"GET": rootGET,
 	},
@@ -182,10 +185,26 @@ func writeOutput(writer http.ResponseWriter, data Data, output OUTPUT) (err erro
 	return
 }
 
+func logoutGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
+	if u == nil {
+		var url string
+		url, err = user.LogoutURL(context, "/")
+		if err != nil {
+			return
+		}
+		var redirect Redirect
+		redirect.URL = url
+		return redirect, nil
+	}
+	var redirect Redirect
+	redirect.URL = "/"
+	return redirect, nil
+}
+
 func loginGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
 	if u == nil {
 		var url string
-		url, err = user.LoginURL(context, "")
+		url, err = user.LoginURL(context, "/")
 		if err != nil {
 			return
 		}

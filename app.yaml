@@ -1,5 +1,5 @@
 application: myrivulet
-version: 184
+version: 186
 runtime: go
 api_version: go1
 
@@ -34,6 +34,10 @@ handlers:
 - url: /
   script: _go_app
   login: required
+
+- url: /logout
+  script: _go_app
+  login: optional
 
 - url: /login
   script: _go_app

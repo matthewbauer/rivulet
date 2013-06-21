@@ -250,7 +250,7 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 			userdata.Articles = userdata.Articles[0 : MAXARTICLES-1]
 		}
 
-		n := sort.Search(len(userdata.Articles), func(i int) bool { return userdata.Articles[i].Rank >= article.Rank })
+		n := sort.Search(len(userdata.Articles), func(i int) bool { return userdata.Articles[i].Rank <= article.Rank })
 		if n == -1 {
 			userdata.Articles = append(userdata.Articles, article)
 		} else {
