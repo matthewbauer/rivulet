@@ -26,9 +26,16 @@ a, a:visited {
   color: @blue
 }
 .content {
-  width: 61.80340%;
-//  width: 80%;
   margin: 0 auto;
+  @media (max-width: 480px) {
+	  width: 100%;
+  }
+  @media (min-width: 720px) {
+      width: 61.80340%;
+  }
+  @media (min-width: 480px) and (max-width: 720px) {
+      width: 90%;
+  }
 }
 #header {
   box-shadow: .5em 0 .5em .5em #ccc;

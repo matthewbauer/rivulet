@@ -37,7 +37,7 @@ var templates *template.Template
 
 func init() {
 	http.HandleFunc("/", server)
-	templates = template.Must(template.ParseFiles("static/articles.html", "static/feeds.html", "static/user.html"))
+	templates = template.Must(template.ParseFiles("templates/articles.html", "templates/feeds.html", "templates/user.html"))
 }
 
 type Data interface {
@@ -57,9 +57,6 @@ func (redirect Redirect) Send() bool       { return true }
 type MethodHandler func(appengine.Context, *user.User, *http.Request) (data Data, err error)
 
 var handlers = map[string]map[string]MethodHandler{
-	"/refresh": {
-		"GET": refreshGET,
-	},
 	"/article": {
 		"GET":  articleGET,
 		"POST": articlePOST,
@@ -71,6 +68,12 @@ var handlers = map[string]map[string]MethodHandler{
 	"/user": {
 		"GET":  userGET,
 		"POST": userPOST,
+	},
+	"/refresh": {
+		"GET": refreshGET,
+	},
+	"/login": {
+		"GET": loginGET,
 	},
 	"/": {
 		"GET": rootGET,
@@ -133,18 +136,6 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	u := user.Current(context)
-	if u == nil {
-		var url string
-		url, err = user.LoginURL(context, request.URL.String())
-		if err != nil {
-			writer.WriteHeader(http.StatusForbidden)
-			fmt.Fprintf(writer, "%v: method not allowed", http.StatusForbidden)
-			return
-		}
-		writer.Header().Set("Location", url)
-		writer.WriteHeader(http.StatusFound)
-		return
-	}
 	var data Data
 	if handlers[request.URL.Path][request.Method] == nil {
 		if handlers[request.URL.Path]["*"] != nil {
@@ -189,6 +180,22 @@ func writeOutput(writer http.ResponseWriter, data Data, output OUTPUT) (err erro
 		err = templates.ExecuteTemplate(writer, data.Template(), data)
 	}
 	return
+}
+
+func loginGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
+	if u == nil {
+		var url string
+		url, err = user.LoginURL(context, "")
+		if err != nil {
+			return
+		}
+		var redirect Redirect
+		redirect.URL = url
+		return redirect, nil
+	}
+	var redirect Redirect
+	redirect.URL = "/"
+	return redirect, nil
 }
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {

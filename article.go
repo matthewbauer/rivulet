@@ -33,7 +33,7 @@ type ArticleData struct {
 const MAXARTICLES = 500
 const DEFAULTCOUNT = 1
 
-func (ArticleData) Template() string { return "static/articles.html" }
+func (ArticleData) Template() string { return "articles.html" }
 func (ArticleData) Redirect() string { return "" }
 func (ArticleData) Send() bool       { return true }
 
@@ -49,7 +49,7 @@ type ArticleList struct {
 	Articles []Article
 }
 
-func (ArticleList) Template() string { return "static/articles.html" }
+func (ArticleList) Template() string { return "articles.html" }
 func (ArticleList) Redirect() string { return "" }
 func (ArticleList) Send() bool       { return true }
 

@@ -27,7 +27,7 @@ type UserData struct {
 	Prefs    []Pref    `datastore:"-"`
 }
 
-func (UserData) Template() string { return "static/user.html" }
+func (UserData) Template() string { return "user.html" }
 func (UserData) Redirect() string { return "" }
 func (UserData) Send() bool       { return true }
 

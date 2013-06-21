@@ -42,7 +42,7 @@ type FeedData struct {
 	SuggestedFeeds []Feed
 }
 
-func (FeedData) Template() string { return "static/feeds.html" }
+func (FeedData) Template() string { return "feeds.html" }
 func (FeedData) Redirect() string { return "" }
 func (FeedData) Send() bool       { return true }
 

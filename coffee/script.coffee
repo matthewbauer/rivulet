@@ -278,8 +278,6 @@ nextArticle = (count, timeout, errornum, fun, current) ->
   if not current?
     current = $('.current')
   $.getJSON('/article?output=json&count=' + count, (data) ->
-    if data.redirect
-      window.location.href = data.redirect
     if data['URL'] is '/feed'
       if errornum < MAXERROR
         nextArticle count, timeout, errornum + 1, fun, current
@@ -294,8 +292,10 @@ nextArticle = (count, timeout, errornum, fun, current) ->
     else
       articles = addArticles data
       newarticles = []
+	  ids = []
       for article in articles
-        if not $(document.getElementById(article.attr('id'))).exists()
+        if not $(document.getElementById(article.attr('id'))).exists() and not $.inArray(article.attr('id'), ids)
+          ids.push article.attr('id')
           newarticles.push article
       if newarticles.length is 0
         timeout *= 2
@@ -305,7 +305,7 @@ nextArticle = (count, timeout, errornum, fun, current) ->
         localStorage.setObj 'articles', localArticles
         fun newarticles, current
   ).fail((data) ->
-    window.location.href = '/_ah/login'
+    window.location.href = '/login'
   )
 
 removeCurrent = (current) ->
