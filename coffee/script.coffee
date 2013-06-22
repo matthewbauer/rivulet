@@ -264,7 +264,7 @@ makeArticle = (articles) ->
 
 makeCurrent = (articles, current) ->
   makeArticle articles
-  for article in articles.slick(0, LIST)
+  for article in articles.slice(0, LIST)
     articleElement = document.getElementById(article.attr('id'))
     articleElement.classList.add('current')
   removeCurrent current
@@ -275,6 +275,8 @@ makeCurrent = (articles, current) ->
   $('body').scrollTo $('.current').offset().top if $('.current').exists()
 
 nextArticle = (count, timeout, errornum, fun, current) ->
+  if errornum > MAXERROR
+    return
   if not current?
     current = $('.current')
   $.getJSON('/article?output=json&count=' + count, (data) ->
@@ -291,21 +293,24 @@ nextArticle = (count, timeout, errornum, fun, current) ->
       timeout *= 2
     else
       articles = addArticles data
+      ids = []
       newarticles = []
-	  ids = []
       for article in articles
-        if not $(document.getElementById(article.attr('id'))).exists() and not $.inArray(article.attr('id'), ids)
+        if not $(document.getElementById(article.attr('id'))).exists()# and not $.inArray(article.attr('id'), ids)
+          console.log article.attr('id')
           ids.push article.attr('id')
           newarticles.push article
       if newarticles.length is 0
         timeout *= 2
+        nextArticle count, timeout, errornum + 1, fun, current
       else
         localArticles = localStorage.getObj('articles')
         localArticles = localArticles.concat(data.Articles)
         localStorage.setObj 'articles', localArticles
         fun newarticles, current
   ).fail((data) ->
-    window.location.href = '/login'
+    if online
+      window.location.href = '/login'
   )
 
 removeCurrent = (current) ->

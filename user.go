@@ -21,6 +21,7 @@ type Pref struct {
 
 type UserData struct {
 	String   string
+	TotalRead int
 	Bytes    []byte    `datastore:",noindex"`
 	Feeds    []string  `datastore:"-"`
 	Articles []Article `datastore:"-"`
