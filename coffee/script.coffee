@@ -266,6 +266,7 @@ makeCurrent = (articles, current) ->
   makeArticle articles
   for article in articles.slice(0, LIST)
     articleElement = document.getElementById(article.attr('id'))
+    #if articleElement?
     articleElement.classList.add('current')
   removeCurrent current
   if $('.current').index() is 0
@@ -296,8 +297,7 @@ nextArticle = (count, timeout, errornum, fun, current) ->
       ids = []
       newarticles = []
       for article in articles
-        if not $(document.getElementById(article.attr('id'))).exists() and not $.inArray(article.attr('id'), ids)
-          console.log article.attr('id')
+        if not $(document.getElementById(article.attr('id'))).exists() and $.inArray(article.attr('id'), ids) == -1
           ids.push article.attr('id')
           newarticles.push article
       if newarticles.length is 0

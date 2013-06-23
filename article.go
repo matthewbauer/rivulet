@@ -116,6 +116,13 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	if err != nil {
 		return
 	}
+	if count > len(userdata.Articles) {
+		printInfo(context, "refresh")
+		refreshDelay.Call(context, "false")
+		var redirect Redirect
+		redirect.URL = "/feed"
+		return redirect, nil
+	}
 	var articleData ArticleData
 	var articleCache ArticleCache
 	var feedCache FeedCache
@@ -145,13 +152,13 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	}
 	if count > len(articleData.Articles) {
 		printInfo(context, "refresh")
-		//refreshDelay.Call(context, "false")
+		refreshDelay.Call(context, "false")
 		var redirect Redirect
 		redirect.URL = "/feed"
 		return redirect, nil
 	}
 	userdata.Articles = userdata.Articles[count:]
-	userdata.TotalRead += count
+	userdata.TotalRead += int64(count)
 	_, err = putUserData(context, userkey, userdata)
 	return articleData, err
 }

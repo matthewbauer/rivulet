@@ -41,7 +41,7 @@ a, a:visited {
   }
 }
 #header {
-  @media (max-height: 300px) {
+  @media (max-height: 400px) {
     display: none;
   }
   box-shadow: .5em 0 .5em .5em #ccc;
@@ -79,7 +79,7 @@ a.star:hover ~ a.star:before {
 }
 a.action, a.action:visited {
   color: black;
-  vertical-align: bottom;
+  vertical-align: middle;
   font-size: 3em;
   padding-left: .1em;
   padding-right: .1em;
@@ -146,6 +146,9 @@ a.current {
   margin-left: 2em;
 }
 .actions {
+  @media (max-width: 300px) {
+    display: none;
+  }
   font-size: .5em;
   float: right;
 }
@@ -154,9 +157,6 @@ a.current {
   color: @feedcolor;
 }
 #tools {
-  @media (max-width: 300px) {
-    display: none;
-  }
   overflow: hidden;
   white-space: nowrap;
   text-align: center;
@@ -174,7 +174,7 @@ a.current {
   color: @bgheader;
 }
 .article-content {
-  @media (max-height: 200px) {
+  @media (max-height: 250px) {
     display: none;
   }
   color: @bgheader;

@@ -57,6 +57,9 @@ func (redirect Redirect) Send() bool       { return true }
 type MethodHandler func(appengine.Context, *user.User, *http.Request) (data Data, err error)
 
 var handlers = map[string]map[string]MethodHandler{
+	"/_ah/warmup": {
+		"GET": warmupGET,
+	},
 	"/article": {
 		"GET":  articleGET,
 		"POST": articlePOST,
@@ -205,7 +208,7 @@ func loginGET(context appengine.Context, u *user.User, request *http.Request) (d
 	if u == nil {
 		var url string
 		request.URL.Path = "/"
-		url, err = user.LoginURL(context, request.String())
+		url, err = user.LoginURL(context, request.URL.String())
 		if err != nil {
 			return
 		}
@@ -220,6 +223,10 @@ func loginGET(context appengine.Context, u *user.User, request *http.Request) (d
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	return article(context, user, request, 0)
+}
+
+func warmupGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	return
 }
 
 func printError(context appengine.Context, err error, info string) {

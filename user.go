@@ -21,7 +21,7 @@ type Pref struct {
 
 type UserData struct {
 	String   string
-	TotalRead int
+	TotalRead int64
 	Bytes    []byte    `datastore:",noindex"`
 	Feeds    []string  `datastore:"-"`
 	Articles []Article `datastore:"-"`
@@ -38,7 +38,7 @@ func (userdata *UserData) Load(c <-chan datastore.Property) (err error) {
 		case "String":
 			userdata.String = p.Value.(string)
 		case "TotalRead":
-			userdata.TotalRead = p.Value.(int)
+			userdata.TotalRead = p.Value.(int64)
 		case "Bytes":
 			reader := bytes.NewBuffer(p.Value.([]byte))
 			decoder := gob.NewDecoder(reader)
@@ -171,7 +171,7 @@ func subscribe(context appengine.Context, userdata *UserData, url string) (err e
 		feed.URL = url
 		feed.Subscribers = []string{userdata.String}
 		key, err = datastore.Put(context, datastore.NewIncompleteKey(context, "Feed", nil), &feed)
-		//refreshSubscriptionURLDelay.Call(context, feed.URL)
+		refreshSubscriptionURLDelay.Call(context, feed.URL)
 		feedsubscribed = true
 	}
 	if !ContainsString(userdata.Feeds, url) {

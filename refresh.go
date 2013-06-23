@@ -159,8 +159,7 @@ func refreshGET(context appengine.Context, user *user.User, request *http.Reques
 	asNeeded := true
 	force := request.FormValue("force")
 	if force != "" {
-		asNeeded := false
-		return
+		asNeeded = false
 	}
 	delay := request.FormValue("delay")
 	if delay != "" {
