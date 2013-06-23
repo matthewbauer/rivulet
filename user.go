@@ -73,6 +73,7 @@ func (userdata *UserData) Save(c chan<- datastore.Property) (err error) {
 
 func newUserData(context appengine.Context, id string) (key *datastore.Key, userdata UserData, err error) {
 	userdata.String = id
+	userdata.TotalRead = 0
 	for _, feed := range builtinFeeds {
 		if feed.Default {
 			err = subscribe(context, &userdata, feed.URL)

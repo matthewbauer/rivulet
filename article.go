@@ -153,7 +153,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	userdata.Articles = userdata.Articles[count:]
 	userdata.TotalRead += count
 	_, err = putUserData(context, userkey, userdata)
-	return articleData, nil
+	return articleData, err
 }
 
 func getArticleById(articles []Article, id string) (article Article) {

@@ -156,16 +156,21 @@ func refreshGET(context appengine.Context, user *user.User, request *http.Reques
 	if url != "" {
 		return nil, refreshSubscriptionURL(context, url)
 	}
+	asNeeded := true
 	force := request.FormValue("force")
 	if force != "" {
-		refreshDelay.Call(context, "false")
+		asNeeded := false
 		return
 	}
 	delay := request.FormValue("delay")
 	if delay != "" {
-		refresh(context, true)
+		if asNeeded {
+			refreshDelay.Call(context, "true")
+		} else {
+			refreshDelay.Call(context, "false")
+		}
 		return
 	}
-	refreshDelay.Call(context, "true")
+	refresh(context, asNeeded)
 	return
 }

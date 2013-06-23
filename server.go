@@ -204,7 +204,8 @@ func logoutGET(context appengine.Context, u *user.User, request *http.Request) (
 func loginGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
 	if u == nil {
 		var url string
-		url, err = user.LoginURL(context, "/")
+		request.URL.Path = "/"
+		url, err = user.LoginURL(context, request.String())
 		if err != nil {
 			return
 		}

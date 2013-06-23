@@ -28,21 +28,21 @@ a, a:visited {
 .content {
   margin: 0 auto;
   @media (max-width: 480px) {
-	  width: 95%;
+    width: 95%;
   }
   @media (min-width: 480px) and (max-width: 7000px) {
-      width: 80%;
+    width: 80%;
   }
   @media (min-width: 700px) and (max-width: 1600px) {
-      width: 75%;
+    width: 75%;
   }
   @media (min-width: 1680px) {
-      width: 61.80340%;
+    width: 61.80340%;
   }
 }
 #header {
-  @media (max-height: 400px) {
-	  display: none;
+  @media (max-height: 300px) {
+    display: none;
   }
   box-shadow: .5em 0 .5em .5em #ccc;
   padding-top: .5em;
@@ -79,7 +79,7 @@ a.star:hover ~ a.star:before {
 }
 a.action, a.action:visited {
   color: black;
-  vertical-align: middle;
+  vertical-align: bottom;
   font-size: 3em;
   padding-left: .1em;
   padding-right: .1em;
@@ -154,6 +154,9 @@ a.current {
   color: @feedcolor;
 }
 #tools {
+  @media (max-width: 300px) {
+    display: none;
+  }
   overflow: hidden;
   white-space: nowrap;
   text-align: center;
@@ -171,8 +174,8 @@ a.current {
   color: @bgheader;
 }
 .article-content {
-  @media (max-height: 300px) {
-	  display: none;
+  @media (max-height: 200px) {
+    display: none;
   }
   color: @bgheader;
 }
