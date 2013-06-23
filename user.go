@@ -168,7 +168,7 @@ func subscribe(context appengine.Context, userdata *UserData, url string) (err e
 		feed.URL = url
 		feed.Subscribers = []string{userdata.String}
 		key, err = datastore.Put(context, datastore.NewIncompleteKey(context, "Feed", nil), &feed)
-		refreshSubscriptionURLDelay.Call(context, feed.URL)
+		//refreshSubscriptionURLDelay.Call(context, feed.URL)
 		feedsubscribed = true
 	}
 	if !ContainsString(userdata.Feeds, url) {

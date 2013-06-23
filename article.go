@@ -142,7 +142,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	}
 	if count > len(articleData.Articles) {
 		printInfo(context, "refresh")
-		refreshDelay.Call(context, "false")
+		//refreshDelay.Call(context, "false")
 		var redirect Redirect
 		redirect.URL = "/feed"
 		return redirect, nil
