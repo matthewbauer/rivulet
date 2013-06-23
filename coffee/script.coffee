@@ -296,7 +296,7 @@ nextArticle = (count, timeout, errornum, fun, current) ->
       ids = []
       newarticles = []
       for article in articles
-        if not $(document.getElementById(article.attr('id'))).exists()# and not $.inArray(article.attr('id'), ids)
+        if not $(document.getElementById(article.attr('id'))).exists() and not $.inArray(article.attr('id'), ids)
           console.log article.attr('id')
           ids.push article.attr('id')
           newarticles.push article

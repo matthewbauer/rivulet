@@ -145,7 +145,7 @@ var builtinFeeds = []Feed{
 	Feed{
 		URL:     "http://rss.csmonitor.com/csmonitor/connectingthedots",
 		Title:   "Connecting the Dots",
-		Default: true,
+		Default: false,
 	},
 	Feed{
 		URL:     "http://feeds.feedburner.com/alistapart/main",

@@ -118,14 +118,6 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	var articleData ArticleData
 	var articleCache ArticleCache
 	var feedCache FeedCache
-	if count > len(userdata.Articles) {
-		refreshDelay.Call(context, "false")
-		printInfo(context, "refresh")
-		var redirect Redirect
-		redirect.URL = "/feed"
-		return redirect, nil
-	}
-	printInfo(context, fmt.Sprintf("article %v", count))
 	for _, article := range userdata.Articles[0:count] {
 		_, err = memcache.Gob.Get(context, article.ID, &articleCache)
 		if err == memcache.ErrCacheMiss {

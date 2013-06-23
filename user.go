@@ -37,6 +37,8 @@ func (userdata *UserData) Load(c <-chan datastore.Property) (err error) {
 		switch p.Name {
 		case "String":
 			userdata.String = p.Value.(string)
+		case "TotalRead":
+			userdata.TotalRead = p.Value.(int)
 		case "Bytes":
 			reader := bytes.NewBuffer(p.Value.([]byte))
 			decoder := gob.NewDecoder(reader)
@@ -54,6 +56,10 @@ func (userdata *UserData) Save(c chan<- datastore.Property) (err error) {
 	c <- datastore.Property{
 		Name:  "String",
 		Value: userdata.String,
+	}
+	c <- datastore.Property{
+		Name:  "TotalRead",
+		Value: userdata.TotalRead,
 	}
 	writer := bytes.Buffer{}
 	encoder := gob.NewEncoder(&writer)

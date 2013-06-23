@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"math/rand"
 )
 
 import (
@@ -40,7 +41,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 		return
 	}
 	if now.Unix() > subscription.Update {
-		duration := defaultRefreshDelay
+		duration := time.Minute * time.Duration(rand.Intn(60))
 		client := urlfetch.Client(context)
 		var response *http.Response
 		printInfo(context, fmt.Sprintf("fetching %v", feed.URL))
