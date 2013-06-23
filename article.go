@@ -89,6 +89,7 @@ func articlePOST(context appengine.Context, user *user.User, request *http.Reque
 				userdata, err = selected(context, userdata, article)
 				if err != nil {
 					printError(context, err, article.ID)
+					err = nil
 				}
 			}
 			if read || article.Read {
@@ -125,6 +126,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 			feedCache, err = getSubscriptionURL(context, article.Feed)
 			if err != nil {
 				printError(context, err, article.Feed)
+				err = nil
 				continue
 			}
 			for _, articleCache = range feedCache.Articles {
@@ -134,6 +136,7 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 			}
 		} else if err != nil {
 			printError(context, err, article.ID)
+			err = nil
 			continue
 		}
 		if articleCache.URL != "" {
@@ -239,6 +242,7 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 	for _, subscriber := range feed.Subscribers {
 		userkey, userdata, err = getUserData(context, subscriber)
 		if err != nil {
+			err = nil
 			continue
 		}
 		article.Rank = articleCache.Date + getRank(articlePrefs, userdata.Prefs)
@@ -258,9 +262,9 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 		_, err = putUserData(context, userkey, userdata)
 		if err != nil {
 			printError(context, err, subscriber)
+			err = nil
 			continue
 		}
 	}
-	err = nil
 	return
 }

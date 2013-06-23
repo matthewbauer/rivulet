@@ -34,7 +34,6 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 	var item *memcache.Item
 	item, err = memcache.Gob.Get(context, feed.URL, &subscription)
 	if err == memcache.ErrCacheMiss {
-		err = nil
 		subscription.URL = feed.URL
 		item = &memcache.Item{Key: feed.URL}
 	} else if err != nil {
@@ -92,6 +91,7 @@ func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastor
 						err = addArticle(context, feed, article)
 						if err != nil {
 							printError(context, err, article.ID)
+							err = nil
 							continue
 						}
 					}
@@ -134,6 +134,7 @@ func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 			break
 		} else if err != nil {
 			printError(context, err, feed.URL)
+			err = nil
 			continue
 		}
 		if asNeeded {
@@ -143,10 +144,10 @@ func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
 		}
 		if err != nil {
 			printError(context, err, feed.URL)
+			err = nil
 			continue
 		}
 	}
-	err = nil
 	return
 }
 
@@ -156,8 +157,14 @@ func refreshGET(context appengine.Context, user *user.User, request *http.Reques
 		return nil, refreshSubscriptionURL(context, url)
 	}
 	force := request.FormValue("force")
-	if force == "1" {
+	if force != "" {
 		refreshDelay.Call(context, "false")
+		return
+	}
+	delay := request.FormValue("delay")
+	if delay != "" {
+		refresh(context, true)
+		return
 	}
 	refreshDelay.Call(context, "true")
 	return

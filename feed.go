@@ -137,6 +137,7 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 				date, err = getDate(item.PubDate)
 				if err != nil {
 					printError(context, fmt.Errorf("rss feed %v has dates that look like %v", channel.Link, item.PubDate), url)
+					err = nil
 					continue
 				}
 				var content string
@@ -156,6 +157,7 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 				err = memcache.Gob.Set(context, &memcache.Item{Key: item.Guid, Object: article})
 				if err != nil {
 					printError(context, err, url)
+					err = nil
 					continue
 				}
 				feedCache.Articles = append(feedCache.Articles, article)
@@ -186,6 +188,7 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 			date, err = getDate(item.Updated)
 			if err != nil {
 				printError(context, fmt.Errorf("atom feed %v has dates that look like %v", feed.Link[0].Href, item.Updated), url)
+				err = nil
 				continue
 			}
 			var url string
@@ -211,6 +214,7 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 			err = memcache.Gob.Set(context, &memcache.Item{Key: item.Id, Object: article})
 			if err != nil {
 				printError(context, err, url)
+				err = nil
 				continue
 			}
 			feedCache.Articles = append(feedCache.Articles, article)
@@ -293,9 +297,11 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 			iterator := query.Run(context)
 			_, err = iterator.Next(&item)
 			if err == datastore.Done {
+				err = nil
 				continue
 			} else if err != nil {
 				printError(context, err, feed)
+				err = nil
 				continue
 			}
 		}
@@ -326,12 +332,14 @@ func feedPOST(context appengine.Context, user *user.User, request *http.Request)
 			err = subscribeUser(context, user, feed.URL)
 			if err != nil {
 				printError(context, err, feed.URL)
+				err = nil
 				continue
 			}
 		} else {
 			err = unsubscribe(context, user.String(), feed.URL)
 			if err != nil {
 				printError(context, err, feed.URL)
+				err = nil
 				continue
 			}
 		}

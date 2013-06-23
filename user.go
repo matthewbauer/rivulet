@@ -78,6 +78,7 @@ func newUserData(context appengine.Context, id string) (key *datastore.Key, user
 			err = subscribe(context, &userdata, feed.URL)
 			if err != nil {
 				printError(context, err, feed.URL)
+				err = nil
 				continue
 			}
 		}
@@ -133,6 +134,7 @@ func unsubscribe(context appengine.Context, user string, url string) (err error)
 		if feed == url {
 			userdata.Feeds = userdata.Feeds[:i+copy(userdata.Feeds[i:], userdata.Feeds[i+1:])]
 			if err != nil {
+				err = nil
 				continue
 			}
 			break
@@ -247,11 +249,11 @@ func getUserFeedList(context appengine.Context, user string) (feeds []FeedCache,
 	for _, feed := range userdata.Feeds {
 		_, err = memcache.Gob.Get(context, feed, &item)
 		if err != nil {
+			err = nil
 			continue
 		}
 		feeds = append(feeds, item)
 	}
-	err = nil
 	return
 }
 
@@ -269,12 +271,12 @@ func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedF
 			break
 		} else if err != nil {
 			printError(context, err, feed.URL)
+			err = nil
 			continue
 		}
 		if !ContainsFeed(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
 			suggestedFeeds = append(suggestedFeeds, feed)
 		}
 	}
-	err = nil
 	return
 }

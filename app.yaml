@@ -1,7 +1,10 @@
 application: myrivulet
-version: 197
+version: 199
 runtime: go
 api_version: go1
+
+inbound_services:
+- warmup
 
 handlers:
 - url: /(rivulet.appcache)
@@ -56,9 +59,5 @@ handlers:
   login: required
 
 - url: /refresh
-  script: _go_app
-  login: admin
-
-- url: /_ah/queue/go/delay
   script: _go_app
   login: admin
