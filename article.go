@@ -232,13 +232,13 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 		printInfo(context, "what?")
 		return
 	}
-	var articlePrefs = []Pref{
+	/*var articlePrefs = []Pref{
 		{
 			Field: "feed",
 			Value: feed.URL,
 			Score: 1,
 		},
-	}
+	}*/
 	printInfo(context, fmt.Sprintf("addArticle %v", articleCache.URL))
 	article := Article{Feed: feed.URL, ID: articleCache.ID, Read: false}
 	var userkey *datastore.Key
@@ -252,7 +252,7 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 			err = nil
 			continue
 		}
-		article.Rank = articleCache.Date + getRank(articlePrefs, userdata.Prefs)
+		article.Rank = articleCache.Date //+ getRank(articlePrefs, userdata.Prefs)
 		if len(userdata.Articles) > MAXARTICLES {
 			userdata.Articles = userdata.Articles[0 : MAXARTICLES-1]
 		}

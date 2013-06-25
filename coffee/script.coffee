@@ -205,7 +205,7 @@ addArticle = (data) ->
             attr('href', '/article?action=star&url=' + data['URL'] + '&id=' + data['ID']).
             click (event) ->
               event.preventDefault()
-              $.getJSON '/article?id=' + encodeURIComponent(element.attr('id'))
+              $.getJSON '/article?id=' + encodeURIComponent($(this).attr('id'))
               false
         ).
         append(
@@ -228,7 +228,10 @@ addArticle = (data) ->
             addClass('article-link').
             click (event) ->
               event.preventDefault()
-              window.open $('.current').children('.article-header').children('.article-link').attr('href'), '_blank'
+              if $('.current').children('.article-content').is(':visible')
+                window.open $('.current').children('.article-header').children('.article-link').attr('href'), '_blank'
+              else
+                $('.current').children('.article-content').show()
               false
         )
     ).

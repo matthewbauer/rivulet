@@ -25,7 +25,6 @@ var refreshSubscriptionURLDelay = delay.Func("refresh", refreshSubscriptionURL)
 var refreshDelay = delay.Func("refresh", func(context appengine.Context, x string) { refresh(context, x != "false") })
 
 func refreshSubscription(context appengine.Context, feed Feed, feedkey *datastore.Key) (err error) {
-	printInfo(context, fmt.Sprintf("refreshing %v", feed.URL))
 	if feed.URL == "" {
 		return
 	}
@@ -123,7 +122,6 @@ func refreshSubscriptionURL(context appengine.Context, url string) (err error) {
 }
 
 func refresh(context appengine.Context, asNeeded bool) (data Data, err error) {
-	printInfo(context, "refreshing")
 	query := datastore.NewQuery("Feed")
 	var keys []*datastore.Key
 	keys, err = query.KeysOnly().GetAll(context, nil)
