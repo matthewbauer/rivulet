@@ -1,11 +1,15 @@
-@bgbody: #E8E8E8;
-@black: #121F36;
-@bgheader: #484848;
+@bgheader: #637CBE;
 @fgheader: #AFAFAF;
-@red: #DE0909;
-@green: #00B518;
+@bgbody: #E8E8E8;
+@fgbody: #484848;
+
 @feedcolor: #24359E;
 @fghover: #FF5100;
+
+@black: #121F36;
+@blue: #24359E;
+@red: #DE0909;
+@green: #00B518;
 
 body {
   padding: 0;
@@ -21,7 +25,6 @@ a {
 a:hover {
   text-decoration: underline;
 }
-@blue: #24359E;
 a, a:visited {
   color: @blue
 }
@@ -78,16 +81,17 @@ a.star:hover ~ a.star:before {
   content: "\2605";
 }
 a.action, a.action:visited {
-  color: black;
+  color: @black;
   vertical-align: middle;
   font-size: 3em;
   padding-left: .1em;
   padding-right: .1em;
-  opacity: .5;
+//  opacity: .5;
 }
 a.action:hover {
   text-decoration: none;
-  opacity: 1;
+//  opacity: 1;
+  color: black;
 }
 .article {
   padding-top: 1em;
@@ -97,7 +101,7 @@ a.action:hover {
   font-size: 1.5em;
 }
 a.article-link, a.article-link:visited {
-  color: #484848;
+  color: @fgbody;
   font-weight: bold;
 }
 .article-content {
@@ -166,19 +170,19 @@ a.current {
   color: @fghover;
 }
 #container > a {
-  color: @bgheader;
+  color: @fgbody;
 }
 .article {
-  color: @bgheader;
+  color: @fgbody;
 }
 .article-header {
-  color: @bgheader;
+  color: @fgbody;
 }
 .article-content {
   @media (max-height: 250px) {
     display: none;
   }
-  color: @bgheader;
+  color: @fgbody;
 }
 .mf-viral {
   display: none;

@@ -182,7 +182,7 @@ parseURL = (url) ->
   hash: a.hash
 
 show = (element) ->
-  $.getJSON '/article?id=' + encodeURIComponent(element.attr('id'))
+#  $.getJSON '/article?id=' + encodeURIComponent(element.attr('id'))
   element.children('.article-content').slideToggle()
 
 hide = (element) ->
@@ -196,18 +196,18 @@ addArticle = (data) ->
     append(
       $('<span/>').
         addClass('actions').
-        append(
-          $('<a/>').
-            addClass('star').
-            addClass('icon-star-empty').
-            addClass('action').
-            attr('target', '_blank').
-            attr('href', '/article?action=star&url=' + data['URL'] + '&id=' + data['ID']).
-            click (event) ->
-              event.preventDefault()
-              $.getJSON '/article?id=' + encodeURIComponent($(this).attr('id'))
-              false
-        ).
+#        append(
+#          $('<a/>').
+#            addClass('star').
+#            addClass('icon-star-empty').
+#            addClass('action').
+#            attr('target', '_blank').
+#            attr('href', '/article?action=star&url=' + data['URL'] + '&id=' + data['ID']).
+#            click (event) ->
+#              event.preventDefault()
+#              $.getJSON '/article?id=' + encodeURIComponent($(this).attr('id'))
+#              false
+#        ).
         append(
           $('<a/>').
             addClass('go').

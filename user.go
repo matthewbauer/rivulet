@@ -76,7 +76,7 @@ func newUserData(context appengine.Context, id string) (key *datastore.Key, user
 	userdata.TotalRead = 0
 	for _, feed := range builtinFeeds {
 		if feed.Default {
-			err = subscribe(context, &userdata, feed.URL)
+			err = subscribe(context, &userdata, feed.URL, feed.Default)
 			if err != nil {
 				printError(context, err, feed.URL)
 				err = nil
@@ -160,7 +160,7 @@ func unsubscribe(context appengine.Context, user string, url string) (err error)
 	return
 }
 
-func subscribe(context appengine.Context, userdata *UserData, url string) (err error) {
+func subscribe(context appengine.Context, userdata *UserData, url string, isdefault bool) (err error) {
 	query := datastore.NewQuery("Feed").Filter("URL=", url)
 	iterator := query.Run(context)
 	var feed Feed
@@ -170,6 +170,7 @@ func subscribe(context appengine.Context, userdata *UserData, url string) (err e
 	if err == datastore.Done {
 		feed.URL = url
 		feed.Subscribers = []string{userdata.String}
+		feed.Default = isdefault
 		key, err = datastore.Put(context, datastore.NewIncompleteKey(context, "Feed", nil), &feed)
 		refreshSubscriptionURLDelay.Call(context, feed.URL)
 		feedsubscribed = true
@@ -191,7 +192,7 @@ func subscribeUser(context appengine.Context, user *user.User, url string) (err 
 	if err != nil {
 		return
 	}
-	err = subscribe(context, &userdata, url)
+	err = subscribe(context, &userdata, url, false)
 	if err != nil {
 		return
 	}
@@ -269,6 +270,7 @@ func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedF
 	for iterator := query.Run(context); ; {
 		_, err = iterator.Next(&feed)
 		if err == datastore.Done {
+			err = nil
 			break
 		} else if err != nil {
 			printError(context, err, feed.URL)

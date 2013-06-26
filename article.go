@@ -198,7 +198,6 @@ func articleGo(context appengine.Context, user *user.User, request *http.Request
 }
 
 func articleStar(context appengine.Context, request *http.Request) (data Data, err error) {
-	printInfo(context, "article star")
 	return
 }
 
@@ -228,10 +227,6 @@ func articleGET(context appengine.Context, user *user.User, request *http.Reques
 }
 
 func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache) (err error) {
-	if articleCache.ID == "" {
-		printInfo(context, "what?")
-		return
-	}
 	/*var articlePrefs = []Pref{
 		{
 			Field: "feed",
