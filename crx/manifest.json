@@ -1,6 +1,6 @@
 {
   "name": "Rivulet",
-  "description": "Pan your news",
+  "description": "a simple way to get content in one place from all over the web",
   "version": "217",
   "manifest_version": 2,
   "app": {

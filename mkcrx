@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd crx
+zip ../crx.zip .
+cd ..

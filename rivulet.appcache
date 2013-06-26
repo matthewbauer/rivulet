@@ -1,9 +1,11 @@
 CACHE MANIFEST
 
-#218
+#221
 
 NETWORK:
 *
+http://*
+https://*
 
 CACHE:
 /static/jquery.min.js

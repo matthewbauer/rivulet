@@ -394,10 +394,10 @@ removeFeed = (url) ->
   $(document.getElementById(url)).remove()
   location.reload()
 
-window.addEventListener "offline", -> online = false
-window.addEventListener "online", -> online = true
+window.addEventListener 'offline', -> online = false
+window.addEventListener 'online', -> online = true
 online = navigator.onLine
-window.applicationCache.addEventListener "error", -> online = false
+window.applicationCache.addEventListener 'error', -> online = false
 applicationCache.addEventListener 'updateready', -> window.location.reload()
 
 $ ->
