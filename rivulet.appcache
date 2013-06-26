@@ -1,14 +1,13 @@
 CACHE MANIFEST
 
-#221
+#227
 
 NETWORK:
 *
-http://*
-https://*
 
 CACHE:
 /static/jquery.min.js
+/static/jquery-2.0.2.min.map
 /static/script.js
 /static/style.css
 /static/logo.png

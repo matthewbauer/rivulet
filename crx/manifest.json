@@ -1,7 +1,7 @@
 {
   "name": "Rivulet",
-  "description": "a simple way to get content in one place from all over the web",
-  "version": "217",
+  "description": "read your feeds",
+  "version": "227",
   "manifest_version": 2,
   "app": {
     "urls": [

@@ -361,6 +361,7 @@ prev = ->
       $('#prev').hide()
     else
       $('#prev').css 'display', 'block'
+    $('#next').show()
     $('body').scrollTo $('.current').offset().top if $('.current').exists()
 
 markAsRead = (elements) ->
