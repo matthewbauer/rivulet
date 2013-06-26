@@ -1,5 +1,5 @@
 application: myrivulet
-version: 217
+version: 218
 runtime: go
 api_version: go1
 
@@ -7,6 +7,10 @@ inbound_services:
 - warmup
 
 handlers:
+- url: /google05548b7e829ace4d.html
+  static_files: google05548b7e829ace4d.html
+  upload: google05548b7e829ace4d.html
+
 - url: /(rivulet.appcache)
   static_files: \1
   upload: rivulet.appcache

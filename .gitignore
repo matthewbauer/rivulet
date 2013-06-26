@@ -2,3 +2,6 @@
 static
 templates
 font-awesome
+google*.html
+jade/analytics.jade
+*.zip
