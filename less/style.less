@@ -1,12 +1,12 @@
-@bgheader: #637CBE;
-@fgheader: #AFAFAF;
+@bgheader: #333333;
+@fgheader: #999999;
 @bgbody: #E8E8E8;
 @fgbody: #484848;
 
 @feedcolor: #24359E;
 @fghover: #FF5100;
 
-@black: #121F36;
+@black: #050505;
 @blue: #24359E;
 @red: #DE0909;
 @green: #00B518;
@@ -81,17 +81,16 @@ a.star:hover ~ a.star:before {
   content: "\2605";
 }
 a.action, a.action:visited {
-  color: @black;
+  color: @fgheader;
   vertical-align: middle;
   font-size: 3em;
   padding-left: .1em;
   padding-right: .1em;
-//  opacity: .5;
+  opacity: .5;
 }
 a.action:hover {
   text-decoration: none;
-//  opacity: 1;
-  color: black;
+  opacity: 1;
 }
 .article {
   padding-top: 1em;
@@ -109,11 +108,13 @@ a.article-link, a.article-link:visited {
   margin-bottom: 1em;
 }
 #next {
+  color: @black;
   display: block;
   text-align: center;
   font-size: 4em;
 }
 #prev {
+  color: @black;
   display: none;
   text-align: center;
   cursor: pointer;
