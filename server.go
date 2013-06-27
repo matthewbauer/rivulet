@@ -222,7 +222,7 @@ func loginGET(context appengine.Context, u *user.User, request *http.Request) (d
 }
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	if u == nil {
+	if user == nil {
 		var redirect Redirect
 		redirect.URL = "/about"
 		return redirect, nil
