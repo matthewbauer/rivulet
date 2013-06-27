@@ -343,6 +343,7 @@ next = ->
       $('body').scrollTo $('.current').offset().top if $('.current').exists()
     else
       if online
+        console.log 'getting more articles'
         nextArticle COUNT, TIMEOUT, 0, makeCurrent, current, index
         $('#next').show()
       else
