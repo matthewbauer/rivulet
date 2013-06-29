@@ -1,5 +1,5 @@
 application: myrivulet
-version: 263
+version: 270
 runtime: go
 api_version: go1
 
@@ -7,9 +7,14 @@ inbound_services:
 - warmup
 
 handlers:
-- url: /google05548b7e829ace4d.html
-  static_files: google05548b7e829ace4d.html
+- url: /(google05548b7e829ace4d.html)
+  static_files: \1
   upload: google05548b7e829ace4d.html
+
+- url: /(rivulet.webapp)
+  static_files: \1
+  upload: rivulet.webapp
+  mime_type: application/x-web-app-manifest+json
 
 - url: /(rivulet.appcache)
   static_files: \1
@@ -19,8 +24,8 @@ handlers:
   static_files: \1
   upload: robots.txt
 
-- url: /favicon.ico
-  static_files: favicon.ico
+- url: /(favicon.ico)
+  static_files: \1
   upload: favicon.ico
 
 - url: /(api|about|offline)
