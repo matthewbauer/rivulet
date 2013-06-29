@@ -22,10 +22,10 @@ body {
 a {
   text-decoration: none;
 }
-a:hover {
+.content a:hover {
   text-decoration: underline;
 }
-a, a:visited {
+.content a, .content a:visited {
   color: @blue
 }
 .content {
@@ -69,6 +69,12 @@ a#tag {
   position: absolute;
   top: 0;
   right: 1em;
+}
+a#tag {
+  text-decoration: none;
+}
+a#tag:hover {
+  text-decoration: underline;
 }
 #toolbar {
   padding-top: 2em;
@@ -134,20 +140,20 @@ a.current {
 .feed {
   list-style-type: none;
 }
-.unsubscribe {
+a.unsubscribe {
   font-size: 3em;
   color: @red;
   text-align: center;
 }
-.unsubscribe:hover {
+a.unsubscribe:hover {
   text-decoration: none;
 }
-.subscribe {
+a.subscribe {
   font-size: 3em;
   color: @green;
   text-align: center;
 }
-.subscribe:hover {
+a.subscribe:hover {
   text-decoration: none;
 }
 #suggested {
@@ -191,4 +197,29 @@ a.current {
 }
 .mf-viral {
   display: none;
+}
+#badge {
+  text-align: center;
+}
+#badge h1 {
+  font-size: 10em;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+#badge p {
+  font-size: 5em;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+#promo {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+#use {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+#credit {
+  margin-top: 1em;
+  margin-bottom: 1em;
 }

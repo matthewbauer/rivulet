@@ -2,13 +2,18 @@
 static
 templates
 font-awesome
+bootstrap
 
 # analytics stuff
 google*.html
 jade/analytics.jade
 
-# chrome files
+# package files
 *.zip
+*.wgt
+*.crx
+*.oex
+wgt
 
 # built application files
 *.apk

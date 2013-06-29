@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" id="http://myrivulet.appspot.com/" version="1" viewmodes="minimized">
+
+<name short="Rivulet" xml:lang="en">Open Source Feed Reader</name>
+<author href= "http://twitter.com/matthewbauer" email="mjbauer95@gmail.com">Matthew Bauer</author>
+<description xml:lang="en">
+  Rivulet is a simple way to get content in one place from all over the web. Like Google Reader, it loads web feeds (RSS and Atom) and displays them to the user. But, Rivulet is simpler and easier to use. Rivulet is a "River of News" that makes users focus on reading instead of managing their feeds.
+</description>
+
+<icon src="icon64.png"/>
+<content src="index.html" type="text/html" encoding="utf-8"/>
+
+<feature name="opera:speeddial" required="true">
+  <param name="url" value="http://myrivulet.appspot.com/"/>
+</feature>
+
+<feature name="opera:share-cookies" required="true"/>
+
+<access origin="http://myrivulet.appspot.com/" subdomains="true"/>
+
+</widget>

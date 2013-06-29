@@ -1,7 +1,7 @@
 {
   "name": "Rivulet",
   "description": "read your feeds",
-  "version": "270",
+  "version": "290",
   "manifest_version": 2,
   "app": {
     "urls": [
