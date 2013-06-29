@@ -232,7 +232,7 @@ func (LandingData) Send() bool       { return true }
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	if user != nil {
 		var redirect Redirect
-		redirect.URL = "/app"
+		redirect.URL = "/login"
 		return redirect, nil
 	}
 	var landingData LandingData
