@@ -4,12 +4,13 @@
 @fgbody: #484848;
 
 @feedcolor: #24359E;
-@fghover: #FF5100;
+@fghover: #e15a00;
 
 @black: #050505;
 @blue: #24359E;
 @red: #DE0909;
 @green: #00B518;
+@orange: #FF7400;
 
 body {
   padding: 0;
@@ -76,6 +77,16 @@ a#tag {
 a#tag:hover {
   text-decoration: underline;
 }
+a#back {
+  position: absolute;
+  font-size: 3em;
+  top: .3em;
+  left: 4em;
+  color: @fgheader;
+}
+a#back:hover {
+  color: @orange;
+}
 #toolbar {
   padding-top: 2em;
 }
@@ -92,11 +103,10 @@ a.action, a.action:visited {
   font-size: 3em;
   padding-left: .5em;
   padding-right: .5em;
-  opacity: .5;
 }
 a.action:hover {
   text-decoration: none;
-  opacity: 1;
+  color: @orange;
 }
 .article {
   padding-top: 1em;
@@ -219,7 +229,8 @@ a.subscribe:hover {
   margin-top: 1em;
   margin-bottom: 1em;
 }
-#credit {
+div#credit {
+  position: static;
   margin-top: 1em;
   margin-bottom: 1em;
 }

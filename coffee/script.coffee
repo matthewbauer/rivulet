@@ -238,9 +238,12 @@ addArticle = (data) ->
     append(
       $('<div/>').
         addClass('article-content').
-        html($.parseHTML(data['Content'])).
-        click (event) ->
+        html($.parseHTML(data['Content']))
     )
+    #$('.article-content a').on('click', ->
+    #    window.open($(this).attr('href'))
+    #    false
+    #)
 
 offlineSetup = ->
   localArticles = localStorage.getObj 'articles'
@@ -269,8 +272,8 @@ makeCurrent = (articles, current) ->
   makeArticle articles
   for article in articles.slice(0, LIST)
     articleElement = document.getElementById(article.attr('id'))
-    #if articleElement?
-    articleElement.classList.add('current')
+    if articleElement?
+      articleElement.classList.add('current')
   removeCurrent current
   if $('.current').index() is 0
     $('#prev').hide()
