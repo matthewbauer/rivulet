@@ -194,7 +194,8 @@ func writeOutput(writer http.ResponseWriter, data Data, output OUTPUT) (err erro
 func logoutGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
 	if u != nil {
 		var url string
-		url, err = user.LogoutURL(context, "/")
+		request.URL.Path = "/"
+		url, err = user.LogoutURL(context, request.URL.String())
 		if err != nil {
 			return
 		}
@@ -210,7 +211,7 @@ func logoutGET(context appengine.Context, u *user.User, request *http.Request) (
 func loginGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
 	if u == nil {
 		var url string
-		request.URL.Path = "/"
+		request.URL.Path = "/app"
 		url, err = user.LoginURL(context, request.URL.String())
 		if err != nil {
 			return
@@ -220,7 +221,7 @@ func loginGET(context appengine.Context, u *user.User, request *http.Request) (d
 		return redirect, nil
 	}
 	var redirect Redirect
-	redirect.URL = "/"
+	redirect.URL = "/app"
 	return redirect, nil
 }
 
@@ -232,7 +233,7 @@ func (LandingData) Send() bool       { return true }
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	if user != nil {
 		var redirect Redirect
-		redirect.URL = "/login"
+		redirect.URL = "/app"
 		return redirect, nil
 	}
 	var landingData LandingData

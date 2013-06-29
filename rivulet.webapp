@@ -17,5 +17,5 @@
   "default_locale": "en",
   "appcache_path": "/rivulet.appcache",
   "fullscreen": "false",
-  "version": "305"
+  "version": "309"
 }
