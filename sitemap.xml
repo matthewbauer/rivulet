@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" 
+  xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+    <url>
+        <loc>http://myrivulet.appspot.com/</loc>
+        <lastmod>2013-06-29</lastmod>
+        <priority>1</priority>
+        <image:image>
+          <image:loc>http://example.com/static/logo.png</image:loc> 
+        </image:image>
+    </url>
+    <url>
+        <loc>http://myrivulet.appspot.com/about</loc>
+        <lastmod>2013-06-29</lastmod>
+        <priority>.8</priority>
+    </url>
+</urlset>
