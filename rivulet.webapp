@@ -1,6 +1,6 @@
 {
   "name": "Rivulet",
-  "description": "Rivulet is a simple way to get content in one place from all over the web. Like Google Reader, it loads web feeds (RSS and Atom) and displays them to the user. But, Rivulet is simpler and easier to use. Rivulet is a "River of News" that makes users focus on reading instead of managing their feeds.")
+  "description": "Rivulet is a simple way to get content in one place from all over the web. Like Google Reader, it loads web feeds (RSS and Atom) and displays them to the user. But, Rivulet is simpler and easier to use. Rivulet is a \"River of News\" that makes users focus on reading instead of managing their feeds.",
   "launch_path": "/app",
   "icons": {
     "16": "/static/icon16.png",
