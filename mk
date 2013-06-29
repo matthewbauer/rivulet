@@ -6,7 +6,7 @@ coffee --compile --output static coffee/*
 #closure static/script.js > static/script.js
 
 jade -o static jade
-cp static/{articles,feeds,user}.html templates
+cp static/{landing,articles,feeds,user}.html templates
 
 lessc less/style.less static/style.css
 

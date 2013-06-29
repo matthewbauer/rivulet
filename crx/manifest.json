@@ -1,14 +1,14 @@
 {
   "name": "Rivulet",
   "description": "read your feeds",
-  "version": "260",
+  "version": "263",
   "manifest_version": 2,
   "app": {
     "urls": [
-      "http://myrivulet.appspot.com/"
+      "http://myrivulet.appspot.com/app"
     ],
     "launch": {
-      "web_url": "http://myrivulet.appspot.com/"
+      "web_url": "http://myrivulet.appspot.com/app"
     }
   },
   "icons": {

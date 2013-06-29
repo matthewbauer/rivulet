@@ -37,7 +37,7 @@ var templates *template.Template
 
 func init() {
 	http.HandleFunc("/", server)
-	templates = template.Must(template.ParseFiles("templates/articles.html", "templates/feeds.html", "templates/user.html"))
+	templates = template.Must(template.ParseFiles("templates/landing.html", "templates/articles.html", "templates/feeds.html", "templates/user.html"))
 }
 
 type Data interface {
@@ -74,6 +74,9 @@ var handlers = map[string]map[string]MethodHandler{
 	},
 	"/refresh": {
 		"GET": refreshGET,
+	},
+	"/app": {
+		"GET": appGET,
 	},
 	"/login": {
 		"GET": loginGET,
@@ -221,12 +224,22 @@ func loginGET(context appengine.Context, u *user.User, request *http.Request) (d
 	return redirect, nil
 }
 
+type LandingData struct {}
+func (LandingData) Template() string { return "landing.html" }
+func (LandingData) Redirect() string { return "" }
+func (LandingData) Send() bool       { return true }
+
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	if user == nil {
+	if user != nil {
 		var redirect Redirect
-		redirect.URL = "/about"
+		redirect.URL = "/app"
 		return redirect, nil
 	}
+	var landingData LandingData
+	return landingData, nil
+}
+
+func appGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	return article(context, user, request, 0)
 }
 
