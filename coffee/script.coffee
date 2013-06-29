@@ -399,13 +399,7 @@ removeFeed = (url) ->
   $(document.getElementById(url)).remove()
   location.reload()
 
-window.addEventListener 'offline', -> online = false
-window.addEventListener 'online', -> online = true
-online = navigator.onLine
-window.applicationCache.addEventListener 'error', -> online = false
-applicationCache.addEventListener 'updateready', -> window.location.reload()
-
-$ ->
+articles = () ->
   $('<section/>').
     attr('id', 'articles').
     insertBefore('#next') if not $('#articles').exists()
@@ -417,6 +411,15 @@ $ ->
     next()
   else
     $('body').scrollTo $('.current').offset().top if $('.current').exists()
+
+$ ->
+  window.addEventListener 'offline', -> online = false
+  window.addEventListener 'online', -> online = true
+  online = navigator.onLine
+  window.applicationCache.addEventListener 'error', -> online = false
+  applicationCache.addEventListener 'updateready', -> window.location.reload()
+
+  articles() if $('#next').exists()
 
   $(window).keyup (event) ->
     switch event.which

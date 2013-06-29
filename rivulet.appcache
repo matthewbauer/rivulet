@@ -3,6 +3,9 @@ CACHE MANIFEST
 #311
 
 NETWORK:
+/article
+/feed
+/user
 *
 
 CACHE:
