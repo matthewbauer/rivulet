@@ -118,7 +118,7 @@ if not KeyEvent?
 
 OK = 200
 LIST = 1
-COUNT = 5
+COUNT = 3
 TIMEOUT = 64
 MAXERROR = 3
 
