@@ -153,6 +153,16 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
+		URL:     "http://feeds.washingtonpost.com/rss/rss_ezra-klein",
+		Title:   "Wonk Blog",
+		Default: false,
+	},
+	Feed{
+		URL:     "http://blogs.wsj.com/numbersguy/feed/",
+		Title:   "The Number's Guy",
+		Default: false,
+	},
+	Feed{
 		URL:     "http://feeds.feedburner.com/alistapart/main",
 		Title:   "A List Apart",
 		Default: true,
@@ -203,11 +213,6 @@ var builtinFeeds = []Feed{
 		Default: true,
 	},
 	Feed{
-		URL:     "http://blogs.wsj.com/numbersguy/feed/",
-		Title:   "The Number's Guy",
-		Default: true,
-	},
-	Feed{
 		URL:     "http://flowingdata.com/feed/",
 		Title:   "Flowing Data",
 		Default: true,
@@ -215,11 +220,6 @@ var builtinFeeds = []Feed{
 	Feed{
 		URL:     "http://feeds.kottke.org/main",
 		Title:   "Jason Kottke",
-		Default: true,
-	},
-	Feed{
-		URL:     "http://feeds.washingtonpost.com/rss/rss_ezra-klein",
-		Title:   "Wonk Blog",
 		Default: true,
 	},
 	Feed{
