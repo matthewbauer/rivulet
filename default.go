@@ -108,6 +108,11 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
+		URL:     "http://www.quirksmode.org/blog/atom.xml",
+		Title:   "Quirks Mode",
+		Default: false,
+	},
+	Feed{
 		URL:     "http://feeds.gawker.com/lifehacker/full",
 		Title:   "Lifehacker",
 		Default: false,
