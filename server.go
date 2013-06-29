@@ -192,7 +192,7 @@ func writeOutput(writer http.ResponseWriter, data Data, output OUTPUT) (err erro
 }
 
 func logoutGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
-	if u == nil {
+	if u != nil {
 		var url string
 		url, err = user.LogoutURL(context, "/")
 		if err != nil {
