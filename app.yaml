@@ -26,7 +26,7 @@ handlers:
 
 - url: /favicon.ico
   static_files: favicon.ico
-  upload: fivacion.ico
+  upload: favicon.ico
 
 - url: /(api|about|offline)
   static_files: static/\1.html
