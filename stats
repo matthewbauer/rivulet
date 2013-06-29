@@ -1,0 +1,3 @@
+#!/bin/sh
+
+cloc --exclude-dir=static,templates,icon,font-awesome,android,.git --force-lang=html,jade .
