@@ -15,7 +15,7 @@ yuicompressor static/style.css -o static/style.css
 
 cp icon/* static
 
-sizes='16 24 32 57 64 72 96 114 128 144 195 256'
+sizes='16 24 32 48 57 64 72 96 114 128 144 195 256'
 for size in $sizes
 do
   inkscape -C -e static/icon$size.png -w $size -h $size icon/icon.svg
