@@ -9,8 +9,8 @@ html(manifest='rivulet.appcache')
       #container-content.content
         | {{with .SuggestedFeeds}}
         #suggested
-          form#addfeed(action='/feed', method='post')
-            input(type='url', name='url')
+          form#addfeed.form-inline(action='/feed', method='post')
+            input(type='url', name='url', placeholder='http://www.example.com/feed.rss')
             input(type='submit', value='subscribe')
           h2 Suggested
           ul

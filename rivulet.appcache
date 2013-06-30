@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#355
+#362
 
 NETWORK:
 /article
@@ -15,7 +15,7 @@ CACHE:
 /static/style.css
 /static/logo.png
 /favicon.ico
-/mybootstrap.css
+/bootstrap/css/bootstrap.min.css
 /font-awesome/css/font-awesome.min.css
 /font-awesome/font/FontAwesome.otf
 /font-awesome/font/fontawesome-webfont.eot

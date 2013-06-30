@@ -1,6 +1,7 @@
 @bgheader: #111111;
 @fgheader: #999999;
-@bgbody: #E8E8E8;
+//@bgbody: #E8E8E8;
+@bgbody: #FFFFFF;
 @fgbody: #484848;
 
 @feedcolor: #24359E;
@@ -89,6 +90,7 @@ a#back {
 }
 a#back:hover {
   color: @orange;
+  text-decoration: none;
 }
 #toolbar {
   padding-top: 2em;
@@ -112,8 +114,9 @@ a.action:hover {
   color: @orange;
 }
 .article {
-  padding-top: 1em;
-  padding-bottom: 1em;
+  background-color: #E8E8E8;
+  padding: 2em;
+  border-radius: 2em;
 }
 .article-header {
   font-size: 1.5em;
@@ -130,13 +133,13 @@ a.go, a.go:visited {
   color: @black;
 }
 #next {
-  color: @black;
+  color: @fgbody;
   display: block;
   text-align: center;
   font-size: 4em;
 }
 #prev {
-  color: @black;
+  color: @fgbody;
   display: none;
   text-align: center;
   cursor: pointer;
@@ -167,6 +170,9 @@ a.subscribe:hover {
   text-decoration: none;
 }
 #suggested {
+  margin-left: 15em;
+}
+#addfeed {
 }
 .actions {
   display: none;
@@ -210,7 +216,6 @@ a.subscribe:hover {
   display: none;
 }
 .hero-unit {
-  background-color: #cce;
   margin-left: 7em;
   margin-right: 7em;
   padding-top: .5em;
@@ -218,6 +223,9 @@ a.subscribe:hover {
   font-size: 2em;
 }
 a#add {
+  @media (max-height: 400px) {
+    display: none;
+  }
   position: absolute;
   font-size: 3em;
   top: .3em;
@@ -244,6 +252,7 @@ a.remove:hover {
 }
 a.feedtag:hover {
   color: @orange;
+  text-decoration: none;
 }
 a.remove {
   padding-left: 1em;

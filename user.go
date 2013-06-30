@@ -141,6 +141,15 @@ func unsubscribe(context appengine.Context, user string, url string) (err error)
 			break
 		}
 	}
+	temp := make([]Article, 0, len(userdata.Articles))
+	i := 0
+	for _, article := range userdata.Articles {
+		if article.Feed != url {
+			temp[i] = article
+			i++
+		}
+	}
+	userdata.Articles = temp
 	_, err = putUserData(context, userkey, userdata)
 	query := datastore.NewQuery("Feed").Filter("URL=", url)
 	var feed Feed
