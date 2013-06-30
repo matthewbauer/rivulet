@@ -11,6 +11,7 @@
 @red: #DE0909;
 @green: #00B518;
 @orange: #FF7400;
+@highlight: #91A2C7;
 
 body {
   padding: 0;
@@ -22,6 +23,7 @@ body {
 }
 a {
   text-decoration: none;
+  cursor: pointer;
 }
 .content a:hover {
   text-decoration: underline;
@@ -48,6 +50,7 @@ a {
   @media (max-height: 400px) {
     display: none;
   }
+  z-index: 1;
   box-shadow: .5em 0 .5em .5em #ccc;
   padding-top: .5em;
   padding-bottom: .5em;
@@ -139,6 +142,9 @@ a.go, a.go:visited {
   cursor: pointer;
   font-size: 4em;
 }
+#prev:hover, #next:hover {
+  color: black;
+}
 .read {
   display: none;
 }
@@ -151,24 +157,16 @@ a.current {
   list-style-type: none;
 }
 a.unsubscribe {
-  font-size: 3em;
-  color: @red;
-  text-align: center;
 }
 a.unsubscribe:hover {
   text-decoration: none;
 }
 a.subscribe {
-  font-size: 3em;
-  color: @green;
-  text-align: center;
 }
 a.subscribe:hover {
   text-decoration: none;
 }
 #suggested {
-  float: right;
-  margin-left: 2em;
 }
 .actions {
   display: none;
@@ -208,29 +206,48 @@ a.subscribe:hover {
 .mf-viral {
   display: none;
 }
-#badge {
+.feed-flare {
+  display: none;
+}
+.hero-unit {
+  background-color: #cce;
+  margin-left: 7em;
+  margin-right: 7em;
+  padding-top: .5em;
   text-align: center;
+  font-size: 2em;
 }
-#badge h1 {
-  font-size: 10em;
-  margin-top: 0;
-  margin-bottom: 0;
+a#add {
+  position: absolute;
+  font-size: 3em;
+  top: .3em;
+  left: 5em;
 }
-#badge p {
-  font-size: 5em;
-  margin-top: 0;
-  margin-bottom: 0;
+a#about {
+  position: absolute;
+  right: 2em;
+  top: .5em;
 }
-#promo {
-  margin-top: 1em;
-  margin-bottom: 1em;
+a.label {
+  color: @fgbody;
+  background-color: @highlight;
+  padding: 3px 4px 3px 4px;
 }
-#use {
-  margin-top: 1em;
-  margin-bottom: 1em;
+a.label:hover {
+  text-decoration: none;
 }
-div#credit {
-  position: static;
-  margin-top: 1em;
-  margin-bottom: 1em;
+a.remove:hover {
+  text-decoration: none;
+}
+.label {
+  margin-left: 1em;
+}
+a.feedtag:hover {
+  color: @orange;
+}
+a.remove {
+  padding-left: 1em;
+}
+a.remove:hover {
+  color: @orange;
 }

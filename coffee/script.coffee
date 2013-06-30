@@ -118,7 +118,7 @@ if not KeyEvent?
 
 OK = 200
 LIST = 1
-COUNT = 3
+COUNT = 5
 TIMEOUT = 64
 MAXERROR = 3
 
@@ -237,6 +237,33 @@ addArticle = (data) ->
     ).
     append(
       $('<div/>').
+        addClass('byline').
+        append(
+          $('<span/>').
+            addClass('label').
+            append(
+              $('<a/>').
+                addClass('feedtag').
+                html(data['Feed']).
+                click (event) ->
+                  event.preventDefault()
+                  false
+            ).
+            append(
+              $('<a/>').
+                addClass('remove').
+                attr('title', 'unsubscribe').
+                append(
+                  $('<i/>').
+                    addClass('icon-remove-sign')
+                ).click (event) ->
+                  event.preventDefault()
+                  false
+            )
+        )
+    ).
+    append(
+      $('<div/>').
         addClass('article-content').
         html($.parseHTML(data['Content']))
     )
@@ -351,7 +378,7 @@ next = ->
         $('#next').show()
       else
         $('#next').hide()
-    setTimeout nextArticle, TIMEOUT, COUNT, TIMEOUT, 0, makeArticle if index >= $('#articles').children().last().index() / 2
+    setTimeout nextArticle, TIMEOUT, COUNT, TIMEOUT, 0, makeArticle if index > $('#articles').children().last().index() / 2
 
 prev = ->
   if $('#prev').is ':visible'
@@ -412,6 +439,8 @@ articles = () ->
   else
     $('body').scrollTo $('.current').offset().top if $('.current').exists()
 
+showbar = () ->
+
 $ ->
   window.addEventListener 'offline', -> online = false
   window.addEventListener 'online', -> online = true
@@ -450,6 +479,11 @@ $ ->
       else
         return true
     return false
+
+  $('#showbar').click (event) ->
+    event.preventDefault()
+    showbar()
+    false
 
   $('#prev').click (event) ->
     event.preventDefault()

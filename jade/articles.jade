@@ -3,6 +3,8 @@ html(manifest='rivulet.appcache')
   include head
   body
     include header
+    a#add.action(href='/feed', title='add and remove feeds', target='_self')
+      i.icon-plus-sign
     #container
       #container-content.content
         a#prev.action.icon-arrow-up
@@ -14,11 +16,15 @@ html(manifest='rivulet.appcache')
               a.go.icon-external-link.action(target='_blank', href='{{urlquery .URL}}')
             header.article-header
               a.article-link(target='_blank', href='{{urlquery .URL}}') {{.Title}}
+            .byline.label
+              a {{.Feed}}
+              a.remove(target='_self', title='unsubscribe')
+                i.icon-remove-sign
             .article-content {{.Content}}
           | {{end}}
         | {{else}}
         noscript
           | Article could not be loaded:
-          a(href='/article?count=5') next
+          a(href='/article?count=5', target='_self') next
         | {{end}}
-        a#next.action.icon-arrow-down(href='/article')
+        a#next.action.icon-arrow-down(href='/article', target='_self')

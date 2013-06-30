@@ -9,24 +9,14 @@ html(manifest='rivulet.appcache')
       #container-content.content
         | {{with .SuggestedFeeds}}
         #suggested
+          form#addfeed(action='/feed', method='post')
+            input(type='url', name='url')
+            input(type='submit', value='subscribe')
           h2 Suggested
           ul
             | {{range .}}
             li.feed(id='{{.URL}}')
-              a.subscribe.icon-plus(href='/feed?subscribe=1&url={{.URL}}')
-              a.feed-link(href='{{.URL}}') {{.Title}}
-            | {{end}}
-          form#addfeed(action='/feed', method='post')
-            input(type='url', name='url')
-            input(type='submit', value='subscribe')
-        | {{end}}
-        | {{with .Feeds}}
-        #feeds
-          h2 Subscribed
-          ul#feeds
-            | {{range .}}
-            li.feed(id='{{.URL}}')
-              a.unsubscribe.icon-minus(href='/feed?unsubscribe=1&url={{.URL}}')
+              a.subscribe.icon-plus-sign(href='/feed?subscribe=1&url={{.URL}}')
               a.feed-link(href='{{.URL}}') {{.Title}}
             | {{end}}
         | {{end}}
