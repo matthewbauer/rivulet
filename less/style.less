@@ -80,14 +80,19 @@ a#tag {
 a#tag:hover {
   text-decoration: underline;
 }
-a#back {
-  position: absolute;
+span#nav {
+  @media (max-height: 400px) {
+    display: none;
+  }
   font-size: 3em;
+  position: absolute;
   top: .3em;
   left: 4em;
+}
+span#nav a {
   color: @fgheader;
 }
-a#back:hover {
+span#nav a:hover {
   color: @orange;
   text-decoration: none;
 }
@@ -176,8 +181,6 @@ a.subscribe:hover {
 #suggested {
   margin-left: 15em;
 }
-#addfeed {
-}
 .actions {
   display: none;
   @media (max-width: 300px) {
@@ -220,26 +223,15 @@ a.subscribe:hover {
   display: none;
 }
 .hero-unit {
+  border: 1px solid #d0d0d0;
   margin-left: 7em;
   margin-right: 7em;
   padding-top: .5em;
   padding-bottom: .5em;
   text-align: center;
   font-size: 2em;
-}
-a#add {
-  @media (max-height: 400px) {
-    display: none;
-  }
-  position: absolute;
-  font-size: 3em;
-  top: .3em;
-  left: 5em;
-}
-a#about {
-  position: absolute;
-  right: 2em;
-  top: .5em;
+  margin-top: .8em;
+  margin-bottom: .8em;
 }
 .label {
 //  color: @fgbody;

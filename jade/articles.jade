@@ -3,8 +3,9 @@ html(manifest='rivulet.appcache')
   include head
   body
     include header
-    a#add.action(href='/feed', title='add and remove feeds', target='_self')
-      i.icon-plus-sign
+    span#nav
+      a#add(href='/feed', title='add and remove feeds', target='_self')
+        i.icon-plus-sign
     #container
       #container-content.content
         a#prev.action.icon-arrow-up

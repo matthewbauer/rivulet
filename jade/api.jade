@@ -3,8 +3,9 @@ html(manifest='rivulet.appcache')
   include head
   body
     include header
-    a#back(href='/app', target='_self')
-      i.icon-chevron-sign-left
+    span#nav
+      a#back(href='/app', target='_self')
+        i.icon-chevron-sign-left
     #container
       #container-content.content
         h1 API info
