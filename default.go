@@ -158,6 +158,11 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
+		URL:     "http://feeds.feedburner.com/codinghorror/",
+		Title:   "Coding Horror",
+		Default: true,
+	},
+	Feed{
 		URL:     "http://www.reddit.com/.rss",
 		Title:   "Reddit",
 		Default: true,
