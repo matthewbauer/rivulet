@@ -149,6 +149,8 @@ func server(writer http.ResponseWriter, request *http.Request) {
 	if handlers[request.URL.Path][request.Method] == nil {
 		if handlers[request.URL.Path]["*"] != nil {
 			data, err = handlers[request.URL.Path]["*"](context, u, request)
+		} else if request.Method == "HEAD" && handlers[request.URL.Path]["GET"] != nil {
+			data, err = handlers[request.URL.Path]["GET"](context, u, request)
 		} else {
 			writer.WriteHeader(http.StatusMethodNotAllowed)
 			fmt.Fprintf(writer, "%v: method not allowed", http.StatusMethodNotAllowed)
@@ -162,7 +164,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if data == nil || !data.Send() {
+	if data == nil || !data.Send() || request.Method == "HEAD" {
 		writer.WriteHeader(http.StatusOK)
 		return
 	}
