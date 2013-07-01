@@ -218,6 +218,29 @@ addArticle = (data) ->
         )
     ).
     append(
+        $('<span/>').
+          addClass('label').
+          addClass('feedtag').
+          append(
+            $('<a/>').
+              html(data['Feed']).
+              click (event) ->
+                event.preventDefault()
+                false
+          )
+#          append(
+#            $('<a/>').
+#              addClass('remove').
+#              attr('title', 'unsubscribe').
+#              append(
+#                $('<i/>').
+#                  addClass('icon-remove-sign')
+#              ).click (event) ->
+#                event.preventDefault()
+#                false
+#          )
+    ).
+    append(
       $('<header/>').
         addClass('article-header').
         append(
@@ -235,33 +258,7 @@ addArticle = (data) ->
               false
         )
     ).
-    append(
-      $('<div/>').
-        addClass('byline').
-        append(
-          $('<span/>').
-            addClass('label').
-            append(
-              $('<a/>').
-                addClass('feedtag').
-                html(data['Feed']).
-                click (event) ->
-                  event.preventDefault()
-                  false
-            ).
-            append(
-              $('<a/>').
-                addClass('remove').
-                attr('title', 'unsubscribe').
-                append(
-                  $('<i/>').
-                    addClass('icon-remove-sign')
-                ).click (event) ->
-                  event.preventDefault()
-                  false
-            )
-        )
-    ).
+
     append(
       $('<div/>').
         addClass('article-content').
@@ -314,6 +311,7 @@ nextArticle = (count, timeout, errornum, fun, current) ->
   if not current?
     current = $('.current')
   $.getJSON('/article?output=json&count=' + count, (data) ->
+    _gaq.push(['_trackPageview', '/article?output=json&count=' + count])
     if data['URL'] is '/feed'
       if errornum < MAXERROR
         nextArticle count, timeout, errornum + 1, fun, current
@@ -378,7 +376,7 @@ next = ->
         $('#next').show()
       else
         $('#next').hide()
-    setTimeout nextArticle, TIMEOUT, COUNT, TIMEOUT, 0, makeArticle if index > $('#articles').children().last().index() / 2
+    setTimeout nextArticle, TIMEOUT, COUNT, TIMEOUT, 0, makeArticle if index >= $('#articles').children().last().index() - 2
 
 prev = ->
   if $('#prev').is ':visible'
