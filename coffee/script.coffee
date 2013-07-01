@@ -311,7 +311,7 @@ nextArticle = (count, timeout, errornum, fun, current) ->
   if not current?
     current = $('.current')
   $.getJSON('/article?output=json&count=' + count, (data) ->
-    _gaq.push(['_trackPageview', '/article?output=json&count=' + count])
+    #_gaq.push(['_trackPageview', '/article?output=json&count=' + count])
     if data['URL'] is '/feed'
       if errornum < MAXERROR
         nextArticle count, timeout, errornum + 1, fun, current
