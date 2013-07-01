@@ -1,11 +1,15 @@
 CACHE MANIFEST
 
-#362
+#371
 
 NETWORK:
 /article
 /feed
 /user
+https://google-analytics.com/ga.js
+http://google-analytics.com/ga.js
+http://*
+https://*
 *
 
 CACHE:
@@ -16,6 +20,7 @@ CACHE:
 /static/logo.png
 /favicon.ico
 /bootstrap/css/bootstrap.min.css
+/bootstrap/js/bootstrap.min.js
 /font-awesome/css/font-awesome.min.css
 /font-awesome/font/FontAwesome.otf
 /font-awesome/font/fontawesome-webfont.eot
