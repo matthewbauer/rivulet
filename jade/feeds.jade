@@ -11,12 +11,13 @@ html(manifest='rivulet.appcache')
         #suggested
           form#addfeed.form-inline(action='/feed', method='post')
             input(type='url', name='url', placeholder='http://www.example.com/feed.rss')
-            input(type='submit', value='subscribe')
+            input.btn(type='submit', value='subscribe')
           h2 Suggested
           ul
             | {{range .}}
             li.feed(id='{{.URL}}')
-              a.subscribe.icon-plus-sign(href='/feed?subscribe=1&url={{.URL}}')
+              a.subscribe.btn(href='/feed?subscribe=1&url={{.URL}}')
+                i.icon-plus
               a.feed-link(href='{{.URL}}') {{.Title}}
             | {{end}}
         | {{end}}

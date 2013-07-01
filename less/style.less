@@ -17,7 +17,6 @@
 body {
   padding: 0;
   margin: 0;
-  -webkit-overflow-scrolling: touch;
   color: @black;
   background-color: @bgbody;
   font-family: helvetica,arial,sans-serif;
@@ -114,11 +113,16 @@ a.action:hover {
   color: @orange;
 }
 .article {
-  background-color: #E8E8E8;
+  //background-color: #E8E8E8;
+  //background-color: #B5C7C7;
+  //background-color: #D9EBEB;
+  background-color: #F8F8F8;
   padding: 2em;
-  border-radius: 2em;
+  border: 1px solid #d0d0d0;
+  border-radius: 1em;
 }
 .article-header {
+  margin-left: 1em;
   font-size: 1.5em;
 }
 a.article-link, a.article-link:visited {
@@ -219,6 +223,7 @@ a.subscribe:hover {
   margin-left: 7em;
   margin-right: 7em;
   padding-top: .5em;
+  padding-bottom: .5em;
   text-align: center;
   font-size: 2em;
 }
@@ -240,6 +245,7 @@ a.label {
   color: @fgbody;
   background-color: @highlight;
   padding: 3px 4px 3px 4px;
+  float: right;
 }
 a.label:hover {
   text-decoration: none;
@@ -250,7 +256,10 @@ a.remove:hover {
 .label {
   margin-left: 1em;
 }
-a.feedtag:hover {
+.feedtag {
+  float: right;
+}
+.feedtag a:hover {
   color: @orange;
   text-decoration: none;
 }
