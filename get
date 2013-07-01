@@ -1,0 +1,13 @@
+#!/bin/sh
+
+wget 'http://code.jquery.com/jquery-2.0.2.min.js' -O static/jquery.min.js
+wget 'http://code.jquery.com/jquery-2.0.2.min.map' -O static/jquery.min.map
+
+wget 'http://twitter.github.io/bootstrap/assets/bootstrap.zip'
+unzip bootstrap.zip
+rm bootstrap.zip
+
+wget 'http://fortawesome.github.io/Font-Awesome/assets/font-awesome.zip'
+unzip font-awesome.zip
+rm font-awesome.zip
+
