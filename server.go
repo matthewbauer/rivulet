@@ -174,16 +174,20 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusFound)
 		return
 	}
-	err = writeOutput(writer, data, output)
+	err = writeOutput(request, writer, data, output)
 }
 
-func writeOutput(writer http.ResponseWriter, data Data, output OUTPUT) (err error) {
+func writeOutput(request *http.Request, writer http.ResponseWriter, data Data, output OUTPUT) (err error) {
 	switch output {
 	case JSON:
 		var bytes []byte
 		bytes, err = json.Marshal(data)
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusOK)
+		if request.FormValue("callback") != "" {
+			fmt.Fprintf(writer, "%v(%s);", request.FormValue("callback"), bytes)
+			return
+		}
 		writer.Write(bytes)
 	default:
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")

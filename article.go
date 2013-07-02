@@ -161,6 +161,11 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 	userdata.Articles = userdata.Articles[count:]
 	userdata.TotalRead += int64(count)
 	_, err = putUserData(context, userkey, userdata)
+	if request.FormValue("output") == "redirect" {
+		var redirect Redirect
+		redirect.URL = articleData.Articles[0].URL
+		return redirect, nil
+	}
 	return articleData, err
 }
 

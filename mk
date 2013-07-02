@@ -11,6 +11,7 @@ cp static/{landing,articles,feeds,user}.html templates
 lessc less/style.less static/style.css
 
 yuicompressor static/script.js -o static/script.js
+yuicompressor static/bookmark.js -o static/bookmark.js
 yuicompressor static/style.css -o static/style.css
 
 cp icon/* static
