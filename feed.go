@@ -29,7 +29,6 @@ const (
 
 type FeedInfo struct {
 	URL        string
-	Subscribed bool
 }
 
 type FeedList struct {
@@ -112,6 +111,7 @@ func getDate(dateString string) (date time.Time, err error) {
 }
 
 func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedCache, err error) {
+	feedCache.URL = url
 	var rss RSSStruct
 	err = xml.Unmarshal(body, &rss)
 	if err != nil {
@@ -152,7 +152,8 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 					Content: content,
 					ID:      item.Guid,
 					Date:    date.Unix(),
-					Feed:    feedCache.Title,
+					FeedName:feedCache.Title,
+					FeedURL: feedCache.URL,
 				}
 				err = memcache.Gob.Set(context, &memcache.Item{Key: item.Guid, Object: article})
 				if err != nil {
@@ -170,6 +171,7 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 }
 
 func getAtom(context appengine.Context, body []byte, url string) (feedCache FeedCache, err error) {
+	feedCache.URL = url
 	var feed AtomFeed
 	err = xml.Unmarshal(body, &feed)
 	if err != nil {
@@ -209,7 +211,8 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 				Content: item.Content.Text,
 				ID:      item.Id,
 				Date:    date.Unix(),
-				Feed:    feedCache.Title,
+				FeedName:feedCache.Title,
+				FeedURL: feedCache.URL,
 			}
 			err = memcache.Gob.Set(context, &memcache.Item{Key: item.Id, Object: article})
 			if err != nil {
@@ -258,7 +261,7 @@ func getSubscriptionURL(context appengine.Context, url string) (feed FeedCache, 
 func feedGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	url := request.FormValue("url")
 	if url != "" {
-		if request.FormValue("unsubscribe") == "1" {
+		if request.FormValue("unsubscribe") != "" {
 			err = unsubscribe(context, user.String(), url)
 			if err != nil {
 				return
@@ -266,7 +269,7 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 			var redirect Redirect
 			redirect.URL = "/feed"
 			return redirect, nil
-		} else if request.FormValue("subscribe") == "1" {
+		} else if request.FormValue("subscribe") != "" {
 			err = subscribeUser(context, user, url)
 			if err != nil {
 				return
@@ -327,8 +330,12 @@ func feedPOST(context appengine.Context, user *user.User, request *http.Request)
 	if err != nil {
 		return
 	}
+	subscribe := false
+	if request.FormValue("subscribe") != "" {
+		subscribe = true
+	}
 	for _, feed := range feedList.Feeds {
-		if feed.Subscribed {
+		if subscribe {
 			err = subscribeUser(context, user, feed.URL)
 			if err != nil {
 				printError(context, err, feed.URL)

@@ -21,7 +21,8 @@ type ArticleCache struct {
 	Content string
 	URL     string
 	ID      string
-	Feed    string
+	FeedName string
+	FeedURL string
 	Date    int64
 }
 
@@ -39,7 +40,7 @@ func (ArticleData) Send() bool       { return true }
 
 type Article struct {
 	Rank       int64
-	Feed       string
+	FeedURL    string
 	ID         string
 	Read       bool
 	Interested bool
@@ -130,9 +131,9 @@ func article(context appengine.Context, user *user.User, request *http.Request, 
 		_, err = memcache.Gob.Get(context, article.ID, &articleCache)
 		if err == memcache.ErrCacheMiss {
 			err = nil
-			feedCache, err = getSubscriptionURL(context, article.Feed)
+			feedCache, err = getSubscriptionURL(context, article.FeedURL)
 			if err != nil {
-				printError(context, err, article.Feed)
+				printError(context, err, article.FeedURL)
 				err = nil
 				continue
 			}
@@ -235,7 +236,7 @@ func addArticle(context appengine.Context, feed Feed, articleCache ArticleCache)
 		},
 	}*/
 	printInfo(context, fmt.Sprintf("addArticle %v", articleCache.URL))
-	article := Article{Feed: feed.URL, ID: articleCache.ID, Read: false}
+	article := Article{FeedURL: feed.URL, ID: articleCache.ID, Read: false}
 	var userkey *datastore.Key
 	var userdata UserData
 	if feed.Default {

@@ -1,8 +1,9 @@
 CACHE MANIFEST
 
-#379
+#409
 
 NETWORK:
+/
 /article
 /feed
 /user
@@ -20,13 +21,14 @@ CACHE:
 /static/logo.png
 /favicon.ico
 /bootstrap/css/bootstrap.min.css
+/bootstrap/css/bootstrap-responsive.min.css
 /bootstrap/js/bootstrap.min.js
 /font-awesome/css/font-awesome.min.css
 /font-awesome/font/FontAwesome.otf
 /font-awesome/font/fontawesome-webfont.eot
 /font-awesome/font/fontawesome-webfont.svg
-/font-awesome/font/fontawesome-webfont.ttf
-/font-awesome/font/fontawesome-webfont.woff
+/font-awesome/font/fontawesome-webfont.ttf?v=3.2.1
+/font-awesome/font/fontawesome-webfont.woff?v=3.2.1
 
 FALLBACK:
 / /offline

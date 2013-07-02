@@ -187,6 +187,18 @@ show = (element) ->
 
 hide = (element) ->
 
+unsubscribe = (url) ->
+  data = Feeds: [
+    URL: url
+  ]
+  $.postJSON '/feed?unsubscribe=1', data
+
+subscribe = (url) ->
+  data = Feeds: [
+    URL: url
+  ]
+  $.postJSON '/feed?subscribe=1', data
+
 addArticle = (data) ->
   $('<article/>').
     addClass('article').
@@ -223,22 +235,32 @@ addArticle = (data) ->
           addClass('feedtag').
           append(
             $('<a/>').
-              html(data['Feed']).
+              addClass('feedname').
+              attr('href', data['FeedURL']).
+              attr('target', '_blank').
+              html(data['FeedName']).
               click (event) ->
                 event.preventDefault()
                 false
+          ).
+          append(
+            $('<a/>').
+              addClass('remove').
+              attr('title', 'unsubscribe').
+              append(
+                $('<i/>').
+                  addClass('icon-remove-sign')
+              ).click (event) ->
+                event.preventDefault()
+                feedurl = $(this).parent().find('.feedname').attr('href')
+                feedname = $(this).parent().find('.feedname').html()
+                $('#unsubscribe-alert').
+                  find('.feed-name').html(feedname)
+                $('#unsubscribe-alert').
+                  find('.feed-url').html(feedurl).attr('href', feedurl)
+                $('#unsubscribe-alert').modal('toggle')
+                false
           )
-#          append(
-#            $('<a/>').
-#              addClass('remove').
-#              attr('title', 'unsubscribe').
-#              append(
-#                $('<i/>').
-#                  addClass('icon-remove-sign')
-#              ).click (event) ->
-#                event.preventDefault()
-#                false
-#          )
     ).
     append(
       $('<header/>').
@@ -406,24 +428,6 @@ markAsRead = (elements) ->
         break
   localStorage.setObj 'articles', localArticles
 
-addFeed = (url) ->
-  data = Feeds: [
-    Subscribed: true
-    URL: url
-  ]
-  $.postJSON '/feed', data
-  $(document.getElementById(url)).remove()
-  location.reload()
-
-removeFeed = (url) ->
-  data = Feeds: [
-    Subscribed: false
-    URL: url
-  ]
-  $.postJSON '/feed', data
-  $(document.getElementById(url)).remove()
-  location.reload()
-
 articles = () ->
   $('<section/>').
     attr('id', 'articles').
@@ -437,7 +441,8 @@ articles = () ->
   else
     $('body').scrollTo $('.current').offset().top if $('.current').exists()
 
-showbar = () ->
+addfeed = ->
+  $('#feedmodal').modal('toggle')
 
 $ ->
   window.addEventListener 'offline', -> online = false
@@ -483,6 +488,11 @@ $ ->
     showbar()
     false
 
+  $('#add').click (event) ->
+    event.preventDefault()
+    addfeed()
+    false
+
   $('#prev').click (event) ->
     event.preventDefault()
     prev()
@@ -493,12 +503,20 @@ $ ->
     next()
     false
 
-  $('.subscribe').click (event) ->
-    event.preventDefault()
-    addFeed event.currentTarget.parentNode.getAttribute 'id'
-    false
+  $('#unsubscribe-ok').click (event) ->
+    feedurl = $('#unsubscribe-alert').find('.feed-url').html()
+    $('.current').removeClass('current unread').addClass('read').fadeOut('slow', ->
+      next()
+    )
+    $('.article').each(->
+      if feedurl is $(this).find('.feedname').attr('href')
+        $(this).remove()
+    )
+    localArticles = localStorage.getObj('articles')
+    newArticles = []
+    for article in localArticles
+      if article['FeedURL'] is not feedurl
+        newArticles.push(article)
+    localStorage.setObj 'articles', newArticles
+    unsubscribe(feedurl)
 
-  $('.unsubscribe').click (event) ->
-    event.preventDefault()
-    removeFeed event.currentTarget.parentNode.getAttribute 'id'
-    false

@@ -9,6 +9,28 @@ html(manifest='rivulet.appcache')
     #container
       #container-content.content
         a#prev.action.icon-arrow-up
+        #unsubscribe-alert.modal.hide.fade.in
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h3
+              | Are you sure you want to unsubscribe from 
+              span.feed-name
+              | ?
+          .modal-body
+            | This will remove all articles in your reading list from the feed with the url of 
+            a.feed-url
+          .modal-footer
+            a#unsubscribe-ok.btn.btn-danger(data-dismiss='modal') Unsubscribe
+            a.btn(href='#', data-dismiss='modal') No
+        #feedmodal.modal.hide.fade.in
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+            h3 Add Feeds
+          .modal-body
+            form#addfeed.form-inline(action='/feed', method='post')
+              input(type='url', name='url', placeholder='http://www.example.com/feed.rss')
+          .modal-footer
+            a.btn(href='#', data-dismiss='modal') Close
         | {{with .Articles}}
         section#articles
           | {{range .}}
@@ -18,7 +40,7 @@ html(manifest='rivulet.appcache')
             header.article-header
               a.article-link(target='_blank', href='{{urlquery .URL}}') {{.Title}}
             .byline.label
-              a {{.Feed}}
+              a(href='{{.FeedURL}}') {{.FeedName}}
               a.remove(target='_self', title='unsubscribe')
                 i.icon-remove-sign
             .article-content {{.Content}}

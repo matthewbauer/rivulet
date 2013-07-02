@@ -158,13 +158,18 @@ var builtinFeeds = []Feed{
 		Default: false,
 	},
 	Feed{
-		URL:     "http://feeds.feedburner.com/codinghorror/",
-		Title:   "Coding Horror",
+		URL:     "http://www.reddit.com/.rss",
+		Title:   "Reddit",
+		Default: false,
+	},
+	Feed{
+		URL:     "http://feeds.feedburner.com/brainpickings/rss",
+		Title:   "Brain Pickings",
 		Default: true,
 	},
 	Feed{
-		URL:     "http://www.reddit.com/.rss",
-		Title:   "Reddit",
+		URL:     "http://feeds.feedburner.com/codinghorror/",
+		Title:   "Coding Horror",
 		Default: true,
 	},
 	Feed{

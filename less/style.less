@@ -25,10 +25,19 @@ a {
   text-decoration: none;
   cursor: pointer;
 }
-.content a:hover {
+#articles {
+ margin-top: 1em;
+}
+#articles a:hover {
   text-decoration: underline;
 }
-.content a, .content a:visited {
+.feedtag a {
+  color: @blue;
+}
+a.remove, a.remove:hover, a.remove:visited {
+  text-decoration: none;
+}
+.article-content a, .article-content a:visited {
   color: @blue
 }
 .content {
@@ -47,9 +56,9 @@ a {
   }
 }
 #header {
-  @media (max-height: 400px) {
-    display: none;
-  }
+ // @media (max-height: 400px) {
+ //   display: none;
+ // }
   z-index: 1;
   box-shadow: .5em 0 .5em .5em #ccc;
   padding-top: .5em;
@@ -69,7 +78,7 @@ a {
 a#tag {
   font-style: italic;
   text-decoration: bold;
-  color: @fgheader;
+  color: @fgbody;
   position: absolute;
   top: 0;
   right: 1em;
@@ -81,13 +90,13 @@ a#tag:hover {
   text-decoration: underline;
 }
 span#nav {
-  @media (max-height: 400px) {
-    display: none;
+  @media (max-width: 480px) {
+   display: none;
   }
   font-size: 3em;
-  position: absolute;
-  top: .3em;
-  left: 4em;
+  position: fixed;
+  top: 20px;
+  left: 5%;
 }
 span#nav a {
   color: @fgheader;
@@ -167,6 +176,9 @@ a.current {
 }
 .feed {
   list-style-type: none;
+  border: 1px solid;
+  border-radius: 1em;
+  padding: 1em;
 }
 a.unsubscribe {
 }
@@ -258,4 +270,7 @@ a.remove {
 }
 a.remove:hover {
   color: @orange;
+}
+#addfeed {
+ width: 95%;
 }

@@ -142,11 +142,9 @@ func unsubscribe(context appengine.Context, user string, url string) (err error)
 		}
 	}
 	temp := make([]Article, 0, len(userdata.Articles))
-	i := 0
 	for _, article := range userdata.Articles {
-		if article.Feed != url {
-			temp[i] = article
-			i++
+		if article.FeedURL != url {
+			temp = append(temp, article)
 		}
 	}
 	userdata.Articles = temp
@@ -215,7 +213,7 @@ func subscribeUser(context appengine.Context, user *user.User, url string) (err 
 func selected(context appengine.Context, userdata UserData, article Article) (UserData, error) {
 	found := false
 	for i, value := range userdata.Prefs {
-		if value.Field == "field" && value.Value == article.Feed {
+		if value.Field == "field" && value.Value == article.FeedURL {
 			found = true
 			value.Score += 1
 			userdata.Prefs[i] = value
@@ -224,8 +222,8 @@ func selected(context appengine.Context, userdata UserData, article Article) (Us
 	}
 	if !found {
 		userdata.Prefs = append(userdata.Prefs, Pref{
-			Field: "feed",
-			Value: article.Feed,
+			Field: "feedurl",
+			Value: article.FeedURL,
 			Score: 1,
 		})
 	}
