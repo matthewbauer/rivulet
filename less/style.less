@@ -29,7 +29,7 @@ a {
  margin-top: 1em;
 }
 #articles a:hover {
-  text-decoration: underline;
+//  text-decoration: underline;
 }
 .feedtag a {
   color: @blue;
@@ -66,6 +66,13 @@ a.remove, a.remove:hover, a.remove:visited {
   color: @fgheader;
   background-color: @bgheader;
 }
+.feedtag a:hover {
+  color: @orange;
+  text-decoration: none;
+}
+.actions a:hover {
+  text-decoration: none;
+}
 #logo {
   vertical-align: middle;
 }
@@ -89,7 +96,8 @@ a#tag {
 a#tag:hover {
   text-decoration: underline;
 }
-span#nav {
+#nav {
+  list-style-type: none;
   @media (max-width: 480px) {
    display: none;
   }
@@ -98,10 +106,10 @@ span#nav {
   top: 20px;
   left: 5%;
 }
-span#nav a {
+#nav a {
   color: @fgheader;
 }
-span#nav a:hover {
+#nav a:hover {
   color: @orange;
   text-decoration: none;
 }
@@ -115,10 +123,12 @@ a.star:hover:before,
 a.star:hover ~ a.star:before {
   content: "\2605";
 }
+a.star {
+ display: none;
+}
 a.action, a.action:visited {
   color: @fgheader;
   vertical-align: middle;
-  font-size: 3em;
   padding-left: .5em;
   padding-right: .5em;
 }
@@ -194,7 +204,6 @@ a.subscribe:hover {
   margin-left: 15em;
 }
 .actions {
-  display: none;
   @media (max-width: 300px) {
     display: none;
   }
@@ -252,31 +261,30 @@ a.subscribe:hover {
   float: right;
   margin-left: 1em;
 }
-.label:hover {
-  text-decoration: none;
-}
 a.remove:hover {
   text-decoration: none;
 }
+.go {
+  display: none;
+}
 .feedtag {
   float: right;
-}
-.feedtag a:hover {
-  color: @orange;
-  text-decoration: none;
+  background-color: inherit;
+  border: 1px solid #ccc;
 }
 a.remove {
   padding-left: 1em;
 }
 a.remove:hover {
+  text-decoration: none;
   color: @orange;
 }
-#addfeed {
- width: 95%;
+#addfeed input {
+  width: 95%;
 }
 #bookmarklet {
- border: 1px solid;
-// background-color: #0320FF;
- border-radius: .25em;
- padding: .25em .5em;
+  border: 1px solid;
+//  background-color: #0320FF;
+  border-radius: .25em;
+  padding: .25em .5em;
 }

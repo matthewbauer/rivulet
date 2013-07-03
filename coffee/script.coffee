@@ -206,30 +206,6 @@ addArticle = (data) ->
     attr('id', data['ID']).
     hide().
     append(
-      $('<span/>').
-        addClass('actions').
-#        append(
-#          $('<a/>').
-#            addClass('star').
-#            addClass('icon-star-empty').
-#            addClass('action').
-#            attr('target', '_blank').
-#            attr('href', '/article?action=star&url=' + data['URL'] + '&id=' + data['ID']).
-#            click (event) ->
-#              event.preventDefault()
-#              $.getJSON '/article?id=' + encodeURIComponent($(this).attr('id'))
-#              false
-#        ).
-        append(
-          $('<a/>').
-            addClass('go').
-            addClass('icon-external-link').
-            addClass('action').
-            attr('target', '_blank').
-            attr('href', data['URL'])
-        )
-    ).
-    append(
         $('<span/>').
           addClass('label').
           addClass('feedtag').
@@ -249,7 +225,7 @@ addArticle = (data) ->
               attr('title', 'unsubscribe').
               append(
                 $('<i/>').
-                  addClass('icon-remove-sign')
+                  addClass('icon-minus-sign')
               ).click (event) ->
                 event.preventDefault()
                 feedurl = $(this).parent().find('.feedname').attr('href')
@@ -278,8 +254,16 @@ addArticle = (data) ->
               else
                 $('.current').children('.article-content').show()
               false
+        ).
+        append(
+          $('<a/>').
+            addClass('star').
+            addClass('icon-star-empty').
+            addClass('action').
+            attr('href', 'https://www.instapaper.com/api/add?url=' + encodeURIComponent(data['URL']) + '&redirect=close&title=' + encodeURIComponent(data['Title']) + '&selection=' + encodeURIComponent(data['Content'])).
+            attr('target', '_blank')
         )
-    ).
+      ).
 
     append(
       $('<div/>').

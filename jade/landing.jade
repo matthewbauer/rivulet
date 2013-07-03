@@ -2,14 +2,11 @@
 html
   include head
   body
-    #header
-      #tools
-        a(href='/', target='_self')
-          img#logo(alt='rivulet', src='static/logo.png', height='64', width='64', title='rivulet')
-      a#tag(href='/about', target='_self') it's twitter for long attention spans
+    include header
     #container
       #container-content
         #landing.hero-unit
+          img(src='/static/logo.png')
           h1 Rivulet
           p a new way to look at RSS
           p#promo
