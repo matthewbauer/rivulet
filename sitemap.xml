@@ -7,9 +7,16 @@
         <loc>http://myrivulet.appspot.com/</loc>
         <lastmod>2013-06-29</lastmod>
         <priority>1</priority>
-        <image:image>
-          <image:loc>http://example.com/static/logo.png</image:loc> 
-        </image:image>
+    </url>
+    <url>
+        <loc>http://myrivulet.appspot.com/extras</loc>
+        <lastmod>2013-06-29</lastmod>
+        <priority>.8</priority>
+    </url>
+    <url>
+        <loc>http://myrivulet.appspot.com/api</loc>
+        <lastmod>2013-06-29</lastmod>
+        <priority>.8</priority>
     </url>
     <url>
         <loc>http://myrivulet.appspot.com/about</loc>

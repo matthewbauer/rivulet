@@ -32,7 +32,7 @@ type FeedInfo struct {
 }
 
 type FeedList struct {
-	Feeds []FeedInfo
+	Feeds []string
 }
 
 type FeedData struct {
@@ -325,10 +325,28 @@ func feedPOST(context appengine.Context, user *user.User, request *http.Request)
 	if err != nil {
 		return
 	}
+	if request.FormValue("clear") != "" {
+		var userdata UserData
+		_, userdata, err = mustGetUserData(context, user.String())
+		if err != nil {
+			return
+		}
+		for _, feed := range userdata.Feeds {
+			err = unsubscribe(context, user.String(), feed)
+			if err != nil {
+				printError(context, err, feed)
+				err = nil
+				continue
+			}
+		}
+	}
 	var feedList FeedList
 	err = json.Unmarshal(body, &feedList)
 	if err != nil {
-		return
+		feedList.Feeds, err = getOPMLFeeds(body)
+		if err != nil {
+			return
+		}
 	}
 	subscribe := false
 	if request.FormValue("subscribe") != "" {
@@ -336,16 +354,16 @@ func feedPOST(context appengine.Context, user *user.User, request *http.Request)
 	}
 	for _, feed := range feedList.Feeds {
 		if subscribe {
-			err = subscribeUser(context, user, feed.URL)
+			err = subscribeUser(context, user, feed)
 			if err != nil {
-				printError(context, err, feed.URL)
+				printError(context, err, feed)
 				err = nil
 				continue
 			}
 		} else {
-			err = unsubscribe(context, user.String(), feed.URL)
+			err = unsubscribe(context, user.String(), feed)
 			if err != nil {
-				printError(context, err, feed.URL)
+				printError(context, err, feed)
 				err = nil
 				continue
 			}

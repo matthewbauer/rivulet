@@ -188,15 +188,11 @@ show = (element) ->
 hide = (element) ->
 
 unsubscribe = (url) ->
-  data = Feeds: [
-    URL: url
-  ]
+  data = Feeds: [url]
   $.postJSON '/feed?unsubscribe=1', data
 
 subscribe = (url) ->
-  data = Feeds: [
-    URL: url
-  ]
+  data = Feeds: [url]
   $.postJSON '/feed?subscribe=1', data
 
 addArticle = (data) ->

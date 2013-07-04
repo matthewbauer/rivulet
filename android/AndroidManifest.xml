@@ -4,11 +4,11 @@
  
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
  
-    <application android:label="rivulet" android:debuggable="true">
-        <activity android:name=".Rivulet" android:label="rivulet">
+    <application android:allowBackup="true" android:icon="@drawable/ic_launcher" android:label="@string/app_name">
+        <activity android:name=".WebViewActivity" android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>

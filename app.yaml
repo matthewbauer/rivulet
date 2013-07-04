@@ -1,5 +1,5 @@
 application: myrivulet
-version: 431
+version: 434
 runtime: go
 api_version: go1
 
@@ -32,7 +32,7 @@ handlers:
   static_files: favicon.ico
   upload: favicon.ico
 
-- url: /(api|about|offline)
+- url: /(api|about|offline|extras)
   static_files: static/\1.html
   upload: static/(api|about|offline).html
 

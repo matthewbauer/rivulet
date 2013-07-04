@@ -1,0 +1,16 @@
+!!!
+html
+  include head
+  body
+    include header
+    #nav
+      a#back(href='/app', target='_self')
+        i.icon-chevron-sign-left
+    #container
+      #container-content.content
+        h1 Extras
+        h2 Bookmarklet
+        p This bookmark is inspired by Google Reader's bookmarklet. It allows you to get the next unread article in your reading list. Click on it to get the next article.
+        p To use the bookmarklet, simple drag the link below to your bookmark bar.
+        p
+          a#bookmarklet(href='http://myrivulet.appspot.com/article?output=redirect&count=1') Next→ 
