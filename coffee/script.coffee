@@ -213,6 +213,7 @@ addArticle = (data) ->
               html(data['FeedName']).
               click (event) ->
                 event.preventDefault()
+                window.open('/feed?url=' + $(this).attr('href'), '_self')
                 false
           ).
           append(
@@ -250,26 +251,13 @@ addArticle = (data) ->
               else
                 $('.current').children('.article-content').show()
               false
-        ).
-        append(
-          $('<a/>').
-            addClass('star').
-            addClass('icon-star-empty').
-            addClass('action').
-            attr('href', 'https://www.instapaper.com/api/add?url=' + encodeURIComponent(data['URL']) + '&redirect=close&title=' + encodeURIComponent(data['Title']) + '&selection=' + encodeURIComponent(data['Content'])).
-            attr('target', '_blank')
         )
       ).
-
     append(
       $('<div/>').
         addClass('article-content').
         html($.parseHTML(data['Content']))
     )
-    #$('.article-content a').on('click', ->
-    #    window.open($(this).attr('href'))
-    #    false
-    #)
 
 offlineSetup = ->
   localArticles = localStorage.getObj 'articles'

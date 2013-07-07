@@ -1,11 +1,19 @@
 #!/bin/sh
 
-wget 'http://code.jquery.com/jquery-2.0.2.min.js' -O static/jquery.min.js
-wget 'http://code.jquery.com/jquery-2.0.2.min.map' -O static/jquery.min.map
+export UNZIP=-o
+
+wget 'http://code.jquery.com/jquery-2.0.2.min.js' -O jquery.js
+wget 'http://code.jquery.com/jquery-2.0.2.min.map' -O jquery.map
 
 wget 'http://twitter.github.io/bootstrap/assets/bootstrap.zip'
 unzip bootstrap.zip
 rm bootstrap.zip
+
+cd bootstrap
+wget 'http://bootstrap-server.jasny.net/bootstrap-fileupload.zip'
+unzip bootstrap-fileupload.zip
+rm bootstrap-fileupload.zip
+cd ..
 
 wget 'http://fortawesome.github.io/Font-Awesome/assets/font-awesome.zip'
 unzip font-awesome.zip

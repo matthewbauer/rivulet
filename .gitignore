@@ -1,8 +1,11 @@
 # directory stuff
-static
+build
 templates
 font-awesome
 bootstrap
+
+jquery.js
+jquery.map
 
 # analytics stuff
 google*.html

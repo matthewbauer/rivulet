@@ -1,26 +1,38 @@
 #!/bin/sh
 
+./bump
+
 echo 'making'
 
-coffee --compile --output static coffee/*
-#closure static/script.js > static/script.js
+coffee --compile --output build coffee/*
+#closure build/script.js > build/script.js
 
-jade -o static jade
-cp static/{landing,articles,feeds,user}.html templates
+jade -o build jade
+cp build/{landing,articles,feeds,user}.html templates
 
-lessc less/style.less static/style.css
+lessc less/style.less build/style.css
 
-yuicompressor static/script.js -o static/script.js
-yuicompressor static/bookmark.js -o static/bookmark.js
-yuicompressor static/style.css -o static/style.css
-
-cp icon/* static
+yuicompressor build/script.js -o build/script.js
+yuicompressor build/bookmark.js -o build/bookmark.js
+yuicompressor build/style.css -o build/style.css
 
 sizes='16 24 32 48 57 64 72 96 114 128 144 195 256 512'
 for size in $sizes
 do
-  inkscape -C -e static/icon$size.png -w $size -h $size icon/icon.svg
+  inkscape -C -e build/icon$size.png -w $size -h $size static/icon.svg
 done
 
 #./bump
+
+#cd crx
+#zip -r ../rivulet.crx .
+#cd ..
+
+#cd wgt
+#cp ../config.xml .
+#cp ../icon/icon.png .
+#cp ../build/offline.html index.html
+#zip -r ../rivulet.wgt .
+#zip -r ../rivulet.oex .
+#cd ..
 

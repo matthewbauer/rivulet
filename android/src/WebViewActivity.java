@@ -1,11 +1,14 @@
 package com.bauer.rivulet;
- 
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebSettings;
  
+import android.net.Uri;
+import android.content.Intent;
+
 public class WebViewActivity extends Activity {
  
     private WebView webview;
@@ -20,10 +23,12 @@ public class WebViewActivity extends Activity {
 
         webview.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String url){
-                // do your handling codes here, which url is the requested url
-                // probably you need to open that url rather than redirect:
-                view.loadUrl(url);
-                return false; // then it is not handled by default action
+                if (Uri.parse(url).getHost().equals("myrivulet.appspot.com")) {
+                    return false;
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+                return true;
             }
         });
 

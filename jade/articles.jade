@@ -3,10 +3,11 @@ html(manifest='rivulet.appcache')
   include head
   body
     include header
-    li#nav
-      ul
-        a#add(href='/feed', title='add and remove feeds', target='_self')
-          i.icon-plus-sign
+    #sidebar
+      li#nav
+        ul
+          a#add(href='/feed', title='add and remove feeds', target='_self')
+            i.icon-plus-sign
     #container
       #container-content.content
         a#prev.action.icon-arrow-up
@@ -28,15 +29,25 @@ html(manifest='rivulet.appcache')
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
             h3 Add Feeds
           .modal-body
+            h4 By url
             form#addfeed.form-inline(action='/feed', method='post')
-              h4 By url
               input(type='url', name='url', placeholder='http://www.example.com/feed.rss')
-              h4 or by OPML (batch upload)
+              button.btn(type='submit') Submit
+            h4 or by OPML (batch upload)
+            form#opmlfeed.form-inline(action='/feed', method='post')
               .fileupload.fileupload-new(data-provides='fileupload')
-                span.btn.btn-file
-                  span.fileupload-new Select OPML file
-                  input(type='file', accept='application/xml,text/xml,text/x-opml')
-                  input(type='checkbox', name='clear', value='clear') Remove default feeds
+                .input-append
+                  .uneditable-input.span3
+                    i.icon-file.fileupload-exists
+                    span.fileupload-preview
+                  span.btn.btn-file
+                    span.fileupload-new Select .opml file
+                    span.fileupload-exists Change
+                    input(type='file', accept='application/xml,text/xml,text/x-opml')
+                    a.btn.fileupload-exists(href='#', data-dismiss='fileupload') Remove
+              label.checkbox
+                input(type='checkbox', name='clear', value='clear')
+                | Remove default feeds
               button.btn(type='submit') Submit
           .modal-footer
             a.btn(href='#', data-dismiss='modal') Close

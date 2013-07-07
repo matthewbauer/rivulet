@@ -7,6 +7,6 @@ let version++
 echo $version > version
 
 sed -i "s/^version: *[0-9]*$/version: $version/" app.yaml
-sed -i "s/^#[0-9]*$/#$version/" rivulet.appcache
-sed -i "s/^\( *\"version\": *\"\)[0-9]*\(\"\)$/\1$version\2/" rivulet.webapp
+sed -i "s/^#[0-9]*$/#$version/" static/rivulet.appcache
+sed -i "s/^\( *\"version\": *\"\)[0-9]*\(\"\)$/\1$version\2/" static/rivulet.webapp
 sed -i "s/^\( *\"version\": *\"\)[0-9]*\(\",\)$/\1$version\2/" crx/manifest.json

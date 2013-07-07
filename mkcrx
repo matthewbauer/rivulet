@@ -1,5 +1,0 @@
-#!/bin/sh
-
-cd crx
-zip -r ../rivulet.crx .
-cd ..
