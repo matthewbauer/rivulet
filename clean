@@ -1,0 +1,7 @@
+#!/bin/sh
+
+rm -r build
+rm -r templates
+rm -r bootstrap
+rm -r font-awesome
+rm jquery.js jquery.map

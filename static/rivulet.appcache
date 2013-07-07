@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#454
+#459
 
 NETWORK:
 /
@@ -15,19 +15,19 @@ https://*
 *
 
 CACHE:
-/static/jquery.min.js
-/static/jquery-2.0.2.min.map
-/static/script.js
-/static/style.css
-/static/logo.png
 /favicon.ico
+/jquery.js
+/jquery.map
+/script.js
+/style.css
 /bootstrap/css/bootstrap.min.css
 /bootstrap/css/bootstrap-responsive.min.css
 /bootstrap/js/bootstrap.min.js
 /font-awesome/css/font-awesome.min.css
-/font-awesome/font/FontAwesome.otf
-/font-awesome/font/fontawesome-webfont.eot
-/font-awesome/font/fontawesome-webfont.svg
+/font-awesome/font/fontawesome-webfont.svg?v=3.2.1
+/font-awesome/font/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1
+/font-awesome/font/fontawesome-webfont.eot?#iefix&v=3.2.1
+/font-awesome/font/fontawesome-webfont.eot?v=3.2.1
 /font-awesome/font/fontawesome-webfont.ttf?v=3.2.1
 /font-awesome/font/fontawesome-webfont.woff?v=3.2.1
 

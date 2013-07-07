@@ -37,9 +37,6 @@ a {
 .feedtag a {
   color: @blue;
 }
-a.remove, a.remove:hover, a.remove:visited {
-  text-decoration: none;
-}
 .article-content a, .article-content a:visited {
   color: @blue
 }
@@ -72,7 +69,6 @@ ul {
   }
   left: 2.5%;
 }
-
 #header {
  // @media (max-height: 400px) {
  //   display: none;
@@ -83,10 +79,6 @@ ul {
   padding-bottom: .5em;
   color: @fgheader;
   background-color: @bgheader;
-}
-.feedtag a:hover {
-  color: @orange;
-  text-decoration: none;
 }
 .actions a:hover {
   text-decoration: none;
@@ -107,9 +99,6 @@ a#tag {
   position: absolute;
   top: 0;
   right: 1em;
-}
-a#tag {
-  text-decoration: none;
 }
 a#tag:hover {
   text-decoration: underline;
@@ -164,9 +153,6 @@ a.article-link, a.article-link:visited {
 .article-content {
   margin-top: 1em;
   margin-bottom: 1em;
-}
-a.go, a.go:visited {
-  color: @black;
 }
 #next {
   color: @fgbody;
@@ -245,12 +231,6 @@ a.subscribe:hover {
   }
   color: @fgbody;
 }
-.mf-viral {
-  display: none;
-}
-.feed-flare {
-  display: none;
-}
 .hero-unit {
   border: 1px solid #d0d0d0;
   padding-top: .5em;
@@ -267,19 +247,26 @@ a.subscribe:hover {
   float: right;
   margin-left: 1em;
 }
-a.remove:hover {
-  text-decoration: none;
-}
 .go {
   display: none;
+}
+a.go, a.go:visited {
+  color: @black;
 }
 .feedtag {
   float: right;
   background-color: inherit;
   border: 1px solid #ccc;
 }
+.feedtag a:hover {
+  color: @orange;
+  text-decoration: none;
+}
 a.remove {
   padding-left: 1em;
+}
+a.remove, a.remove:visited {
+  text-decoration: none;
 }
 a.remove:hover {
   text-decoration: none;
@@ -294,3 +281,9 @@ a.remove:hover {
   border-radius: .25em;
   padding: .25em .5em;
 }
+
+// feed content
+.mf-viral, .feed-flare, .feedflare {
+  display: none;
+}
+

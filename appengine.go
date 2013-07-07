@@ -6,10 +6,7 @@ package main
 import (
 	"net/http"
 	"net/url"
-	"bytes"
 	"fmt"
-	"encoding/gob"
-	"text/template"
 )
 
 import (
@@ -19,11 +16,6 @@ import (
 	"appengine/user"
 	"appengine/taskqueue"
 )
-
-func init() {
-	http.HandleFunc("/", server)
-	templates = template.Must(template.ParseFiles("templates/landing.html", "templates/articles.html", "templates/feeds.html", "templates/user.html"))
-}
 
 type Context appengine.Context
 func NewContext(r *http.Request) Context {
@@ -51,45 +43,6 @@ func LogoutURL(context Context, dest string) (string, error) {
 }
 
 // datastore
-
-func (userdata *UserData) Load(c <-chan datastore.Property) (err error) {
-	for p := range c {
-		switch p.Name {
-		case "String":
-			userdata.String = p.Value.(string)
-		case "TotalRead":
-			userdata.TotalRead = p.Value.(int64)
-		case "Bytes":
-			reader := bytes.NewBuffer(p.Value.([]byte))
-			decoder := gob.NewDecoder(reader)
-			err = decoder.Decode(userdata)
-			if err != nil {
-				return
-			}
-		}
-	}
-	return
-}
-
-func (userdata *UserData) Save(c chan<- datastore.Property) (err error) {
-	defer close(c)
-	c <- datastore.Property{
-		Name:  "String",
-		Value: userdata.String,
-	}
-	c <- datastore.Property{
-		Name:  "TotalRead",
-		Value: userdata.TotalRead,
-	}
-	writer := bytes.Buffer{}
-	encoder := gob.NewEncoder(&writer)
-	err = encoder.Encode(userdata)
-	if err != nil {
-		return
-	}
-	c <- datastore.Property{Name: "Bytes", Value: writer.Bytes(), NoIndex: true}
-	return
-}
 
 var Done = datastore.Done
 type Key datastore.Key
