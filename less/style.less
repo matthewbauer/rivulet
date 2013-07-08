@@ -15,24 +15,11 @@
 @highlight: #91A2C7;
 
 body {
-  padding: 0;
-  margin: 0;
-  color: @black;
-  background-color: @bgbody;
-  font-family: helvetica,arial,sans-serif;
+  height: 100%;
 }
 a {
   text-decoration: none;
   cursor: pointer;
-}
-#articles {
- margin-top: 1em;
- @media (max-width: 480px) {
-   margin-top: 4em;
- }
-}
-#articles a:hover {
-//  text-decoration: underline;
 }
 .feedtag a {
   color: @blue;
@@ -42,49 +29,38 @@ a {
 }
 .content {
   margin: 0 auto;
+  margin-top: 2em;
   @media (max-width: 480px) {
-    width: 90%;
+    width: 100%;
   }
-  @media (min-width: 480px) and (max-width: 700px) {
+  @media (min-width: 480px) {
     width: 80%;
   }
-  @media (min-width: 700px) and (max-width: 1600px) {
-    width: 75%;
+}
+#sidebar {
+  @media (max-width: 480px) {
+    position: static;
+    width: 100%;
   }
-  @media (min-width: 1680px) {
-    width: 61.80340%;
+  @media (min-width: 480px) {
+    position: fixed;
+    width: 10%;
+    top: 10%;
   }
 }
-ul {
-  margin: 0;
+#sidebar li {
+  @media (max-width: 480px) {
+    display: inline;
+  }
+}
+#sidebar ul {
+  list-style-type: none;
+  font-size: 3em;
+  margin: 0 auto;
+  width: 1em;
 }
 #nav {
   list-style-type: none;
-  font-size: 3em;
-  position: fixed;
-  top: 40px;
-  @media (max-width: 480px) {
-    position: absolute;
-    top: 20px;
-  }
-  left: 2.5%;
-}
-#header {
- // @media (max-height: 400px) {
- //   display: none;
- // }
-  z-index: 1;
-  box-shadow: .5em 0 .5em .5em #ccc;
-  padding-top: .5em;
-  padding-bottom: .5em;
-  color: @fgheader;
-  background-color: @bgheader;
-}
-.actions a:hover {
-  text-decoration: none;
-}
-#logo {
-  vertical-align: middle;
 }
 #credit {
   position: relative;
@@ -113,15 +89,12 @@ a#tag:hover {
 #toolbar {
   padding-top: 2em;
 }
-#container-content {
-  padding-top: 1em;
-}
 a.star:hover:before,
 a.star:hover ~ a.star:before {
   content: "\2605";
 }
 a.star {
- display: none;
+  display: none;
 }
 a.action, a.action:visited {
   color: @fgheader;
@@ -138,12 +111,22 @@ a.action:hover {
   //background-color: #B5C7C7;
   //background-color: #D9EBEB;
   background-color: #F8F8F8;
-  padding: 2em;
   border: 1px solid #d0d0d0;
   border-radius: 1em;
+  @media (max-width: 480px) {
+   padding: 1em;
+  }
+  @media (min-width: 480px) {
+   padding: 2em;
+  }
 }
 .article-header {
-  margin-left: 1em;
+  @media (max-width: 480px) {
+   margin-left: 0;
+  }
+  @media (min-width: 480px) {
+   margin-left: 1em;
+  }
   font-size: 1.5em;
 }
 a.article-link, a.article-link:visited {
@@ -204,6 +187,9 @@ a.subscribe:hover {
   font-size: .5em;
   float: right;
 }
+.actions a:hover {
+  text-decoration: none;
+}
 .feed-link, .feed-link:visited {
   font-size: 1.5em;
   color: @feedcolor;
@@ -212,6 +198,9 @@ a.subscribe:hover {
   overflow: hidden;
   white-space: nowrap;
   text-align: center;
+}
+#container {
+  margin-top: 1em;
 }
 #container > a:hover {
   color: @fghover;
@@ -226,20 +215,9 @@ a.subscribe:hover {
   color: @fgbody;
 }
 .article-content {
-  @media (max-height: 250px) {
-    display: none;
-  }
   color: @fgbody;
 }
-.hero-unit {
-  border: 1px solid #d0d0d0;
-  padding-top: .5em;
-  padding-bottom: .5em;
-  text-align: center;
-  font-size: 2em;
-  margin-top: .8em;
-  margin-bottom: .8em;
-}
+
 .label {
 //  color: @fgbody;
 //  background-color: @highlight;
@@ -254,9 +232,15 @@ a.go, a.go:visited {
   color: @black;
 }
 .feedtag {
-  float: right;
+  @media (min-width: 480px) {
+    float: right;
+  }
+  @media (max-width: 480px) {
+    float: none;
+  }
   background-color: inherit;
   border: 1px solid #ccc;
+  margin-bottom: 1em;
 }
 .feedtag a:hover {
   color: @orange;
@@ -282,8 +266,21 @@ a.remove:hover {
   padding: .25em .5em;
 }
 
+// landing
+.hero-unit {
+}
+#self {
+  font-size: 14px;
+}
+#logo {
+  float: left;
+  margin-right: 40px;
+}
+#use {
+  margin-left: 20px;
+}
+
 // feed content
 .mf-viral, .feed-flare, .feedflare {
   display: none;
 }
-

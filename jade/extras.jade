@@ -3,9 +3,11 @@ html
   include head
   body
     include header
-    #nav
-      a#back(href='/app', target='_self')
-        i.icon-chevron-sign-left
+    #sidebar
+      ul#nav
+        li
+          a#back(href='/app', target='_self', title='back')
+            i.icon-chevron-sign-left
     #container
       #container-content.content
         h1 Extras

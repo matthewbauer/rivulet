@@ -3,22 +3,15 @@ html
   include head
   body
     include header
-    span#nav
-      a#back(href='/app', target='_self')
-        i.icon-chevron-sign-left
+    #sidebar
+      ul#nav
+        li
+          a#back(href='/app', target='_self', title='back')
+            i.icon-chevron-sign-left
     #container
       #container-content.content
         h2 Concept
         p Feed readers should embraces the 'River of News' principle of feed reading. Article reading should be simple and easy to use. It is a free, open source alternative to Google Reader.
-        h2 Support
-        p
-          | This is a non profit app, so support may be hard to find.
-          | Try submitting questions to
-          a(href='http://reddit.com/r/rivulet') our subreddit
-          | . Submit bugs to
-          a(href='https://github.com/matthewbauer/rivulet/issues') our github big tracker
-          | If you have any problems, concerns, or requests, feel free to 
-          a(href='mailto:mjbauer95@gmail.com') email me.
         h2 Creator
         p This app was coded over summer break by Matthew Bauer, a high school student.
         h2 Internals

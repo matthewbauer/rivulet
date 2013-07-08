@@ -3,10 +3,12 @@ html
   include head
   body
     include header
-    span#nav
-      a#back(href='/app', target='_self')
-        i.icon-chevron-sign-left
     #container
+      #sidebar
+        ul
+          li#nav
+            a#back(href='/app', target='_self', title='back')
+              i.icon-chevron-sign-left
       #container-content.content
         | {{with .SuggestedFeeds}}
         #suggested

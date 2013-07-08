@@ -7,6 +7,8 @@ wget 'http://code.jquery.com/jquery-2.0.2.min.js' -O jquery.js
 wget 'http://code.jquery.com/jquery-2.0.2.min.map' -O $MAP
 sed -i "s/sourceMappingURL=\(.*\)/sourceMappingURL=$MAP/" jquery.js
 
+wget http://google-analytics.com/ga.js
+
 wget 'http://twitter.github.io/bootstrap/assets/bootstrap.zip'
 unzip bootstrap.zip
 rm bootstrap.zip

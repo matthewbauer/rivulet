@@ -1,5 +1,5 @@
 application: myrivulet
-version: 459
+version: 521
 runtime: go
 api_version: go1
 
@@ -32,9 +32,13 @@ handlers:
   static_files: static/favicon.ico
   upload: static/favicon.ico
 
-- url: /(api|about|offline|extras)
+- url: /ga.js
+  static_files: ga.js
+  upload: ga.js
+
+- url: /(api|about|offline|extras|help)
   static_files: build/\1.html
-  upload: build/(api|about|offline|extras).html
+  upload: build/(api|about|offline|extras|help).html
 
 - url: /script.js
   static_files: build/script.min.js
@@ -49,32 +53,21 @@ handlers:
   upload: static/logo.png
 
 - url: /icon(.*).png
-  static_files: static/icon\1.png
-  upload: static/icon.*.png
+  static_files: build/icon\1.png
+  upload: build/icon.*.png
 
 - url: /jquery.js
   static_files: jquery.js
   upload: jquery.js
 
-- url: /jquery.map
-  static_files: jquery.map
-  upload: jquery.map
-
 - url: /bootstrap
   static_dir: bootstrap
 
-- url: /font-awesome
-  static_dir: font-awesome
+- url: /font-awesome/font
+  static_dir: font-awesome/font
 
-- url: /font-awesome/font/fontawesome-webfont.eot
-  static_files: font-awesome/font/fontawesome-webfont.eot
-  upload: font-awesome/font/fontawesome-webfont.eot
-  mime_type: application/vnd.ms-fontobject
-
-- url: /font-awesome/font/fontawesome-webfont.woff
-  static_files: font-awesome/font/fontawesome-webfont.woff
-  upload: font-awesome/font/fontawesome-webfont.woff
-  mime_type: application/font-woff
+- url: /font-awesome/css
+  static_dir: font-awesome/css
 
 - url: /
   script: _go_app
@@ -105,6 +98,10 @@ handlers:
   login: required
 
 - url: /refresh
+  script: _go_app
+  login: admin
+
+- url: /_ah/queue/go/delay
   script: _go_app
   login: admin
 

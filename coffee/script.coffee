@@ -471,6 +471,13 @@ $ ->
     next()
     false
 
+  $('#addfeed').submit (event) ->
+    event.preventDefault()
+    url = $('#addfeed').find('input:first').val()
+    subscribe(url)
+    $('#feedmodal').hide()
+    false
+
   $('#unsubscribe-ok').click (event) ->
     feedurl = $('#unsubscribe-alert').find('.feed-url').html()
     $('.current').removeClass('current unread').addClass('read').fadeOut('slow', ->

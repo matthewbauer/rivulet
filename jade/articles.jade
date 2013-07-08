@@ -3,12 +3,21 @@ html(manifest='rivulet.appcache')
   include head
   body
     include header
-    #sidebar
-      li#nav
-        ul
-          a#add(href='/feed', title='add and remove feeds', target='_self')
-            i.icon-plus-sign
     #container
+      #sidebar
+        ul#nav
+          li
+            a#add(href='/feed', title='add and remove feeds', target='_self')
+              i.icon-plus-sign
+          li
+            a(href='/help', title='help me', target='_self')
+              i.icon-question-sign
+          li
+            a(href='http://twitter.com/share?url=http://myrivulet.appspot.com/&text=Rivulet, a simple web-based RSS reader that just works', title='share', target='_blank')
+              i.icon-share-sign
+          li
+            a(href='/extras', title='extras', target='_self')
+              i.icon-rocket
       #container-content.content
         a#prev.action.icon-arrow-up
         #unsubscribe-alert.modal.hide.fade.in

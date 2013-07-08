@@ -1,14 +1,12 @@
 #!/bin/sh
 
-./bump
-
 echo 'making'
 
 mkdir -p build templates
 
 coffee --compile --output build coffee/script.coffee
 
-jade -o build jade/{api,about,offline,extras}.jade
+jade -o build jade/{api,about,offline,extras,help}.jade
 jade -o templates jade/{landing,articles,feeds,user}.jade
 
 lessc less/style.less build/style.css

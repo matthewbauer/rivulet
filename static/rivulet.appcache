@@ -1,28 +1,17 @@
 CACHE MANIFEST
 
-#459
-
-NETWORK:
-/
-/article
-/article*
-/feed
-/user
-https://google-analytics.com/ga.js
-http://google-analytics.com/ga.js
-http://*
-https://*
-*
+#521
 
 CACHE:
 /favicon.ico
 /jquery.js
-/jquery.map
 /script.js
 /style.css
 /bootstrap/css/bootstrap.min.css
 /bootstrap/css/bootstrap-responsive.min.css
 /bootstrap/js/bootstrap.min.js
+/bootstrap/bootstrap-fileupload.min.js
+/bootstrap/bootstrap-fileupload.min.css
 /font-awesome/css/font-awesome.min.css
 /font-awesome/font/fontawesome-webfont.svg?v=3.2.1
 /font-awesome/font/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1
@@ -30,6 +19,9 @@ CACHE:
 /font-awesome/font/fontawesome-webfont.eot?v=3.2.1
 /font-awesome/font/fontawesome-webfont.ttf?v=3.2.1
 /font-awesome/font/fontawesome-webfont.woff?v=3.2.1
+
+NETWORK:
+*
 
 FALLBACK:
 / /offline
