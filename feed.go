@@ -1,13 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
+	"encoding/json"
 )
 
 import (
@@ -110,124 +110,6 @@ func getDate(dateString string) (date time.Time, err error) {
 	return
 }
 
-func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedCache, err error) {
-	feedCache.URL = url
-	var rss RSSStruct
-	err = xml.Unmarshal(body, &rss)
-	if err != nil {
-		//printError(context, err, url)
-		err = nil
-	}
-	var date time.Time
-	for _, channel := range rss.Channel {
-		if channel.Ttl > 0 {
-			feedCache.TimeToLive = time.Duration(channel.Ttl)
-		}
-		feedCache.Title = channel.Title
-		for _, item := range channel.Item {
-			if item.Guid == "" {
-				break
-			}
-			_, err = memcache.Gob.Get(context, item.Guid, nil)
-			if err == memcache.ErrCacheMiss {
-				err = nil
-				if item.DCDate != "" {
-					item.PubDate = item.DCDate
-				}
-				date, err = getDate(item.PubDate)
-				if err != nil {
-					printError(context, fmt.Errorf("rss feed %v has dates that look like %v", channel.Link, item.PubDate), url)
-					err = nil
-					continue
-				}
-				var content string
-				if item.Content != "" {
-					content = item.Content
-				} else {
-					content = item.Description
-				}
-				article := ArticleCache{
-					URL:     item.Link,
-					Title:   item.Title,
-					Content: content,
-					ID:      item.Guid,
-					Date:    date.Unix(),
-					FeedName:feedCache.Title,
-					FeedURL: feedCache.URL,
-				}
-				err = memcache.Gob.Set(context, &memcache.Item{Key: item.Guid, Object: article})
-				if err != nil {
-					printError(context, err, url)
-					err = nil
-					continue
-				}
-				feedCache.Articles = append(feedCache.Articles, article)
-			} else if err != nil {
-				break
-			}
-		}
-	}
-	return
-}
-
-func getAtom(context appengine.Context, body []byte, url string) (feedCache FeedCache, err error) {
-	feedCache.URL = url
-	var feed AtomFeed
-	err = xml.Unmarshal(body, &feed)
-	if err != nil {
-		//printError(context, err, url)
-		err = nil
-	}
-	feedCache.Title = feed.Title
-	var date time.Time
-	for _, item := range feed.Entry {
-		if item.Id == "" {
-			break
-		}
-		_, err = memcache.Gob.Get(context, item.Id, nil)
-		if err == memcache.ErrCacheMiss {
-			err = nil
-			date, err = getDate(item.Updated)
-			if err != nil {
-				printError(context, fmt.Errorf("atom feed %v has dates that look like %v", feed.Link[0].Href, item.Updated), url)
-				err = nil
-				continue
-			}
-			var url string
-			for _, link := range item.Link {
-				if link.Href != "" {
-					url = link.Href
-					if link.Rel == "alternate" {
-						break
-					}
-				}
-			}
-			if url == "" {
-				break
-			}
-			article := ArticleCache{
-				URL:     url,
-				Title:   item.Title,
-				Content: item.Content.Text,
-				ID:      item.Id,
-				Date:    date.Unix(),
-				FeedName:feedCache.Title,
-				FeedURL: feedCache.URL,
-			}
-			err = memcache.Gob.Set(context, &memcache.Item{Key: item.Id, Object: article})
-			if err != nil {
-				printError(context, err, url)
-				err = nil
-				continue
-			}
-			feedCache.Articles = append(feedCache.Articles, article)
-		} else if err != nil {
-			break
-		}
-	}
-	return
-}
-
 func getSubscription(context appengine.Context, format FeedFormat, body []byte, url string) (feed FeedCache, err error) { // url is only used for debugging purposes
 	switch format {
 	case RSS:
@@ -261,23 +143,22 @@ func getSubscriptionURL(context appengine.Context, url string) (feed FeedCache, 
 func feedGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	url := request.FormValue("url")
 	if url != "" {
-		if request.FormValue("unsubscribe") != "" {
-			err = unsubscribe(context, user.String(), url)
-			if err != nil {
-				return
-			}
-			var redirect Redirect
-			redirect.URL = "/feed"
-			return redirect, nil
-		} else if request.FormValue("subscribe") != "" {
-			err = subscribeUser(context, user, url)
-			if err != nil {
-				return
-			}
-			var redirect Redirect
-			redirect.URL = "/feed"
-			return redirect, nil
+		var feed Feed
+		query := datastore.NewQuery("Feed").Filter("URL=", feed)
+		iterator := query.Run(context)
+		_, err = iterator.Next(&feed)
+		if err != nil {
+			return
 		}
+		var articleCache ArticleCache
+		var articleData ArticleData
+		for _, article := range feed.Articles {
+			_, err = memcache.Gob.Get(context, article, &articleCache)
+			if articleCache.URL != "" {
+				articleData.Articles = append(articleData.Articles, articleCache)
+			}
+		}
+		return articleData, err
 	}
 	var feedData FeedData
 	feedData.User = user.String()
@@ -319,55 +200,89 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 	return feedData, nil
 }
 
-func feedPOST(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	var body []byte
-	body, err = ioutil.ReadAll(request.Body)
-	if err != nil {
-		return
-	}
-	if request.FormValue("clear") != "" {
-		var userdata UserData
-		_, userdata, err = mustGetUserData(context, user.String())
-		if err != nil {
-			return
-		}
-		for _, feed := range userdata.Feeds {
-			err = unsubscribe(context, user.String(), feed)
-			if err != nil {
-				printError(context, err, feed)
-				err = nil
-				continue
-			}
-		}
-	}
-	var feedList FeedList
-	err = json.Unmarshal(body, &feedList)
-	if err != nil {
-		feedList.Feeds, err = getOPMLFeeds(body)
-		if err != nil {
-			return
-		}
-	}
-	subscribe := false
-	if request.FormValue("subscribe") != "" {
-		subscribe = true
-	}
+func subscribeFeedList(context appengine.Context, user *user.User, feedList FeedList) (err error) {
 	for _, feed := range feedList.Feeds {
-		if subscribe {
 			err = subscribeUser(context, user, feed)
 			if err != nil {
 				printError(context, err, feed)
 				err = nil
 				continue
 			}
-		} else {
-			err = unsubscribe(context, user.String(), feed)
-			if err != nil {
-				printError(context, err, feed)
-				err = nil
-				continue
-			}
+	}
+	return
+}
+
+func unsubscribeFeedList(context appengine.Context, user *user.User, feedList FeedList) (err error) {
+	for _, feed := range feedList.Feeds {
+		err = unsubscribe(context, user.String(), feed)
+		if err != nil {
+			printError(context, err, feed)
+			err = nil
+			continue
 		}
 	}
 	return
 }
+
+func unsubscribeAll(context appengine.Context, user *user.User) (err error) {
+	var userdata UserData
+	_, userdata, err = mustGetUserData(context, user.String())
+	if err != nil {
+		return
+	}
+	var feedList FeedList
+	for _, feed := range userdata.Feeds {
+		feedList.Feeds = append(feedList.Feeds, feed)
+	}
+	err = unsubscribeFeedList(context, user, feedList)
+	return
+}
+
+func feedJSONPOST(context appengine.Context, user *user.User, request *http.Request) (err error) { // todo: add json subscribe
+	var body []byte
+	body, err = ioutil.ReadAll(request.Body)
+	if err != nil {
+		return
+	}
+	var feedList FeedList
+	err = json.Unmarshal(body, &feedList)
+	if err != nil {
+		return
+	}
+	err = subscribeFeedList(context, user, feedList)
+	return
+}
+
+func feedPOST(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	if request.FormValue("clear") != "" {
+		err = unsubscribeAll(context, user)
+	}
+	if request.FormValue("input") == "json" {
+		err = feedJSONPOST(context, user, request)
+	} else if request.FormValue("input") == "opml" {
+		err = feedOPMLPOST(context, user, request)
+	} else if request.FormValue("input") == "form" || request.FormValue("url") != "" {
+		err = subscribeUser(context, user, request.FormValue("url"))
+	}
+	if err != nil {
+		return
+	}
+	var redirect Redirect
+	redirect.URL = "/app"
+	return redirect, nil
+}
+
+func feedDELETE(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	if request.FormValue("url") != "" {
+		err = unsubscribe(context, user.String(), request.FormValue("url"))
+	} else {
+		err = unsubscribeAll(context, user)
+	}
+	if err != nil {
+		return
+	}
+	var redirect Redirect
+	redirect.URL = "/app"
+	return redirect, nil
+}
+

@@ -39,21 +39,19 @@ html(manifest='rivulet.appcache')
             h3 Add Feeds
           .modal-body
             h4 By url
-            form#addfeed.form-inline(action='/feed', method='post')
+            form#addfeed.form-inline(action='/feed?input=form', method='post', target='_self')
               input(type='url', name='url', placeholder='http://www.example.com/feed.rss')
               button.btn(type='submit') Submit
             h4 or by OPML (batch upload)
-            form#opmlfeed.form-inline(action='/feed', method='post')
+            form#opmlfeed.form-inline(action='/feed?input=opml', method='post', target='_self', enctype='multipart/form-data')
               .fileupload.fileupload-new(data-provides='fileupload')
-                .input-append
-                  .uneditable-input.span3
-                    i.icon-file.fileupload-exists
-                    span.fileupload-preview
-                  span.btn.btn-file
-                    span.fileupload-new Select .opml file
-                    span.fileupload-exists Change
-                    input(type='file', accept='application/xml,text/xml,text/x-opml')
-                    a.btn.fileupload-exists(href='#', data-dismiss='fileupload') Remove
+                .uneditable-input.span3
+                  i.icon-file.fileupload-exists
+                  span.fileupload-preview
+                span.btn.btn-file
+                  span.fileupload-new Select .opml file
+                  span.fileupload-exists Change
+                  input(type='file', accept='application/xml,text/xml,text/x-opml', name='opml')
               label.checkbox
                 input(type='checkbox', name='clear', value='clear')
                 | Remove default feeds

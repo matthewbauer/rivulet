@@ -37,7 +37,7 @@ var templates *template.Template
 
 func init() {
 	http.HandleFunc("/", server)
-	templates = template.Must(template.ParseFiles("templates/landing.html", "templates/articles.html", "templates/feeds.html", "templates/user.html"))
+	templates = template.Must(template.ParseFiles("templates/landing.html", "templates/articles.html", "templates/feeds.html"))
 }
 
 type Data interface {
@@ -57,23 +57,17 @@ func (redirect Redirect) Send() bool       { return true }
 type MethodHandler func(appengine.Context, *user.User, *http.Request) (data Data, err error)
 
 var handlers = map[string]map[string]MethodHandler{
-	"/_ah/warmup": {
-		"GET": warmupGET,
-	},
 	"/article": {
-		"GET":  articleGET,
-		"POST": articlePOST,
+		"GET":  articleGET, // todo: make not idempotent
 	},
 	"/feed": {
 		"GET":  feedGET,
 		"POST": feedPOST,
-	},
-	"/user": {
-		"GET":  userGET,
-		"POST": userPOST,
+		"DELET": feedDELETE,
 	},
 	"/refresh": {
 		"GET": refreshGET,
+		"POST": refreshGET,
 	},
 	"/app": {
 		"GET": appGET,
@@ -86,6 +80,9 @@ var handlers = map[string]map[string]MethodHandler{
 	},
 	"/": {
 		"GET": rootGET,
+	},
+	"/_ah/warmup": {
+		"GET": warmupGET,
 	},
 }
 

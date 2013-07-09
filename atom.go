@@ -1,6 +1,15 @@
 package main
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+	"fmt"
+)
+
+import (
+	"appengine"
+	"appengine/memcache"
+)
 
 // Based on rfc4287
 type AtomCategory struct {
@@ -82,3 +91,62 @@ type AtomSource struct {
 	Title       string                `xml:"title"`
 	Updated     string                `xml:"updated"`
 }
+
+func getAtom(context appengine.Context, body []byte, url string) (feedCache FeedCache, err error) {
+	feedCache.URL = url
+	var feed AtomFeed
+	err = xml.Unmarshal(body, &feed)
+	if err != nil {
+		//printError(context, err, url)
+		err = nil
+	}
+	feedCache.Title = feed.Title
+	var date time.Time
+	for _, item := range feed.Entry {
+		if item.Id == "" {
+			break
+		}
+		_, err = memcache.Gob.Get(context, item.Id, nil)
+		if err == memcache.ErrCacheMiss {
+			err = nil
+			date, err = getDate(item.Updated)
+			if err != nil {
+				printError(context, fmt.Errorf("atom feed %v has dates that look like %v", feed.Link[0].Href, item.Updated), url)
+				err = nil
+				continue
+			}
+			var url string
+			for _, link := range item.Link {
+				if link.Href != "" {
+					url = link.Href
+					if link.Rel == "alternate" {
+						break
+					}
+				}
+			}
+			if url == "" {
+				break
+			}
+			article := ArticleCache{
+				URL:     url,
+				Title:   item.Title,
+				Content: item.Content.Text,
+				ID:      item.Id,
+				Date:    date.Unix(),
+				FeedName:feedCache.Title,
+				FeedURL: feedCache.URL,
+			}
+			err = memcache.Gob.Set(context, &memcache.Item{Key: item.Id, Object: article})
+			if err != nil {
+				printError(context, err, url)
+				err = nil
+				continue
+			}
+			feedCache.Articles = append(feedCache.Articles, article)
+		} else if err != nil {
+			break
+		}
+	}
+	return
+}
+

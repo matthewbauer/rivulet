@@ -2,6 +2,14 @@ package main
 
 import (
 	"encoding/xml"
+	"net/http"
+	"mime/multipart"
+	"io/ioutil"
+)
+
+import (
+	"appengine"
+	"appengine/user"
 )
 
 type Opml struct {
@@ -53,3 +61,24 @@ func getOPMLFeeds(opmlFile []byte) (feeds []string, err error) {
 	}
 	return
 }
+
+func feedOPMLPOST(context appengine.Context, user *user.User, request *http.Request) (err error) {
+	var body []byte
+	var file multipart.File
+	file, _, err = request.FormFile("opml")
+	if err != nil {
+		return
+	}
+	body, err = ioutil.ReadAll(file)
+	if err != nil {
+		return
+	}
+	var feedList FeedList
+	feedList.Feeds, err = getOPMLFeeds(body)
+	if err != nil {
+		return
+	}
+	err = subscribeFeedList(context, user, feedList)
+	return
+}
+

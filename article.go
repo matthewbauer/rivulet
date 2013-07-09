@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"fmt"
 	"sort"
@@ -53,59 +51,6 @@ type ArticleList struct {
 func (ArticleList) Template() string { return "articles.html" }
 func (ArticleList) Redirect() string { return "" }
 func (ArticleList) Send() bool       { return true }
-
-func articlePOST(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	var body []byte
-	body, err = ioutil.ReadAll(request.Body)
-	if err != nil {
-		return
-	}
-	var articleList ArticleList
-	err = json.Unmarshal(body, &articleList)
-	if err != nil {
-		return
-	}
-	var userkey *datastore.Key
-	var userdata UserData
-	userkey, userdata, err = mustGetUserData(context, user.String())
-	if err != nil {
-		return
-	}
-	read := false
-	if request.FormValue("read") == "1" {
-		read = true
-	}
-	for _, article := range articleList.Articles {
-		n := 0
-		var a Article
-		found := false
-		for n, a = range userdata.Articles {
-			if a.ID == article.ID {
-				found = true
-				break
-			}
-		}
-		if found {
-			if article.Interested {
-				userdata, err = selected(context, userdata, article)
-				if err != nil {
-					printError(context, err, article.ID)
-					err = nil
-				}
-			}
-			if read || article.Read {
-				userdata.Articles = append(userdata.Articles[:n], userdata.Articles[n+1:]...)
-				userdata.Articles[n], userdata.Articles = userdata.Articles[len(userdata.Articles)-1], userdata.Articles[:len(userdata.Articles)-1]
-			} else {
-				userdata.Articles[n] = article
-			}
-		} else {
-			userdata.Articles = append(userdata.Articles, article)
-		}
-	}
-	_, err = putUserData(context, userkey, userdata)
-	return
-}
 
 func article(context appengine.Context, user *user.User, request *http.Request, count int) (data Data, err error) {
 	if count == 0 {

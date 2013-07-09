@@ -188,12 +188,15 @@ show = (element) ->
 hide = (element) ->
 
 unsubscribe = (url) ->
-  data = Feeds: [url]
-  $.postJSON '/feed?unsubscribe=1', data
+  _gaq.push(['_trackEvent', 'Feeds', 'Unsubscribe', url])
+  $.ajax(
+    url: '/feed?url=' + url
+    type: 'DELETE'
+  )
 
 subscribe = (url) ->
-  data = Feeds: [url]
-  $.postJSON '/feed?subscribe=1', data
+  _gaq.push(['_trackEvent', 'Feeds', 'Subscribe', url])
+  $.postJSON '/feed?url=' + url
 
 addArticle = (data) ->
   $('<article/>').
@@ -293,6 +296,7 @@ makeCurrent = (articles, current) ->
     $('#prev').hide()
   else
     $('#prev').css 'display', 'block'
+  _gaq.push(['_trackEvent', 'Articles', 'Next',  $('.current').attr('id')])
   $('body').scrollTo $('.current').offset().top if $('.current').exists()
 
 nextArticle = (count, timeout, errornum, fun, current) ->
@@ -301,7 +305,7 @@ nextArticle = (count, timeout, errornum, fun, current) ->
   if not current?
     current = $('.current')
   $.getJSON('/article?output=json&count=' + count, (data) ->
-    #_gaq.push(['_trackPageview', '/article?output=json&count=' + count])
+    _gaq.push(['_trackEvent', 'Articles', 'Get',  count])
     if data['URL'] is '/feed'
       if errornum < MAXERROR
         nextArticle count, timeout, errornum + 1, fun, current
@@ -352,6 +356,7 @@ next = ->
     if index + LIST < $('#articles').children().length
       $('#articles').children().slice(index + 1, index + LIST + 1).addClass('current').show()
       removeCurrent current
+      _gaq.push(['_trackEvent', 'Articles', 'Next',  $('.current').attr('id')])
       index = $('.current').index()
       if index is 0
         $('#prev').hide()
@@ -376,6 +381,7 @@ prev = ->
       markAsRead $('.current')
       $('.current').removeClass 'current'
       $('#articles').children().slice(index - LIST, index).addClass('current').show()
+    _gaq.push(['_trackEvent', 'Articles', 'Previous',  $('.current').attr('id')])
     if index - LIST is 0
       $('#prev').hide()
     else

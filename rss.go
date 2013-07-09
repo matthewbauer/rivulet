@@ -1,5 +1,16 @@
 package main
 
+import (
+	"encoding/xml"
+	"time"
+	"fmt"
+)
+
+import (
+	"appengine"
+	"appengine/memcache"
+)
+
 // Even though we hate it, there are much more RSS feeds out there than Atom feeds
 // We'll use http://www.rssboard.org/rss-specification
 
@@ -84,3 +95,64 @@ type RSSCloud struct {
 	RegisterProcedure string `xml:"registerprocedure,attr"`
 	Protocol          string `xml:"protocol,attr"`
 }
+
+func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedCache, err error) {
+	feedCache.URL = url
+	var rss RSSStruct
+	err = xml.Unmarshal(body, &rss)
+	if err != nil {
+		//printError(context, err, url)
+		err = nil
+	}
+	var date time.Time
+	for _, channel := range rss.Channel {
+		if channel.Ttl > 0 {
+			feedCache.TimeToLive = time.Duration(channel.Ttl)
+		}
+		feedCache.Title = channel.Title
+		for _, item := range channel.Item {
+			if item.Guid == "" {
+				break
+			}
+			_, err = memcache.Gob.Get(context, item.Guid, nil)
+			if err == memcache.ErrCacheMiss {
+				err = nil
+				if item.DCDate != "" {
+					item.PubDate = item.DCDate
+				}
+				date, err = getDate(item.PubDate)
+				if err != nil {
+					printError(context, fmt.Errorf("rss feed %v has dates that look like %v", channel.Link, item.PubDate), url)
+					err = nil
+					continue
+				}
+				var content string
+				if item.Content != "" {
+					content = item.Content
+				} else {
+					content = item.Description
+				}
+				article := ArticleCache{
+					URL:     item.Link,
+					Title:   item.Title,
+					Content: content,
+					ID:      item.Guid,
+					Date:    date.Unix(),
+					FeedName:feedCache.Title,
+					FeedURL: feedCache.URL,
+				}
+				err = memcache.Gob.Set(context, &memcache.Item{Key: item.Guid, Object: article})
+				if err != nil {
+					printError(context, err, url)
+					err = nil
+					continue
+				}
+				feedCache.Articles = append(feedCache.Articles, article)
+			} else if err != nil {
+				break
+			}
+		}
+	}
+	return
+}
+

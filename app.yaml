@@ -1,5 +1,5 @@
 application: myrivulet
-version: 521
+version: 540
 runtime: go
 api_version: go1
 
@@ -52,6 +52,14 @@ handlers:
   static_files: static/logo.png
   upload: static/logo.png
 
+- url: /icon.svg
+  static_files: static/icon.svg
+  upload: static/icon.svg
+
+- url: /icon.png
+  static_files: static/icon.png
+  upload: static/icon.png
+
 - url: /icon(.*).png
   static_files: build/icon\1.png
   upload: build/icon.*.png
@@ -90,10 +98,6 @@ handlers:
   login: required
 
 - url: /feed
-  script: _go_app
-  login: required
-
-- url: /user
   script: _go_app
   login: required
 

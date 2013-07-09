@@ -4,7 +4,7 @@ echo 'making'
 
 mkdir -p build templates
 
-coffee --compile --output build coffee/script.coffee
+coffee --bare --compile --output build coffee/script.coffee
 
 jade -o build jade/{api,about,offline,extras,help}.jade
 jade -o templates jade/{landing,articles,feeds,user}.jade

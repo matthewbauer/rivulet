@@ -40,7 +40,6 @@ a {
 #sidebar {
   @media (max-width: 480px) {
     position: static;
-    width: 100%;
   }
   @media (min-width: 480px) {
     position: fixed;
@@ -48,16 +47,22 @@ a {
     top: 10%;
   }
 }
-#sidebar li {
+#nav li {
+  display: inline;
   @media (max-width: 480px) {
     display: inline;
   }
 }
+#nav a {
+  display: inline-block;
+}
 #sidebar ul {
   list-style-type: none;
   font-size: 3em;
-  margin: 0 auto;
-  width: 1em;
+  @media (min-width: 480px) {
+    margin: 0 auto;
+    width: 1em;
+  }
 }
 #nav {
   list-style-type: none;

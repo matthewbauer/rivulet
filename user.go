@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/gob"
-	"net/http"
 )
 
 import (
@@ -228,24 +227,6 @@ func selected(context appengine.Context, userdata UserData, article Article) (Us
 		})
 	}
 	return userdata, nil
-}
-
-func userGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	var userdata UserData
-	_, userdata, err = mustGetUserData(context, user.String())
-	if err != nil {
-		return
-	}
-	if request.FormValue("new") == "1" {
-		var redirect Redirect
-		redirect.URL = "/"
-		return redirect, nil
-	}
-	return userdata, nil
-}
-
-func userPOST(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	return
 }
 
 func getUserFeedList(context appengine.Context, user string) (feeds []FeedCache, err error) {
