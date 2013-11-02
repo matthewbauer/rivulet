@@ -124,6 +124,9 @@ MAXERROR = 3
 
 online = true
 
+if not source?
+  source = '/article'
+
 $.ajaxSetup
   async: false
   cache: false
@@ -225,7 +228,7 @@ addArticle = (data) ->
               attr('title', 'unsubscribe').
               append(
                 $('<i/>').
-                  addClass('icon-minus-sign')
+                  addClass('fa').addClass('fa-minus-sign')
               ).click (event) ->
                 event.preventDefault()
                 feedurl = $(this).parent().find('.feedname').attr('href')
@@ -304,6 +307,9 @@ nextArticle = (count, timeout, errornum, fun, current) ->
     return
   if not current?
     current = $('.current')
+  if source is not '/article'
+    $('#next').hide()
+    return
   $.getJSON('/article?output=json&count=' + count, (data) ->
     _gaq.push(['_trackEvent', 'Articles', 'Get',  count])
     if data['URL'] is '/feed'
@@ -311,7 +317,7 @@ nextArticle = (count, timeout, errornum, fun, current) ->
         nextArticle count, timeout, errornum + 1, fun, current
         return
       else
-        fun [addArticle {'Title': 'No more articles', 'URL': '/feed'}], current
+        $('#').show();
       if fun is makeCurrent
         $('#next').hide()
     else if data['URL']?
@@ -415,18 +421,12 @@ articles = () ->
   else
     $('body').scrollTo $('.current').offset().top if $('.current').exists()
 
+  $('.current').show()
+
 addfeed = ->
   $('#feedmodal').modal('toggle')
 
 $ ->
-  window.addEventListener 'offline', -> online = false
-  window.addEventListener 'online', -> online = true
-  online = navigator.onLine
-  window.applicationCache.addEventListener 'error', -> online = false
-  applicationCache.addEventListener 'updateready', -> window.location.reload()
-
-  articles() if $('#next').exists()
-
   $(window).keyup (event) ->
     switch event.which
       when KeyEvent.DOM_VK_J, KeyEvent.DOM_VK_N, KeyEvent.DOM_VK_NUMPAD2, KeyEvent.DOM_VK_NUMPAD3 #KeyEvent.DOM_VK_SPACE, KeyEvent.DOM_VK_PAGEDOWN, KeyEvent.DOM_VK_DOWN, 
@@ -457,10 +457,8 @@ $ ->
         return true
     return false
 
-  $('#showbar').click (event) ->
-    event.preventDefault()
-    showbar()
-    false
+  $('#share').click (event) ->
+    _gaq.push(['_trackEvent', 'Social', 'Share', 'Twitter'])
 
   $('#add').click (event) ->
     event.preventDefault()
@@ -480,6 +478,7 @@ $ ->
   $('#addfeed').submit (event) ->
     event.preventDefault()
     url = $('#addfeed').find('input:first').val()
+    _gaq.push(['_trackEvent', 'Feeds', 'Add', url])
     subscribe(url)
     $('#feedmodal').hide()
     false
@@ -501,3 +500,16 @@ $ ->
     localStorage.setObj 'articles', newArticles
     unsubscribe(feedurl)
 
+  window.addEventListener 'offline', ->
+    online = false
+    $('#add').hide()
+
+  window.addEventListener 'online', ->
+    online = true
+    $('#add').show()
+
+  online = navigator.onLine
+  window.applicationCache.addEventListener 'error', -> online = false
+  applicationCache.addEventListener 'updateready', -> window.location.reload()
+
+  articles() if ($('#article').exists() or $('#offline').exists()) and source is '/article'

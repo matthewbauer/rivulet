@@ -1,36 +1,34 @@
 
-// +build appengine 
+// +build !appengine 
 
 package main
 
 import (
 	"net/http"
+	"github.com/bradfitz/gomemcache/memcache"
 )
-
-import "appengine"
-import "appengine/memcache"
 
 // context
 
-type Context appengine.Context
+type Context struct {
+	Memcache *memcache.Client
+}
 
 func NewContext(request *http.Request) Context {
-	return Context(appengine.NewContext(request))
+	return Context{}
 }
 
 // memcache
 
-var ErrCacheMiss = memcache.ErrCacheMiss
-
 type Item memcache.Item
 
 func memcacheGet(c Context, key string) (*Item, error) {
-	item, err := memcache.Get(appengine.Context(c), key)
+	item, err := c.Memcache.Get(key)
 	return (*Item)(item), err
 }
 
 func memcacheSet(c Context, item *Item) error {
-	return memcache.Set(appengine.Context(c), (*memcache.Item)(item))
+	return c.Memcache.Set((*memcache.Item)(item))
 }
 
 func memcacheGobGet(c Context, key string, v interface{}) (*Item, error) {

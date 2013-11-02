@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"time"
 	"encoding/json"
 )
@@ -24,6 +25,7 @@ const (
 	UNKNOWN FeedFormat = iota
 	RSS
 	ATOM
+	HTMLFeed
 	OTHER
 )
 
@@ -72,12 +74,29 @@ type GenericFeed struct {
 	XMLName xml.Name
 }
 
+type HTMLLink struct {
+	Rel string `xml:"rel,attr"`
+	Type string `xml:"type,attr"`
+	Title string `xml:"title,attr"`
+	Href string `xml:"href,attr"`
+}
+
+type HTMLHead struct {
+	Link []HTMLLink `xml:"link"`
+}
+
+type HTMLStruct struct {
+	Head HTMLHead `xml:"head"`
+}
+
 func getFeedType(response *http.Response, body []byte) FeedFormat {
 	switch response.Header.Get("Content-Type") {
 	case "application/atom+xml":
 		return ATOM
 	case "application/rss+xml":
 		return RSS
+	case "text/html":
+		return HTMLFeed
 	default:
 		var feed GenericFeed
 		xml.Unmarshal(body, &feed)
@@ -86,6 +105,8 @@ func getFeedType(response *http.Response, body []byte) FeedFormat {
 			return RSS
 		case "feed":
 			return ATOM
+		case "html":
+			return HTMLFeed
 		default:
 			return OTHER
 		}
@@ -95,12 +116,13 @@ func getFeedType(response *http.Response, body []byte) FeedFormat {
 }
 
 const (
-	MYDATE    = "1/2/2006 3:04:05 PM"
 	ONIONDATE = "Mon, 2 Jan 2006 15:04:05 -0700"
+	MYDATE    = "1/2/2006 3:04:05 PM"
 )
 
 func getDate(dateString string) (date time.Time, err error) {
-	layouts := []string{time.RFC822, time.RFC822Z, time.RFC3339, time.RFC1123, time.RFC1123Z, time.ANSIC, time.UnixDate, time.RubyDate, ONIONDATE} //, MYDATE
+	layouts := []string{time.RFC822, time.RFC822Z, time.RFC3339, time.RFC1123, time.RFC1123Z,
+		time.ANSIC, time.UnixDate, time.RubyDate, ONIONDATE} //, MYDATE
 	for _, layout := range layouts {
 		date, err = time.Parse(layout, dateString)
 		if err == nil && date.Year() != 0 {
@@ -110,16 +132,23 @@ func getDate(dateString string) (date time.Time, err error) {
 	return
 }
 
-func getSubscription(context appengine.Context, format FeedFormat, body []byte, url string) (feed FeedCache, err error) { // url is only used for debugging purposes
+var (
+	NotFeed = errors.New(fmt.Sprintf("not a feed"))
+	UnknownFormat = errors.New(fmt.Sprintf("could not determine format"))
+)
+
+func getSubscription(context appengine.Context, format FeedFormat, body []byte, url string) (feed FeedCache, err error) {
+	// url is only used for debugging purposes
 	switch format {
 	case RSS:
 		return getRSS(context, body, url)
 	case ATOM:
 		return getAtom(context, body, url)
 	case OTHER:
-		err = errors.New(fmt.Sprintf("not a feed")) // later we can delete the feed
+		err = NotFeed // later we can delete the feed
+		return
 	}
-	err = errors.New(fmt.Sprintf("could not determine format")) // later we can delete the feed
+	err = UnknownFormat // later we can delete the feed
 	return
 }
 
@@ -131,37 +160,47 @@ func getSubscriptionURL(context appengine.Context, url string) (feed FeedCache, 
 		return
 	}
 	defer response.Body.Close()
+
 	var body []byte
 	body, err = ioutil.ReadAll(response.Body)
 	if err != nil {
 		return
 	}
+
 	format := getFeedType(response, body)
+
 	return getSubscription(context, format, body, url)
 }
 
-func feedGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	url := request.FormValue("url")
-	if url != "" {
-		var feed Feed
-		query := datastore.NewQuery("Feed").Filter("URL=", feed)
-		iterator := query.Run(context)
-		_, err = iterator.Next(&feed)
-		if err != nil {
-			return
-		}
+func feedURLGET(context appengine.Context, u string) (data Data, err error) {
+	var feed Feed
+	_, err = GetFirst(context, "Feed", "URL", u, &feed)
+
+	articleData := ArticleData{ Source: fmt.Sprintf("/feed?url=%v", url.QueryEscape(u) )}
+	for _, article := range feed.Articles {
 		var articleCache ArticleCache
-		var articleData ArticleData
-		for _, article := range feed.Articles {
-			_, err = memcache.Gob.Get(context, article, &articleCache)
-			if articleCache.URL != "" {
-				articleData.Articles = append(articleData.Articles, articleCache)
-			}
+		_, err = memcache.Gob.Get(context, article, &articleCache)
+		if err != nil {
+			printError(context, err, feed.URL)
+			err = nil
+			continue
 		}
-		return articleData, err
+		if articleCache.URL != "" {
+			articleData.Articles = append(articleData.Articles, articleCache)
+		}
 	}
-	var feedData FeedData
-	feedData.User = user.String()
+
+	return articleData, err
+}
+
+func feedGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	u := request.FormValue("url")
+	if u != "" {
+		return feedURLGET(context, u)
+	}
+
+	feedData := FeedData{ User: user.String() }
+
 	var userdata UserData
 	_, userdata, err = mustGetUserData(context, user.String())
 	if err != nil {
@@ -176,20 +215,16 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 				break
 			}
 		}
+
 		if item.URL == "" {
-			query := datastore.NewQuery("Feed").Filter("URL=", feed)
-			iterator := query.Run(context)
-			_, err = iterator.Next(&item)
-			if err == datastore.Done {
-				err = nil
-				continue
-			} else if err != nil {
+			_, err = GetFirst(context, "Feed", "URL", feed, &item)
+			if err != nil {
 				printError(context, err, feed)
 				err = nil
 				continue
 			}
 		}
-		err = nil
+
 		feedData.Feeds = append(feedData.Feeds, item)
 	}
 
@@ -197,24 +232,13 @@ func feedGET(context appengine.Context, user *user.User, request *http.Request) 
 	if err != nil {
 		return
 	}
+
 	return feedData, nil
 }
 
-func subscribeFeedList(context appengine.Context, user *user.User, feedList FeedList) (err error) {
+func subscribeFeedList(context appengine.Context, userdata *UserData, feedList FeedList) (err error) {
 	for _, feed := range feedList.Feeds {
-			err = subscribeUser(context, user, feed)
-			if err != nil {
-				printError(context, err, feed)
-				err = nil
-				continue
-			}
-	}
-	return
-}
-
-func unsubscribeFeedList(context appengine.Context, user *user.User, feedList FeedList) (err error) {
-	for _, feed := range feedList.Feeds {
-		err = unsubscribe(context, user.String(), feed)
+		err = subscribe(context, userdata, feed, false)
 		if err != nil {
 			printError(context, err, feed)
 			err = nil
@@ -224,65 +248,100 @@ func unsubscribeFeedList(context appengine.Context, user *user.User, feedList Fe
 	return
 }
 
-func unsubscribeAll(context appengine.Context, user *user.User) (err error) {
-	var userdata UserData
-	_, userdata, err = mustGetUserData(context, user.String())
-	if err != nil {
-		return
+func unsubscribeFeedList(context appengine.Context, userdata *UserData, feedList FeedList) (err error) {
+	for _, feed := range feedList.Feeds {
+		err = unsubscribe(context, userdata, feed)
+		if err != nil {
+			printError(context, err, feed)
+			err = nil
+			continue
+		}
 	}
+	return
+}
+
+func unsubscribeAll(context appengine.Context, userdata *UserData) (err error) {
 	var feedList FeedList
 	for _, feed := range userdata.Feeds {
 		feedList.Feeds = append(feedList.Feeds, feed)
 	}
-	err = unsubscribeFeedList(context, user, feedList)
+
+	err = unsubscribeFeedList(context, userdata, feedList)
 	return
 }
 
-func feedJSONPOST(context appengine.Context, user *user.User, request *http.Request) (err error) { // todo: add json subscribe
+func feedJSONPOST(context appengine.Context, userdata *UserData, request *http.Request) (err error) {
+	// todo: add json subscribe
 	var body []byte
 	body, err = ioutil.ReadAll(request.Body)
 	if err != nil {
 		return
 	}
+
 	var feedList FeedList
 	err = json.Unmarshal(body, &feedList)
 	if err != nil {
 		return
 	}
-	err = subscribeFeedList(context, user, feedList)
+
+	err = subscribeFeedList(context, userdata, feedList)
 	return
 }
 
 func feedPOST(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
-	if request.FormValue("clear") != "" {
-		err = unsubscribeAll(context, user)
+	var userdata UserData
+	var userkey *datastore.Key
+	userkey, userdata, err = mustGetUserData(context, user.String())
+	if err != nil {
+		return
 	}
+
+	if request.FormValue("clear") != "" {
+		err = unsubscribeAll(context, &userdata)
+	}
+
 	if request.FormValue("input") == "json" {
-		err = feedJSONPOST(context, user, request)
+		err = feedJSONPOST(context, &userdata, request)
 	} else if request.FormValue("input") == "opml" {
-		err = feedOPMLPOST(context, user, request)
+		err = feedOPMLPOST(context, &userdata, request)
 	} else if request.FormValue("input") == "form" || request.FormValue("url") != "" {
-		err = subscribeUser(context, user, request.FormValue("url"))
+		err = subscribe(context, &userdata, request.FormValue("url"), false)
 	}
 	if err != nil {
 		return
 	}
-	var redirect Redirect
-	redirect.URL = "/app"
+
+	_, err = putUserData(context, userkey, userdata)
+	if err != nil {
+		return
+	}
+
+	redirect := Redirect{URL: "/app"}
 	return redirect, nil
 }
 
 func feedDELETE(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
+	var userdata UserData
+	var userkey *datastore.Key
+	userkey, userdata, err = mustGetUserData(context, user.String())
+	if err != nil {
+		return
+	}
+
 	if request.FormValue("url") != "" {
-		err = unsubscribe(context, user.String(), request.FormValue("url"))
+		err = unsubscribe(context, &userdata, request.FormValue("url"))
 	} else {
-		err = unsubscribeAll(context, user)
+		err = unsubscribeAll(context, &userdata)
 	}
 	if err != nil {
 		return
 	}
-	var redirect Redirect
-	redirect.URL = "/app"
+
+	_, err = putUserData(context, userkey, userdata)
+	if err != nil {
+		return
+	}
+
+	redirect := Redirect{URL: "/app"}
 	return redirect, nil
 }
-

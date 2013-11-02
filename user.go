@@ -73,6 +73,7 @@ func (userdata *UserData) Save(c chan<- datastore.Property) (err error) {
 func newUserData(context appengine.Context, id string) (key *datastore.Key, userdata UserData, err error) {
 	userdata.String = id
 	userdata.TotalRead = 0
+
 	for _, feed := range builtinFeeds {
 		if feed.Default {
 			err = subscribe(context, &userdata, feed.URL, feed.Default)
@@ -83,19 +84,20 @@ func newUserData(context appengine.Context, id string) (key *datastore.Key, user
 			}
 		}
 	}
+
 	if id != "default" {
 		var defaultUser UserData
 		_, defaultUser, err = mustGetUserData(context, "default")
 		userdata.Articles = defaultUser.Articles
 	}
+
 	key, err = putUserData(context, datastore.NewIncompleteKey(context, "UserData", nil), userdata)
+
 	return
 }
 
 func getUserData(context appengine.Context, id string) (key *datastore.Key, userdata UserData, err error) {
-	query := datastore.NewQuery("UserData").Filter("String=", id).Limit(1)
-	iterator := query.Run(context)
-	key, err = iterator.Next(&userdata)
+	key, err = GetFirst(context, "UserData", "String", id, &userdata)
 	return
 }
 
@@ -112,24 +114,7 @@ func putUserData(context appengine.Context, oldkey *datastore.Key, userdata User
 	return
 }
 
-func getRank(article []Pref, user []Pref) (score int64) {
-	for _, userPref := range user {
-		for _, articlePref := range article {
-			if userPref.Field == articlePref.Field && userPref.Value == articlePref.Value {
-				score += articlePref.Score * userPref.Score
-			}
-		}
-	}
-	return
-}
-
-func unsubscribe(context appengine.Context, user string, url string) (err error) {
-	var userdata UserData
-	var userkey *datastore.Key
-	userkey, userdata, err = mustGetUserData(context, user)
-	if err != nil {
-		return
-	}
+func unsubscribe(context appengine.Context, userdata *UserData, url string) (err error) {
 	for i, feed := range userdata.Feeds {
 		if feed == url {
 			userdata.Feeds = userdata.Feeds[:i+copy(userdata.Feeds[i:], userdata.Feeds[i+1:])]
@@ -140,6 +125,7 @@ func unsubscribe(context appengine.Context, user string, url string) (err error)
 			break
 		}
 	}
+
 	temp := make([]Article, 0, len(userdata.Articles))
 	for _, article := range userdata.Articles {
 		if article.FeedURL != url {
@@ -147,15 +133,14 @@ func unsubscribe(context appengine.Context, user string, url string) (err error)
 		}
 	}
 	userdata.Articles = temp
-	_, err = putUserData(context, userkey, userdata)
-	query := datastore.NewQuery("Feed").Filter("URL=", url)
+
 	var feed Feed
 	var key *datastore.Key
-	iterator := query.Run(context)
-	key, err = iterator.Next(&feed)
+	key, err = GetFirst(context, "Feed", "URL", url, &feed)
 	if err != nil {
 		return
 	}
+
 	for i, subscriber := range feed.Subscribers {
 		if subscriber == userdata.String {
 			feed.Subscribers = feed.Subscribers[:i+copy(feed.Subscribers[i:], feed.Subscribers[i+1:])]
@@ -163,15 +148,35 @@ func unsubscribe(context appengine.Context, user string, url string) (err error)
 			break
 		}
 	}
+
+	return
+}
+
+func unsubscribeUser(context appengine.Context, user *user.User, url string) (err error) {
+	var userdata UserData
+	var userkey *datastore.Key
+	userkey, userdata, err = mustGetUserData(context, user.String())
+	if err != nil {
+		return
+	}
+
+	err = unsubscribe(context, &userdata, url)
+	if err != nil {
+		return
+	}
+
+	_, err = putUserData(context, userkey, userdata)
+
 	return
 }
 
 func subscribe(context appengine.Context, userdata *UserData, url string, isdefault bool) (err error) {
 	query := datastore.NewQuery("Feed").Filter("URL=", url)
 	iterator := query.Run(context)
+
+	feedsubscribed := false
 	var feed Feed
 	var key *datastore.Key
-	feedsubscribed := false
 	key, err = iterator.Next(&feed)
 	if err == datastore.Done {
 		feed.URL = url
@@ -181,6 +186,7 @@ func subscribe(context appengine.Context, userdata *UserData, url string, isdefa
 		refreshSubscriptionURLDelay.Call(context, feed.URL)
 		feedsubscribed = true
 	}
+
 	if !ContainsString(userdata.Feeds, url) {
 		userdata.Feeds = append(userdata.Feeds, url)
 		if !feedsubscribed {
@@ -188,6 +194,7 @@ func subscribe(context appengine.Context, userdata *UserData, url string, isdefa
 			_, err = datastore.Put(context, key, &feed)
 		}
 	}
+
 	return
 }
 
@@ -198,14 +205,62 @@ func subscribeUser(context appengine.Context, user *user.User, url string) (err 
 	if err != nil {
 		return
 	}
+
 	err = subscribe(context, &userdata, url, false)
 	if err != nil {
 		return
 	}
+
 	_, err = putUserData(context, userkey, userdata)
+
+	return
+}
+
+func getUserFeedList(context appengine.Context, user string) (feeds []FeedCache, err error) {
+	var userdata UserData
+	_, userdata, err = mustGetUserData(context, user)
 	if err != nil {
 		return
 	}
+
+	for _, feed := range userdata.Feeds {
+		var item FeedCache
+		_, err = memcache.Gob.Get(context, feed, &item)
+		if err != nil {
+			printError(context, err, feed)
+			err = nil
+			continue
+		}
+		feeds = append(feeds, item)
+	}
+
+	return
+}
+
+func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedFeeds []Feed, err error) {
+	for _, feed := range builtinFeeds {
+		if !ContainsFeed(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
+			suggestedFeeds = append(suggestedFeeds, feed)
+		}
+	}
+
+	query := datastore.NewQuery("Feed")
+	for iterator := query.Run(context); ; {
+		var feed Feed
+		_, err = iterator.Next(&feed)
+		if err == datastore.Done {
+			err = nil
+			break
+		} else if err != nil {
+			printError(context, err, feed.URL)
+			err = nil
+			continue
+		}
+		if !ContainsFeed(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
+			suggestedFeeds = append(suggestedFeeds, feed)
+		}
+	}
+
 	return
 }
 
@@ -219,6 +274,7 @@ func selected(context appengine.Context, userdata UserData, article Article) (Us
 			break
 		}
 	}
+
 	if !found {
 		userdata.Prefs = append(userdata.Prefs, Pref{
 			Field: "feedurl",
@@ -226,47 +282,16 @@ func selected(context appengine.Context, userdata UserData, article Article) (Us
 			Score: 1,
 		})
 	}
+
 	return userdata, nil
 }
 
-func getUserFeedList(context appengine.Context, user string) (feeds []FeedCache, err error) {
-	var userdata UserData
-	_, userdata, err = mustGetUserData(context, user)
-	if err != nil {
-		return
-	}
-	var item FeedCache
-	for _, feed := range userdata.Feeds {
-		_, err = memcache.Gob.Get(context, feed, &item)
-		if err != nil {
-			err = nil
-			continue
-		}
-		feeds = append(feeds, item)
-	}
-	return
-}
-
-func getSuggestedFeeds(context appengine.Context, userdata UserData) (suggestedFeeds []Feed, err error) {
-	for _, feed := range builtinFeeds {
-		if !ContainsFeed(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
-			suggestedFeeds = append(suggestedFeeds, feed)
-		}
-	}
-	query := datastore.NewQuery("Feed")
-	var feed Feed
-	for iterator := query.Run(context); ; {
-		_, err = iterator.Next(&feed)
-		if err == datastore.Done {
-			err = nil
-			break
-		} else if err != nil {
-			printError(context, err, feed.URL)
-			err = nil
-			continue
-		}
-		if !ContainsFeed(suggestedFeeds, feed.URL) && !ContainsString(userdata.Feeds, feed.URL) {
-			suggestedFeeds = append(suggestedFeeds, feed)
+func getRank(article []Pref, user []Pref) (score int64) {
+	for _, userPref := range user {
+		for _, articlePref := range article {
+			if userPref.Field == articlePref.Field && userPref.Value == articlePref.Value {
+				score += articlePref.Score * userPref.Score
+			}
 		}
 	}
 	return

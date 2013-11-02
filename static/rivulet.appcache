@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#540
+#587
 
 CACHE:
 /favicon.ico
@@ -8,17 +8,16 @@ CACHE:
 /script.js
 /style.css
 /bootstrap/css/bootstrap.min.css
-/bootstrap/css/bootstrap-responsive.min.css
 /bootstrap/js/bootstrap.min.js
-/bootstrap/bootstrap-fileupload.min.js
-/bootstrap/bootstrap-fileupload.min.css
+/bootstrap/extend/js/jasny-bootstrap.min.js
+/bootstrap/extend/css/jasny-bootstrap.min.css
 /font-awesome/css/font-awesome.min.css
-/font-awesome/font/fontawesome-webfont.svg?v=3.2.1
-/font-awesome/font/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1
-/font-awesome/font/fontawesome-webfont.eot?#iefix&v=3.2.1
-/font-awesome/font/fontawesome-webfont.eot?v=3.2.1
-/font-awesome/font/fontawesome-webfont.ttf?v=3.2.1
-/font-awesome/font/fontawesome-webfont.woff?v=3.2.1
+/font-awesome/fonts/fontawesome-webfont.svg?v=4.0.1
+/font-awesome/fonts/fontawesome-webfont.svg#fontawesomeregular?v=4.0.1
+/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.0.1
+/font-awesome/fonts/fontawesome-webfont.eot?v=4.0.1
+/font-awesome/fonts/fontawesome-webfont.ttf?v=4.0.1
+/font-awesome/fonts/fontawesome-webfont.woff?v=4.0.1
 
 NETWORK:
 *

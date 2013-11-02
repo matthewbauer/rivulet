@@ -1,13 +1,13 @@
 !!!
 html
   include head
-  body
+  body#extras
     include header
     #sidebar
       ul#nav
         li
           a#back(href='/app', target='_self', title='back')
-            i.icon-chevron-sign-left
+            i.fa.fa-chevron-sign-left
     #container
       #container-content.content
         h1 Extras
@@ -22,4 +22,6 @@ html
             a(href='https://chrome.google.com/webstore/detail/rivulet/icodakibhkgbddiipldgkmgeoenndbpc') Chrome OS app
           li
             a(href='https://marketplace.firefox.com/app/rivulet') Firefox Marketplace
-
+        h2 Source
+        p
+          a(href='http://github.com/matthewbauer') Github

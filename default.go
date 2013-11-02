@@ -177,11 +177,11 @@ var builtinFeeds = []Feed{
 		Title:   "A List Apart",
 		Default: true,
 	},
-	Feed{
+/*	Feed{
 		URL:     "http://feeds.feedburner.com/ommalik",
 		Title:   "GigaOM",
 		Default: true,
-	},
+	},*/
 	Feed{
 		URL:     "http://www.marco.org/rss",
 		Title:   "Marco Arment",

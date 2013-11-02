@@ -1,25 +1,27 @@
 !!!
 html(manifest='rivulet.appcache')
   include head
-  body
+  body#article
+    script.
+      var source = '{{.Source}}';
     include header
     #container
-      #sidebar
+      #sidebarleft
         ul#nav
           li
-            a#add(href='/feed', title='add and remove feeds', target='_self')
-              i.icon-plus-sign
+            a#add(href='/feed', title='add and remove feeds', target='_self', data-toggle='tooltip', data-placement='right')
+              i.fa.fa-plus-circle
           li
-            a(href='/help', title='help me', target='_self')
-              i.icon-question-sign
+            a#help(href='/help', title='help me', target='_self')
+              i.fa.fa-question-circle
           li
-            a(href='http://twitter.com/share?url=http://myrivulet.appspot.com/&text=Rivulet, a simple web-based RSS reader that just works', title='share', target='_blank')
-              i.icon-share-sign
+            a#share(href='http://twitter.com/share?url=http://myrivulet.appspot.com/&text=Rivulet, a simple web-based RSS reader that just works', title='share', target='_blank')
+              i.fa.fa-share-circle
           li
-            a(href='/extras', title='extras', target='_self')
-              i.icon-rocket
+            a#extras(href='/extras', title='extras', target='_self')
+              i.fa.fa-rocket
       #container-content.content
-        a#prev.action.icon-arrow-up
+        a#prev.action.fa.fa-arrow-up
         #unsubscribe-alert.modal.hide.fade.in
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
@@ -46,7 +48,7 @@ html(manifest='rivulet.appcache')
             form#opmlfeed.form-inline(action='/feed?input=opml', method='post', target='_self', enctype='multipart/form-data')
               .fileupload.fileupload-new(data-provides='fileupload')
                 .uneditable-input.span3
-                  i.icon-file.fileupload-exists
+                  i.fa.fa-file.fileupload-exists
                   span.fileupload-preview
                 span.btn.btn-file
                   span.fileupload-new Select .opml file
@@ -63,13 +65,13 @@ html(manifest='rivulet.appcache')
           | {{range .}}
           article.article.unread(id='{{.ID}}')
             span.actions
-              a.go.icon-external-link.action(target='_blank', href='{{urlquery .URL}}')
+              a.go.fa.fa-external-link.action(target='_blank', href='{{urlquery .URL}}')
             header.article-header
               a.article-link(target='_blank', href='{{urlquery .URL}}') {{.Title}}
             .byline.label
               a(href='{{.FeedURL}}') {{.FeedName}}
               a.remove(target='_self', title='unsubscribe')
-                i.icon-remove-sign
+                i.fa.fa-remove-sign
             .article-content {{.Content}}
           | {{end}}
         | {{else}}
@@ -77,4 +79,9 @@ html(manifest='rivulet.appcache')
           | Article could not be loaded:
           a(href='/article?count=5', target='_self') next
         | {{end}}
-        a#next.action.icon-arrow-down(href='/article', target='_self')
+        a#next.action.fa.fa-arrow-down(href='/article', target='_self')
+      #sidebarright
+        ul#nav
+          li
+            a#manage(href='/feed', title='manage feeds', target='_self')
+              i.fa.fa-book

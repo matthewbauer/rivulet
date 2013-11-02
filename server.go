@@ -13,6 +13,7 @@ import (
 import (
 	"appengine"
 	"appengine/user"
+	"appengine/datastore"
 )
 
 func ContainsFeed(list []Feed, elem string) bool {
@@ -125,13 +126,15 @@ func getOutput(request *http.Request) (output OUTPUT) {
 
 func server(writer http.ResponseWriter, request *http.Request) {
 	var err error
-	context := appengine.NewContext(request)
+
+	context := NewContext(request)
 	output := getOutput(request)
 	if handlers[request.URL.Path] == nil {
 		writer.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(writer, "%v: not found", http.StatusNotFound)
 		return
 	}
+
 	if request.Method == "OPTIONS" {
 		var methods []string
 		for method := range handlers[request.URL.Path] {
@@ -141,6 +144,7 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		writer.WriteHeader(http.StatusNoContent)
 		return
 	}
+
 	u := user.Current(context)
 	var data Data
 	if handlers[request.URL.Path][request.Method] == nil {
@@ -161,10 +165,12 @@ func server(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	if data == nil || !data.Send() || request.Method == "HEAD" {
 		writer.WriteHeader(http.StatusOK)
 		return
 	}
+
 	redirect := data.Redirect()
 	if redirect != "" && output != JSON {
 		writer.Header().Set("Location", redirect)
@@ -186,6 +192,7 @@ func writeOutput(request *http.Request, writer http.ResponseWriter, data Data, o
 			return
 		}
 		writer.Write(bytes)
+
 	default:
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 		writer.WriteHeader(http.StatusOK)
@@ -196,36 +203,28 @@ func writeOutput(request *http.Request, writer http.ResponseWriter, data Data, o
 
 func logoutGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
 	if u != nil {
-		var url string
 		request.URL.Path = "/"
+		var url string
 		url, err = user.LogoutURL(context, request.URL.String())
 		if err != nil {
 			return
 		}
-		var redirect Redirect
-		redirect.URL = url
-		return redirect, nil
+		return Redirect{URL: url}, nil
 	}
-	var redirect Redirect
-	redirect.URL = "/"
-	return redirect, nil
+	return Redirect{URL: "/app"}, nil
 }
 
 func loginGET(context appengine.Context, u *user.User, request *http.Request) (data Data, err error) {
 	if u == nil {
-		var url string
 		request.URL.Path = "/app"
+		var url string
 		url, err = user.LoginURL(context, request.URL.String())
 		if err != nil {
 			return
 		}
-		var redirect Redirect
-		redirect.URL = url
-		return redirect, nil
+		return Redirect{URL: url}, nil
 	}
-	var redirect Redirect
-	redirect.URL = "/app"
-	return redirect, nil
+	return Redirect{URL: "/app"}, nil
 }
 
 type LandingData struct {}
@@ -235,9 +234,7 @@ func (LandingData) Send() bool       { return true }
 
 func rootGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	if user != nil {
-		var redirect Redirect
-		redirect.URL = "/app"
-		return redirect, nil
+		return Redirect{URL: "/app"}, nil
 	}
 	var landingData LandingData
 	return landingData, nil
@@ -249,6 +246,12 @@ func appGET(context appengine.Context, user *user.User, request *http.Request) (
 
 func warmupGET(context appengine.Context, user *user.User, request *http.Request) (data Data, err error) {
 	return
+}
+
+func GetFirst(context appengine.Context, kind string, field string, value string, dst interface{}) (key *datastore.Key, err error) {
+	query := datastore.NewQuery(kind).Filter(fmt.Sprintf("%v=", field), value).Limit(1)
+	iterator := query.Run(context)
+	return iterator.Next(dst)
 }
 
 func printError(context appengine.Context, err error, info string) {

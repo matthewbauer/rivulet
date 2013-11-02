@@ -1,18 +1,24 @@
-@bgheader: #111111;
+/*@bgheader: #111111;
 @fgheader: #999999;
-//@bgbody: #E8E8E8;
 @bgbody: #FFFFFF;
 @fgbody: #484848;
 
 @feedcolor: #24359E;
 @fghover: #e15a00;
+*/
+
+@bgheader: #111111;
+@fgheader: #999999;
+@bgbody: #C0D3C6;
+@fgbody: #484848;
 
 @black: #050505;
-@blue: #24359E;
-@red: #DE0909;
-@green: #00B518;
-@orange: #FF7400;
-@highlight: #91A2C7;
+
+@feedcolor: #24359E;
+@fghover: #E15A00;
+@highlightfg: #FF7400;
+@ftbg: #D8FFE6;
+@linkfg: #24359E;
 
 body {
   height: 100%;
@@ -22,10 +28,10 @@ a {
   cursor: pointer;
 }
 .feedtag a {
-  color: @blue;
+  color: @linkfg;
 }
 .article-content a, .article-content a:visited {
-  color: @blue
+  color: @linkfg;
 }
 .content {
   margin: 0 auto;
@@ -37,7 +43,18 @@ a {
     width: 80%;
   }
 }
-#sidebar {
+#sidebarright {
+  @media (max-width: 480px) {
+    position: static;
+  }
+  @media (min-width: 480px) {
+    position: fixed;
+    width: 10%;
+    top: 10%;
+  }
+  left: 90%;
+}
+#sidebarleft {
   @media (max-width: 480px) {
     position: static;
   }
@@ -52,20 +69,31 @@ a {
   @media (max-width: 480px) {
     display: inline;
   }
-}
+};
 #nav a {
   display: inline-block;
 }
-#sidebar ul {
+#sidebarleft ul {
   list-style-type: none;
   font-size: 3em;
   @media (min-width: 480px) {
     margin: 0 auto;
-    width: 1em;
+    width: 2em;
+  }
+}
+#sidebarright ul {
+  list-style-type: none;
+  font-size: 3em;
+  @media (min-width: 480px) {
+    margin: 0 auto;
+    width: 2em;
   }
 }
 #nav {
   list-style-type: none;
+  @media (max-width: 480px) {
+    text-align: center;
+  }
 }
 #credit {
   position: relative;
@@ -88,7 +116,7 @@ a#tag:hover {
   color: @fgheader;
 }
 #nav a:hover {
-  color: @orange;
+  color: @highlightfg;
   text-decoration: none;
 }
 #toolbar {
@@ -109,7 +137,7 @@ a.action, a.action:visited {
 }
 a.action:hover {
   text-decoration: none;
-  color: @orange;
+  color: @highlightfg;
 }
 .article {
   //background-color: #E8E8E8;
@@ -224,8 +252,6 @@ a.subscribe:hover {
 }
 
 .label {
-//  color: @fgbody;
-//  background-color: @highlight;
   padding: .5em .5em;
   float: right;
   margin-left: 1em;
@@ -248,7 +274,7 @@ a.go, a.go:visited {
   margin-bottom: 1em;
 }
 .feedtag a:hover {
-  color: @orange;
+  color: @highlightfg;
   text-decoration: none;
 }
 a.remove {
@@ -259,7 +285,7 @@ a.remove, a.remove:visited {
 }
 a.remove:hover {
   text-decoration: none;
-  color: @orange;
+  color: @highlightfg;
 }
 #addfeed input {
   width: 80%;
@@ -286,6 +312,6 @@ a.remove:hover {
 }
 
 // feed content
-.mf-viral, .feed-flare, .feedflare {
+.mf-viral, .feed-flare, .feedflare, img[src*='feedsportal.com/'] {
   display: none;
 }

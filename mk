@@ -14,11 +14,11 @@ lessc less/style.less build/style.css
 yuicompressor build/script.js -o build/script.min.js
 yuicompressor build/style.css -o build/style.min.css
 
-sizes='16 24 32 48 57 64 72 96 114 128 144 195 256 512'
-for size in $sizes
-do
-  inkscape -C -e build/icon$size.png -w $size -h $size static/icon.svg
-done
+#sizes='16 24 32 48 57 64 72 96 114 128 144 195 256 512'
+#for size in $sizes
+#do
+#  inkscape -C -e build/icon$size.png -w $size -h $size static/icon.svg
+#done
 
 #./bump
 

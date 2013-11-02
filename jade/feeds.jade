@@ -1,14 +1,14 @@
 !!!
 html
   include head
-  body
+  body#feed
     include header
     #container
       #sidebar
         ul
           li#nav
             a#back(href='/app', target='_self', title='back')
-              i.icon-chevron-sign-left
+              i.fa.fa-chevron-sign-left
       #container-content.content
         | {{with .SuggestedFeeds}}
         #suggested
@@ -20,7 +20,7 @@ html
             | {{range .}}
             li.feed(id='{{.URL}}')
               a.subscribe.btn(href='/feed?subscribe=1&url={{.URL}}')
-                i.icon-plus
+                i.fa.fa-plus
               a.feed-link(href='{{.URL}}') {{.Title}}
             | {{end}}
         | {{end}}

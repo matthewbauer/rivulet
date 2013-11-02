@@ -9,7 +9,6 @@ import (
 
 import (
 	"appengine"
-	"appengine/user"
 )
 
 type Opml struct {
@@ -56,29 +55,33 @@ func getOPMLFeeds(opmlFile []byte) (feeds []string, err error) {
 	if err != nil {
 		return nil, err
 	}
+
 	for _, feed := range opml.Body.Outlines {
-		feeds = append(feeds, feed.HtmlUrl)
+		feeds = append(feeds, feed.XmlUrl)
 	}
+
 	return
 }
 
-func feedOPMLPOST(context appengine.Context, user *user.User, request *http.Request) (err error) {
+func feedOPMLPOST(context appengine.Context, userdata *UserData, request *http.Request) (err error) {
 	var body []byte
 	var file multipart.File
 	file, _, err = request.FormFile("opml")
 	if err != nil {
 		return
 	}
+
 	body, err = ioutil.ReadAll(file)
 	if err != nil {
 		return
 	}
+
 	var feedList FeedList
 	feedList.Feeds, err = getOPMLFeeds(body)
 	if err != nil {
 		return
 	}
-	err = subscribeFeedList(context, user, feedList)
+	err = subscribeFeedList(context, userdata, feedList)
+
 	return
 }
-

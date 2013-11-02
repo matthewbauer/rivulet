@@ -1,5 +1,5 @@
 application: myrivulet
-version: 540
+version: 587
 runtime: go
 api_version: go1
 
@@ -71,8 +71,8 @@ handlers:
 - url: /bootstrap
   static_dir: bootstrap
 
-- url: /font-awesome/font
-  static_dir: font-awesome/font
+- url: /font-awesome/fonts
+  static_dir: font-awesome/fonts
 
 - url: /font-awesome/css
   static_dir: font-awesome/css

@@ -115,7 +115,7 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 				break
 			}
 			_, err = memcache.Gob.Get(context, item.Guid, nil)
-			if err == memcache.ErrCacheMiss {
+			if err == ErrCacheMiss {
 				err = nil
 				if item.DCDate != "" {
 					item.PubDate = item.DCDate
@@ -155,4 +155,3 @@ func getRSS(context appengine.Context, body []byte, url string) (feedCache FeedC
 	}
 	return
 }
-

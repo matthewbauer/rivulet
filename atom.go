@@ -107,7 +107,7 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 			break
 		}
 		_, err = memcache.Gob.Get(context, item.Id, nil)
-		if err == memcache.ErrCacheMiss {
+		if err == ErrCacheMiss {
 			err = nil
 			date, err = getDate(item.Updated)
 			if err != nil {
@@ -149,4 +149,3 @@ func getAtom(context appengine.Context, body []byte, url string) (feedCache Feed
 	}
 	return
 }
-

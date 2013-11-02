@@ -1,14 +1,14 @@
 !!!
 html
   include head
-  body
+  body#user
     include header
     #container
       #sidebar
         ul
           li#nav
             a#back(href='/app', target='_self', title='back')
-              i.icon-chevron-sign-left
+              i.fa.fa-chevron-sign-left
       #container-content.content
         h1 {{.String}}
         | {{with .Feeds}}

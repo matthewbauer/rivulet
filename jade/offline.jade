@@ -1,16 +1,16 @@
 !!!
 html
   include head
-  body
+  body#offline
     include header
     #container
       #sidebar
         ul
           li#nav
             a#back(href='/app', target='_self', title='back')
-              i.icon-chevron-sign-left
+              i.fa.fa-chevron-sign-left
       #container-content.content
-        a#prev.action.icon-arrow-up
+        a#prev.action.fa.fa-arrow-up
         #unsubscribe-alert.modal.hide.fade.in
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
@@ -38,7 +38,7 @@ html
               .fileupload.fileupload-new(data-provides='fileupload')
                 .input-append
                   .uneditable-input.span3
-                    i.icon-file.fileupload-exists
+                    i.fa.fa-file.fileupload-exists
                     span.fileupload-preview
                   span.btn.btn-file
                     span.fileupload-new Select .opml file
@@ -55,4 +55,4 @@ html
         noscript
           | Article could not be loaded:
           a(href='/article?count=5', target='_self') next
-        a#next.action.icon-arrow-down(href='/article', target='_self')
+        a#next.action.fa.fa-arrow-down(href='/article', target='_self')
