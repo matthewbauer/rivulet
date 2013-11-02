@@ -1,5 +1,5 @@
 application: myrivulet
-version: 587
+version: 592
 runtime: go
 api_version: go1
 
@@ -68,14 +68,28 @@ handlers:
   static_files: jquery.js
   upload: jquery.js
 
-- url: /bootstrap
-  static_dir: bootstrap
-
 - url: /font-awesome/fonts
   static_dir: font-awesome/fonts
 
-- url: /font-awesome/css
-  static_dir: font-awesome/css
+- url: /font-awesome/css/font-awesome.min.css
+  static_files: font-awesome/css/font-awesome.min.css
+  upload: font-awesome/css/font-awesome.min.css
+
+- url: /bootstrap/css/bootstrap.min.css
+  static_files: bootstrap/css/bootstrap.min.css
+  upload: bootstrap/css/bootstrap.min.css
+
+- url: /bootstrap/extend/css/jasny-bootstrap.min.css
+  static_files: bootstrap/extend/css/jasny-bootstrap.min.css
+  upload: bootstrap/extend/css/jasny-bootstrap.min.css
+
+- url: /bootstrap/js/bootstrap.min.js
+  static_files: bootstrap/js/bootstrap.min.js
+  upload: bootstrap/js/bootstrap.min.js
+
+- url: /bootstrap/extend/js/jasny-bootstrap.min.js
+  static_files: bootstrap/extend/js/jasny-bootstrap.min.js
+  upload: bootstrap/extend/js/jasny-bootstrap.min.js
 
 - url: /
   script: _go_app
